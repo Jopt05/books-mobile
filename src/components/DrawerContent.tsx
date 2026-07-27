@@ -4,6 +4,7 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { ConfirmModal } from './ConfirmModal';
@@ -123,33 +124,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    borderRightWidth: 1,
+    borderRightWidth: 1
   },
   header: {
-    marginBottom: 28,
+    marginBottom: 28
   },
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 8
   },
   logo: {
     width: 28,
     height: 28,
-    borderRadius: 4,
+    borderRadius: 4
   },
   appName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: fonts.bold
   },
   nav: {
-    flex: 1,
+    flex: 1
   },
   sectionLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.bold,
     textTransform: 'uppercase',
-    marginBottom: 8,
+    marginBottom: 8
   },
   navItem: {
     flexDirection: 'row',
@@ -158,38 +159,39 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 8,
-    marginBottom: 2,
+    marginBottom: 2
   },
   navLabel: {
     fontSize: 14,
+    fontFamily: fonts.regular
   },
   navLabelActive: {
-    fontWeight: '600',
+    fontFamily: fonts.bold
   },
   footer: {
     borderTopWidth: 1,
-    paddingTop: 16,
+    paddingTop: 16
   },
   footerTop: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 12
   },
   username: {
     fontSize: 14,
-    fontWeight: '600',
-    flex: 1,
+    fontFamily: fonts.bold,
+    flex: 1
   },
   footerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 8
   },
   langToggle: {
     fontSize: 14,
-    fontWeight: 'bold',
-  },
+    fontFamily: fonts.bold
+    },
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -198,11 +200,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#EF4444',
     paddingVertical: 10,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: 8
   },
   logoutText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
-  },
+    fontFamily: fonts.bold
+  }
 });

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useImport } from '../hooks/useImport';
 import { Loader } from '../components/Loader';
@@ -58,15 +59,15 @@ export function ImportScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1, padding: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+  title: { fontSize: 24, fontFamily: fonts.bold, marginBottom: 20 },
   button: { padding: 14, borderRadius: 8, alignItems: 'center' },
-  buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  buttonText: { color: '#FFFFFF', fontSize: 16, fontFamily: fonts.bold },
   errorText: { fontSize: 14, marginTop: 12 },
   results: { marginTop: 20 },
-  subtitle: { fontSize: 20, fontWeight: '600', marginBottom: 10 },
+  subtitle: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 10 },
   counterRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 16 },
-  counter: { fontSize: 16, fontWeight: '600' },
+  counter: { fontSize: 16, fontFamily: fonts.bold },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottomWidth: 1 },
   detailTitle: { fontSize: 14, flex: 1 },
-  detailStatus: { fontSize: 14 },
+  detailStatus: { fontSize: 14 }
 });

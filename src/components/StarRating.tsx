@@ -32,5 +32,5 @@ export function StarRating({ rating, onRate, size = 20 }: StarRatingProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', alignItems: 'center' },
+  container: { flexDirection: 'row', alignItems: 'center' }
 });

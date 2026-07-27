@@ -16,7 +16,7 @@ function formatDisplay(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
-    day: 'numeric',
+    day: 'numeric'
   });
 }
 
@@ -80,5 +80,5 @@ export function EditableDate({ icon, label, value, onSave }: EditableDateProps) 
 
 const styles = StyleSheet.create({
   displayRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
-  displayText: { fontSize: 14 },
+  displayText: { fontSize: 14 }
 });

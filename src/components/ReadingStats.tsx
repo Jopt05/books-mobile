@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useReadingStats, StatsPeriod } from '../hooks/useReadingStats';
 
@@ -71,16 +72,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: 1
   },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  title: { fontSize: 18, fontWeight: 'bold' },
+  title: { fontSize: 18, fontFamily: fonts.bold },
   toggle: { flexDirection: 'row', borderWidth: 1, borderRadius: 8, overflow: 'hidden' },
   toggleBtn: { paddingHorizontal: 12, paddingVertical: 6 },
-  toggleText: { fontSize: 14, fontWeight: '500' },
+  toggleText: { fontSize: 14, fontFamily: fonts.bold },
   grid: { flexDirection: 'row', gap: 12 },
   stat: { flex: 1, borderRadius: 8, padding: 14, alignItems: 'center' },
-  number: { fontSize: 24, fontWeight: 'bold' },
+  number: { fontSize: 24, fontFamily: fonts.bold },
   label: { fontSize: 14, marginTop: 4 },
-  loadingText: { fontSize: 14 },
+  loadingText: { fontSize: 14 }
 });

@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Activity } from '../types/domain';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { UserAvatar } from './UserAvatar';
 import { StarRating } from './StarRating';
@@ -15,7 +16,7 @@ const ACTIVITY_KEYS: Record<string, string> = {
   ADDED_TO_SHELF: 'activity.addedToShelf',
   STARTED_READING: 'activity.startedReading',
   FINISHED_READING: 'activity.finishedReading',
-  REVIEWED: 'activity.reviewed',
+  REVIEWED: 'activity.reviewed'
 };
 
 function getTimeAgo(dateStr: string): string {
@@ -101,14 +102,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 1,
-    gap: 10,
+    gap: 10
   },
   content: { flex: 1 },
   text: { fontSize: 14, lineHeight: 20 },
-  username: { fontWeight: '700' },
-  bookTitleText: { fontWeight: '600' },
+  username: { fontFamily: fonts.bold },
+  bookTitleText: { fontFamily: fonts.bold },
   ratingRow: { marginTop: 4 },
   timeAgo: { fontSize: 14, marginTop: 4 },
   coverWrap: { width: 44, height: 64, borderRadius: 6, overflow: 'hidden' },
-  cover: { width: '100%', height: '100%' },
+  cover: { width: '100%', height: '100%' }
 });

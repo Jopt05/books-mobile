@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../types/book';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 
 interface BookCardProps {
   book: Book;
@@ -58,42 +59,42 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: 1
   },
   coverContainer: {
     width: 72,
     height: 100,
     borderRadius: 6,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   cover: { width: '100%', height: '100%' },
   coverPlaceholder: {
     width: '100%',
     height: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   info: {
     flex: 1,
     marginLeft: 12,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   title: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.bold
   },
   authors: {
     fontSize: 14,
-    marginTop: 2,
+    marginTop: 2
   },
   tag: {
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 4,
-    marginTop: 6,
+    marginTop: 6
   },
   tagText: {
-    fontSize: 14,
-  },
+    fontSize: 14
+  }
 });

@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useBooks } from '../hooks/useBooks';
 import { useReadingProgress } from '../hooks/useReadingProgress';
@@ -94,8 +95,8 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 24, paddingTop: 24 },
   searchSection: { paddingHorizontal: 16, marginBottom: 12 },
   searchHeader: { marginBottom: 8 },
-  sectionTitle: { fontSize: 28, fontWeight: 'bold' },
+  sectionTitle: { fontSize: 28, fontFamily: fonts.bold },
   booksCount: { fontSize: 14, marginTop: 2 },
   bookGrid: { paddingHorizontal: 16 },
-  message: { fontSize: 16, textAlign: 'center', marginTop: 20, paddingHorizontal: 16 },
+  message: { fontSize: 16, textAlign: 'center', marginTop: 20, paddingHorizontal: 16 }
 });

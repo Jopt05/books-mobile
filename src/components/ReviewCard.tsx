@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Review } from '../types/domain';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { StarRating } from './StarRating';
 import { UserAvatar } from './UserAvatar';
@@ -21,7 +22,7 @@ export function ReviewCard({ review, isOwn = false, onDelete }: ReviewCardProps)
   const [spoilerRevealed, setSpoilerRevealed] = useState(false);
 
   const date = new Date(review.createdAt).toLocaleDateString(undefined, {
-    year: 'numeric', month: 'short', day: 'numeric',
+    year: 'numeric', month: 'short', day: 'numeric'
   });
 
   return (
@@ -69,11 +70,11 @@ const styles = StyleSheet.create({
   container: { borderWidth: 1, borderRadius: 10, padding: 12, marginBottom: 10 },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
   userRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
-  username: { fontSize: 14, fontWeight: '600' },
+  username: { fontSize: 14, fontFamily: fonts.bold },
   date: { fontSize: 14, marginRight: 8 },
   deleteBtn: { padding: 4 },
   contentArea: { marginTop: 8 },
   spoilerOverlay: { padding: 12, borderRadius: 8, alignItems: 'center' },
-  spoilerBtn: { fontSize: 14, fontWeight: '600' },
-  content: { fontSize: 16 },
+  spoilerBtn: { fontSize: 14, fontFamily: fonts.bold },
+  content: { fontSize: 16 }
 });

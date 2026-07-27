@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { getUserReviews, UserReview } from '../api/reviews';
 import { StarRating } from './StarRating';
@@ -111,13 +112,13 @@ const styles = StyleSheet.create({
   coverWrap: { width: 56, height: 80, borderRadius: 6, overflow: 'hidden' },
   coverImg: { width: '100%', height: '100%' },
   info: { flex: 1 },
-  bookTitle: { fontSize: 14, fontWeight: '600', marginBottom: 4 },
+  bookTitle: { fontSize: 14, fontFamily: fonts.bold, marginBottom: 4 },
   ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
   date: { fontSize: 14 },
   reviewContent: { fontSize: 14, marginTop: 4 },
   spoiler: { padding: 10, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  spoilerText: { fontSize: 14, fontWeight: '600' },
+  spoilerText: { fontSize: 14, fontFamily: fonts.bold },
   pagination: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, paddingVertical: 12 },
   pageText: { fontSize: 14 },
-  empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 },
+  empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 }
 });

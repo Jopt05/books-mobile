@@ -37,5 +37,5 @@ export function SearchBar({ onSearch, placeholder }: SearchBarProps) {
 const styles = StyleSheet.create({
   container: { marginHorizontal: 16, marginBottom: 12, borderRadius: 8, borderWidth: 1, flexDirection: 'row', alignItems: 'center' },
   icon: { marginLeft: 12 },
-  input: { flex: 1, padding: 12, fontSize: 16 },
+  input: { flex: 1, padding: 12, fontSize: 16 }
 });

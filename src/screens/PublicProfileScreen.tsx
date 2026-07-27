@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { usePublicProfile } from '../hooks/usePublicProfile';
@@ -133,15 +134,15 @@ const styles = StyleSheet.create({
   profileCenter: { alignItems: 'center', paddingHorizontal: 16 },
   avatar: { width: 100, height: 100, borderRadius: 50 },
   avatarPlaceholder: { width: 100, height: 100, borderRadius: 50, alignItems: 'center', justifyContent: 'center' },
-  avatarInitial: { color: '#FFFFFF', fontSize: 36, fontWeight: 'bold' },
-  username: { fontSize: 24, fontWeight: 'bold', marginTop: 12 },
+  avatarInitial: { color: '#FFFFFF', fontSize: 36, fontFamily: fonts.bold },
+  username: { fontSize: 24, fontFamily: fonts.bold, marginTop: 12 },
   counters: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
   counter: { fontSize: 14 },
-  counterBold: { fontWeight: '700' },
+  counterBold: { fontFamily: fonts.bold },
   dot: { fontSize: 14 },
   followBtn: { marginTop: 12, paddingVertical: 10, paddingHorizontal: 24, borderRadius: 8 },
-  followText: { fontSize: 14, fontWeight: '600' },
+  followText: { fontSize: 14, fontFamily: fonts.bold },
   bioSection: { paddingHorizontal: 16, marginTop: 16 },
-  bioTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 6 },
-  bioText: { fontSize: 16, lineHeight: 22 },
+  bioTitle: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 6 },
+  bioText: { fontSize: 16, lineHeight: 22 }
 });

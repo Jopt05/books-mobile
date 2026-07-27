@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { getUserBooks, getPublicUserBooks } from '../api/userBooks';
 import { Loader } from './Loader';
@@ -32,7 +33,7 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
     READING: t('shelf.reading'),
     WANT_TO_READ: t('shelf.wantToRead'),
     READ: t('shelf.read'),
-    DID_NOT_FINISH: t('shelf.didNotFinish'),
+    DID_NOT_FINISH: t('shelf.didNotFinish')
   };
 
   const fetchBooks = useCallback(async () => {
@@ -91,12 +92,12 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { paddingTop: 12, paddingBottom: 20 },
   section: { marginBottom: 20, paddingLeft: 16 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  sectionTitle: { fontSize: 18, fontFamily: fonts.bold, marginBottom: 10 },
   scroll: { gap: 12, paddingRight: 16 },
   card: { width: 110 },
   cover: { width: 110, height: 160, borderRadius: 8, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   coverImg: { width: '100%', height: '100%' },
-  bookTitle: { fontSize: 14, fontWeight: '600', marginTop: 6 },
+  bookTitle: { fontSize: 14, fontFamily: fonts.bold, marginTop: 6 },
   bookAuthor: { fontSize: 14, marginTop: 2 },
-  empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 },
+  empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 }
 });

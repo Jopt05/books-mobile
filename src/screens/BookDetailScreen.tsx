@@ -5,6 +5,7 @@ import RenderHtml from 'react-native-render-html';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useBookDetail } from '../hooks/useBookDetail';
@@ -296,7 +297,7 @@ export function BookDetailScreen() {
                         <View style={styles.journalEntryHeader}>
                           <Text style={[styles.journalDate, { color: colors.textSecondary }]}>
                             {new Date(entry.createdAt).toLocaleDateString(undefined, {
-                              year: 'numeric', month: 'short', day: 'numeric',
+                              year: 'numeric', month: 'short', day: 'numeric'
                             })}
                           </Text>
                           <TouchableOpacity onPress={() => journal.removeEntry(entry.id)} style={styles.journalDeleteBtn}>
@@ -363,8 +364,8 @@ export function BookDetailScreen() {
               baseStyle={{ color: colors.textSecondary, fontSize: 16, lineHeight: 24 }}
               tagsStyles={{
                 p: { marginBottom: 8 },
-                b: { color: colors.text, fontWeight: 'bold' },
-                i: { fontStyle: 'italic' },
+                b: { color: colors.text },
+                i: { fontStyle: 'italic' }
               }}
             />
           </View>
@@ -454,7 +455,7 @@ const styles = StyleSheet.create({
   cover: { width: '100%', height: '100%' },
   coverPlaceholder: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
   heroInfo: { flex: 1, marginLeft: 16, justifyContent: 'center' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
+  title: { fontSize: 22, fontFamily: fonts.bold, marginBottom: 4 },
   authors: { fontSize: 16, marginBottom: 8 },
   statsRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   statsText: { fontSize: 14 },
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
   readingSection: { borderRadius: 12, padding: 14, marginBottom: 20 },
   readingSectionHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
   readingLeft: { flex: 1 },
-  readingTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
+  readingTitle: { fontSize: 16, fontFamily: fonts.bold, marginBottom: 4 },
   dateText: { fontSize: 14, marginTop: 4 },
 
   // Journal form
@@ -475,15 +476,15 @@ const styles = StyleSheet.create({
   journalFormRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   modeToggle: { flexDirection: 'row', borderWidth: 1, borderRadius: 8, overflow: 'hidden' },
   modeBtn: { paddingHorizontal: 12, paddingVertical: 6 },
-  modeBtnText: { fontSize: 14, fontWeight: '500' },
+  modeBtnText: { fontSize: 14, fontFamily: fonts.bold },
   progressInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, fontSize: 14, width: 70 },
   journalSubmitBtn: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 8, marginLeft: 'auto' },
-  journalSubmitText: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
+  journalSubmitText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
   journalError: { fontSize: 14, marginTop: 4 },
 
   // Journal entries toggle & list
   journalToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 14 },
-  journalToggleText: { fontSize: 14, fontWeight: '500' },
+  journalToggleText: { fontSize: 14, fontFamily: fonts.bold },
   journalEntries: { marginTop: 12 },
   journalEntry: { borderBottomWidth: 1, paddingVertical: 10 },
   journalEntryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -499,11 +500,11 @@ const styles = StyleSheet.create({
   metaGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: 20 },
   metaItem: { width: '45%' },
   metaLabel: { fontSize: 14, textTransform: 'uppercase', marginBottom: 2 },
-  metaValue: { fontSize: 16, fontWeight: '600' },
+  metaValue: { fontSize: 16, fontFamily: fonts.bold },
 
   // Description
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  sectionTitle: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 10 },
   description: { fontSize: 16, lineHeight: 24 },
 
   // Reviews
@@ -516,6 +517,6 @@ const styles = StyleSheet.create({
   spoilerText: { fontSize: 14 },
   valError: { fontSize: 14, marginTop: 6 },
   submitBtn: { alignSelf: 'flex-end', marginTop: 10, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-  submitText: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
-  emptyReviews: { fontSize: 16, textAlign: 'center', marginTop: 10 },
+  submitText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
+  emptyReviews: { fontSize: 16, textAlign: 'center', marginTop: 10 }
 });

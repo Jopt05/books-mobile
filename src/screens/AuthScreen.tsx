@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { AuthStackParamList } from '../navigation/AuthStack';
 
@@ -16,7 +17,7 @@ export function AuthScreen() {
   const { t } = useLanguage();
   const {
     isLogin, email, setEmail, username, setUsername, password, setPassword,
-    showPassword, togglePassword, errors, generalError, loading, handleSubmit, toggleMode,
+    showPassword, togglePassword, errors, generalError, loading, handleSubmit, toggleMode
   } = useAuthForm();
 
   return (
@@ -100,7 +101,7 @@ export function AuthScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   container: { flexGrow: 1, justifyContent: 'center', padding: 24 },
-  title: { fontSize: 32, fontWeight: 'bold', textAlign: 'center', marginBottom: 4 },
+  title: { fontSize: 32, fontFamily: fonts.bold, textAlign: 'center', marginBottom: 4 },
   subtitle: { fontSize: 20, textAlign: 'center', marginBottom: 24 },
   field: { marginBottom: 16 },
   input: { borderWidth: 1, borderRadius: 8, padding: 14, fontSize: 16 },
@@ -108,6 +109,6 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 14, marginTop: 4 },
   generalError: { fontSize: 14, textAlign: 'center', marginBottom: 12 },
   submitBtn: { padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 8 },
-  submitText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
-  link: { fontSize: 14, textAlign: 'center', marginTop: 16 },
+  submitText: { color: '#FFFFFF', fontSize: 16, fontFamily: fonts.bold },
+  link: { fontSize: 14, textAlign: 'center', marginTop: 16 }
 });

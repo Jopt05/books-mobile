@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { ReadingProgress } from '../api/userBooks';
 
@@ -72,35 +73,35 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: 1
   },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
+  title: { fontSize: 18, fontFamily: fonts.bold, marginBottom: 12 },
   scrollContent: { gap: 12 },
   card: { width: 130 },
   coverContainer: {
     width: 130,
     height: 185,
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   cover: { width: '100%', height: '100%' },
   coverPlaceholder: {
     width: '100%',
     height: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
-  bookTitle: { fontSize: 14, fontWeight: '600', marginTop: 8 },
+  bookTitle: { fontSize: 14, fontFamily: fonts.bold, marginTop: 8 },
   bookAuthor: { fontSize: 14, marginTop: 2 },
   progressBar: {
     height: 5,
     borderRadius: 3,
     marginTop: 6,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   progressFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 3
   },
-  progressText: { fontSize: 14, marginTop: 3 },
+  progressText: { fontSize: 14, marginTop: 3 }
 });

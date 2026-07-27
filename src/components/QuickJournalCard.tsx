@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useQuickJournal } from '../hooks/useQuickJournal';
 import { ReadingProgress } from '../api/userBooks';
@@ -22,7 +23,7 @@ export function QuickJournalCard({ onEntryCreated }: QuickJournalCardProps) {
     setContent,
     saving,
     error,
-    submit,
+    submit
   } = useQuickJournal();
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -136,17 +137,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: 1
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 10,
+    marginBottom: 10
   },
   headerText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: fonts.bold
   },
   selector: {
     flexDirection: 'row',
@@ -156,16 +157,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 10,
+    marginBottom: 10
   },
   selectorText: {
     fontSize: 14,
     flex: 1,
-    marginRight: 8,
+    marginRight: 8
   },
   aboutText: {
     fontSize: 14,
-    marginBottom: 10,
+    marginBottom: 10
   },
   input: {
     borderWidth: 1,
@@ -174,46 +175,46 @@ const styles = StyleSheet.create({
     fontSize: 14,
     minHeight: 70,
     textAlignVertical: 'top',
-    marginBottom: 10,
+    marginBottom: 10
   },
   errorText: {
     fontSize: 14,
-    marginBottom: 8,
+    marginBottom: 8
   },
   submitBtn: {
     alignSelf: 'flex-end',
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 8
   },
   submitText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.bold
   },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   pickerModal: {
     width: '85%',
     maxHeight: 300,
     borderRadius: 12,
-    padding: 8,
+    padding: 8
   },
   pickerItem: {
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 8
   },
   pickerItemText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: fonts.bold
   },
   pickerItemAuthor: {
     fontSize: 14,
-    marginTop: 2,
-  },
+    marginTop: 2
+  }
 });

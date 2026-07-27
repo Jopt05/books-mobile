@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { TabView, TabBar, SceneRendererProps, NavigationState } from 'react-native-tab-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useFeed } from '../hooks/useFeed';
 import { ActivityCard } from '../components/ActivityCard';
@@ -105,12 +106,12 @@ export function FeedScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  title: { fontSize: 28, fontWeight: 'bold', paddingHorizontal: 16, marginTop: 8, marginBottom: 4 },
+  title: { fontSize: 28, fontFamily: fonts.bold, paddingHorizontal: 16, marginTop: 8, marginBottom: 4 },
   tabBar: { elevation: 0, shadowOpacity: 0, borderBottomWidth: 0 },
   indicator: { height: 3, borderRadius: 2 },
-  tabLabel: { fontSize: 14, fontWeight: '600', textTransform: 'none' },
+  tabLabel: { fontSize: 14, fontFamily: fonts.bold, textTransform: 'none' },
   message: { fontSize: 16, textAlign: 'center', marginTop: 20 },
   emptyState: { alignItems: 'center', paddingTop: 60 },
   emptyText: { fontSize: 16, marginTop: 12 },
-  listContent: { paddingTop: 8, paddingBottom: 20 },
+  listContent: { paddingTop: 8, paddingBottom: 20 }
 });

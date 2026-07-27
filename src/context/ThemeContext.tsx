@@ -24,7 +24,7 @@ const lightColors: ThemeColors = {
   error: '#EF4444',
   card: '#FFFFFF',
   tabBar: '#FAF6F0',
-  tabBarInactive: '#8C7B6B',
+  tabBarInactive: '#8C7B6B'
 };
 
 const darkColors: ThemeColors = {
@@ -37,7 +37,7 @@ const darkColors: ThemeColors = {
   error: '#F87171',
   card: '#2A2420',
   tabBar: '#231E1A',
-  tabBarInactive: '#9C8B7A',
+  tabBarInactive: '#9C8B7A'
 };
 
 interface ThemeContextValue {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import client from '../api/client';
 
@@ -46,9 +47,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: 1
   },
   textContainer: {},
-  count: { fontSize: 18, fontWeight: 'bold' },
-  message: { fontSize: 14 },
+  count: { fontSize: 18, fontFamily: fonts.bold },
+  message: { fontSize: 14 }
 });

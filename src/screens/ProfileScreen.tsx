@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../context/AuthContext';
@@ -49,7 +50,7 @@ export function ProfileScreen() {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 0.8
     });
     if (!result.canceled && result.assets && result.assets[0]) {
       await updateAvatar(result.assets[0].uri);
@@ -157,26 +158,26 @@ const styles = StyleSheet.create({
   avatarContainer: { position: 'relative' },
   avatar: { width: 100, height: 100, borderRadius: 50 },
   avatarPlaceholder: { width: 100, height: 100, borderRadius: 50, alignItems: 'center', justifyContent: 'center' },
-  avatarInitial: { color: '#FFFFFF', fontSize: 36, fontWeight: 'bold' },
+  avatarInitial: { color: '#FFFFFF', fontSize: 36, fontFamily: fonts.bold },
   avatarBadge: { position: 'absolute', bottom: 2, right: 2, width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
 
-  username: { fontSize: 24, fontWeight: 'bold', marginTop: 12 },
+  username: { fontSize: 24, fontFamily: fonts.bold, marginTop: 12 },
   counters: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
   counter: { fontSize: 14 },
-  counterBold: { fontWeight: '700' },
+  counterBold: { fontFamily: fonts.bold },
   dot: { fontSize: 14 },
 
   // Bio
   bioSection: { width: '100%', marginTop: 16 },
   bioHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
-  bioTitle: { fontSize: 20, fontWeight: 'bold' },
+  bioTitle: { fontSize: 20, fontFamily: fonts.bold },
   editBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  editBtnText: { fontSize: 14, fontWeight: '500' },
+  editBtnText: { fontSize: 14, fontFamily: fonts.bold },
   bioText: { fontSize: 16, lineHeight: 22 },
   bioInput: { borderWidth: 1, borderRadius: 8, padding: 12, fontSize: 14, minHeight: 70, textAlignVertical: 'top', marginBottom: 10 },
   bioActions: { flexDirection: 'row', gap: 10 },
   saveBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-  saveBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
+  saveBtnText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
   cancelBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-  cancelBtnText: { fontSize: 14, fontWeight: '500' },
+  cancelBtnText: { fontSize: 14, fontFamily: fonts.bold }
 });

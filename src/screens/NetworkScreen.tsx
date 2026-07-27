@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useNetwork } from '../hooks/useNetwork';
 import { UserAvatar } from '../components/UserAvatar';
@@ -50,9 +51,9 @@ function UserList({ users, emptyMessage }: { users: FollowUser[]; emptyMessage: 
 const listStyles = StyleSheet.create({
   list: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 20 },
   card: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 12, marginBottom: 8, gap: 14 },
-  username: { fontSize: 16, fontWeight: '600' },
+  username: { fontSize: 16, fontFamily: fonts.bold },
   emptyContainer: { alignItems: 'center', paddingTop: 40 },
-  emptyText: { fontSize: 16, marginTop: 10 },
+  emptyText: { fontSize: 16, marginTop: 10 }
 });
 
 // Tab wrapper components
@@ -100,6 +101,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10 },
   backBtn: { padding: 4 },
-  title: { fontSize: 24, fontWeight: 'bold' },
-  usernameTag: { fontSize: 16 },
+  title: { fontSize: 24, fontFamily: fonts.bold },
+  usernameTag: { fontSize: 16 }
 });

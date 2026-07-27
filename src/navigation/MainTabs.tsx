@@ -106,9 +106,9 @@ export function MainTabs() {
         headerShown: false,
         drawerStyle: {
           width: 240,
-          backgroundColor: colors.surface,
+          backgroundColor: colors.surface
         },
-        swipeEnabled: true,
+        swipeEnabled: true
       }}
     >
       <Drawer.Screen name="HomeStack" component={HomeStack} />

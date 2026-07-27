@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ConfirmModalProps {
@@ -38,9 +39,9 @@ export function ConfirmModal({ visible, title, message, onConfirm, onCancel }: C
 const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   modal: { width: '85%', borderRadius: 12, padding: 20 },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 8 },
+  title: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 8 },
   message: { fontSize: 16, marginBottom: 20 },
   buttons: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10 },
   btn: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8 },
-  btnText: { fontSize: 14, fontWeight: '600' },
+  btnText: { fontSize: 14, fontFamily: fonts.bold }
 });

@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useImport } from '../hooks/useImport';
 import { Loader } from '../components/Loader';
@@ -27,7 +28,7 @@ export function SettingsScreen() {
     formData.append('file', {
       uri: file.uri,
       name: file.name,
-      type: file.mimeType || 'text/csv',
+      type: file.mimeType || 'text/csv'
     } as any);
 
     await importFile(formData);
@@ -135,25 +136,25 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10 },
   backBtn: { padding: 4 },
-  title: { fontSize: 24, fontWeight: 'bold' },
+  title: { fontSize: 24, fontFamily: fonts.bold },
   content: { flex: 1, paddingHorizontal: 16 },
   card: { borderRadius: 12, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
-  cardTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 4 },
+  cardTitle: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 4 },
   cardDescription: { fontSize: 14, marginBottom: 16 },
   dropzone: { borderWidth: 2, borderStyle: 'dashed', borderRadius: 12, padding: 30, alignItems: 'center', gap: 8 },
-  dropzoneText: { fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  dropzoneText: { fontSize: 14, fontFamily: fonts.bold, textAlign: 'center' },
   dropzoneHint: { fontSize: 14 },
   errorText: { fontSize: 14, marginTop: 10 },
   loadingState: { alignItems: 'center', paddingVertical: 20, gap: 10 },
   loadingText: { fontSize: 14 },
   statsGrid: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   statCard: { flex: 1, borderRadius: 8, padding: 12, alignItems: 'center' },
-  statNumber: { fontSize: 24, fontWeight: 'bold' },
+  statNumber: { fontSize: 24, fontFamily: fonts.bold },
   statLabel: { fontSize: 14, marginTop: 4 },
   detailsList: { maxHeight: 200 },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1 },
   detailTitle: { fontSize: 14, flex: 1, marginRight: 8 },
   detailStatus: { fontSize: 14 },
   resetBtn: { marginTop: 16, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' },
-  resetText: { fontSize: 14, fontWeight: '500' },
+  resetText: { fontSize: 14, fontFamily: fonts.bold }
 });

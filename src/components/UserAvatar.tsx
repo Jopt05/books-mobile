@@ -24,5 +24,5 @@ export function UserAvatar({ uri, size }: UserAvatarProps) {
 
 const styles = StyleSheet.create({
   image: {},
-  placeholder: { alignItems: 'center', justifyContent: 'center' },
+  placeholder: { alignItems: 'center', justifyContent: 'center' }
 });

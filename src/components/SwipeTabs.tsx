@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, useWindowDimensions, StyleSheet } from 'react-native';
 import { TabView, TabBar, SceneRendererProps, NavigationState } from 'react-native-tab-view';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 
 export interface SwipeTab {
   key: string;
@@ -62,5 +63,5 @@ export function SwipeTabs({ tabs, initialIndex = 0, onIndexChange }: SwipeTabsPr
 }
 
 const styles = StyleSheet.create({
-  tabLabel: { fontSize: 14, fontWeight: '600', textTransform: 'none' },
+  tabLabel: { fontSize: 14, fontFamily: fonts.bold, textTransform: 'none' }
 });

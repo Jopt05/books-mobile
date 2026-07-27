@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { forgotPassword } from '../api/auth';
 
@@ -69,11 +70,11 @@ export function ForgotPasswordScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24 },
-  title: { fontSize: 24, fontWeight: '600', marginBottom: 20 },
+  title: { fontSize: 24, fontFamily: fonts.bold, marginBottom: 20 },
   input: { borderWidth: 1, borderRadius: 8, padding: 14, fontSize: 16, marginBottom: 4 },
   errorText: { fontSize: 14, marginBottom: 12 },
   successText: { fontSize: 14, marginBottom: 12 },
   button: { padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 12 },
-  buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
-  link: { fontSize: 14, textAlign: 'center', marginTop: 20 },
+  buttonText: { color: '#FFFFFF', fontSize: 16, fontFamily: fonts.bold },
+  link: { fontSize: 14, textAlign: 'center', marginTop: 20 }
 });

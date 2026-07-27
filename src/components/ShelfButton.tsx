@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { BookStatus } from '../types/domain';
 import { useTheme } from '../hooks/useTheme';
+import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ShelfButtonProps {
@@ -67,9 +68,9 @@ export function ShelfButton({ currentStatus, onSelect, onRemove, loading }: Shel
 
 const styles = StyleSheet.create({
   button: { paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8, alignItems: 'center' },
-  buttonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '600' },
+  buttonText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   menu: { width: '80%', borderRadius: 12, padding: 8 },
   option: { padding: 14, borderRadius: 8 },
-  optionText: { fontSize: 16 },
+  optionText: { fontSize: 16 }
 });
