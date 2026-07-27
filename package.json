@@ -29,7 +29,10 @@
     "react-native-reanimated": "~3.17.4",
     "@react-native-community/datetimepicker": "^8.0.0",
     "react-native-render-html": "^6.3.4",
-    "expo-image-picker": "~16.1.0"
+    "expo-image-picker": "~16.1.0",
+    "expo-document-picker": "~13.1.0",
+    "react-native-tab-view": "^4.0.0",
+    "react-native-pager-view": "6.6.1"
   },
   "devDependencies": {
     "typescript": "~5.8.3",

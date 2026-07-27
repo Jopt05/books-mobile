@@ -22,7 +22,9 @@ export type HomeStackParamList = {
 export type FeedStackParamList = {
   Feed: undefined;
   PublicProfile: { username: string };
+  BookDetail: { bookId: string };
   BookDetailFeed: { bookId: string };
+  Network: { username: string };
 };
 
 export type ProfileStackParamList = {
@@ -31,7 +33,9 @@ export type ProfileStackParamList = {
   Settings: undefined;
   Import: undefined;
   PublicProfileFromProfile: { username: string };
+  PublicProfile: { username: string };
   BookDetailProfile: { bookId: string };
+  BookDetail: { bookId: string };
 };
 
 export type SettingsStackParamList = {
@@ -57,7 +61,8 @@ function FeedStack() {
     <FeedStackNav.Navigator screenOptions={{ headerShown: false }}>
       <FeedStackNav.Screen name="Feed" component={FeedScreen} />
       <FeedStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
-      <FeedStackNav.Screen name="BookDetailFeed" component={BookDetailScreen} />
+      <FeedStackNav.Screen name="BookDetail" component={BookDetailScreen} />
+      <FeedStackNav.Screen name="Network" component={NetworkScreen} />
     </FeedStackNav.Navigator>
   );
 }
@@ -81,7 +86,9 @@ function ProfileStack() {
       <ProfileStackNav.Screen name="Settings" component={SettingsScreen} />
       <ProfileStackNav.Screen name="Import" component={ImportScreen} />
       <ProfileStackNav.Screen name="PublicProfileFromProfile" component={PublicProfileScreen} />
+      <ProfileStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
       <ProfileStackNav.Screen name="BookDetailProfile" component={BookDetailScreen} />
+      <ProfileStackNav.Screen name="BookDetail" component={BookDetailScreen} />
     </ProfileStackNav.Navigator>
   );
 }

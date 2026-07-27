@@ -8,6 +8,7 @@ interface UseReadingStatsReturn {
   period: StatsPeriod;
   setPeriod: (p: StatsPeriod) => void;
   loading: boolean;
+  refresh: () => Promise<void>;
 }
 
 export function useReadingStats(): UseReadingStatsReturn {
@@ -36,5 +37,5 @@ export function useReadingStats(): UseReadingStatsReturn {
     refresh();
   }, [refresh]);
 
-  return { stats, period, setPeriod, loading };
+  return { stats, period, setPeriod, loading, refresh };
 }

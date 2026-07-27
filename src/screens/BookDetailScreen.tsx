@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Image, ScrollView, TextInput, TouchableOpacity, StyleSheet, useWindowDimensions, RefreshControl } from 'react-native';
+import { View, Text, Image, ScrollView, TextInput, TouchableOpacity, StyleSheet, useWindowDimensions, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import RenderHtml from 'react-native-render-html';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
@@ -80,6 +80,7 @@ export function BookDetailScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -427,6 +428,7 @@ export function BookDetailScreen() {
           )}
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
 
       <ConfirmModal
         visible={!!deleteReviewId}

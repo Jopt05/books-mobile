@@ -1,66 +1,159 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as DocumentPicker from 'expo-document-picker';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
-import { useAuth } from '../context/AuthContext';
-import { AppHeader } from '../components/AppHeader';
-import { ProfileStackParamList } from '../navigation/MainTabs';
-
-type NavProp = NativeStackNavigationProp<ProfileStackParamList, 'Settings'>;
+import { useImport } from '../hooks/useImport';
+import { Loader } from '../components/Loader';
 
 export function SettingsScreen() {
-  const nav = useNavigation<NavProp>();
-  const { colors, isDark, toggle } = useTheme();
-  const { locale, setLocale, t } = useLanguage();
-  const { logout } = useAuth();
+  const navigation = useNavigation();
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+  const { result, loading, error, importFile, reset } = useImport();
+  const [fileName, setFileName] = useState<string | null>(null);
+
+  const handlePickFile = async () => {
+    const res = await DocumentPicker.getDocumentAsync({ type: 'text/csv' });
+    if (res.canceled || !res.assets?.[0]) return;
+
+    const file = res.assets[0];
+    setFileName(file.name);
+
+    const formData = new FormData();
+    formData.append('file', {
+      uri: file.uri,
+      name: file.name,
+      type: file.mimeType || 'text/csv',
+    } as any);
+
+    await importFile(formData);
+  };
+
+  const handleReset = () => {
+    reset();
+    setFileName(null);
+  };
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      <AppHeader />
-      <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={22} color={colors.textSecondary} />
+        </TouchableOpacity>
+        <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
+      </View>
 
-      <TouchableOpacity style={[styles.row, { borderColor: colors.border }]} onPress={toggle}>
-        <View style={styles.rowLeft}>
-          <Ionicons name={isDark ? 'sunny-outline' : 'moon-outline'} size={20} color={colors.text} />
-          <Text style={[styles.rowText, { color: colors.text }]}>{t('settings.theme')}</Text>
-        </View>
-        <Text style={[styles.rowValue, { color: colors.textSecondary }]}>{isDark ? t('settings.darkMode') : t('settings.lightMode')}</Text>
-      </TouchableOpacity>
+      <View style={styles.content}>
+        {/* Import Section Card */}
+        <View style={[styles.card, { backgroundColor: colors.card }]}>
+          <Text style={[styles.cardTitle, { color: colors.text }]}>{t('import.title')}</Text>
+          <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+            {t('settings.import')}
+          </Text>
 
-      <TouchableOpacity style={[styles.row, { borderColor: colors.border }]} onPress={() => setLocale(locale === 'es' ? 'en' : 'es')}>
-        <View style={styles.rowLeft}>
-          <Ionicons name="language-outline" size={20} color={colors.text} />
-          <Text style={[styles.rowText, { color: colors.text }]}>{t('settings.language')}</Text>
-        </View>
-        <Text style={[styles.rowValue, { color: colors.textSecondary }]}>{locale.toUpperCase()}</Text>
-      </TouchableOpacity>
+          {!result && !loading && (
+            <>
+              {/* Dropzone */}
+              <TouchableOpacity
+                style={[styles.dropzone, { borderColor: colors.border }]}
+                onPress={handlePickFile}
+              >
+                <Ionicons name="cloud-upload-outline" size={36} color={colors.primary} />
+                <Text style={[styles.dropzoneText, { color: colors.text }]}>
+                  {fileName || t('import.selectFile')}
+                </Text>
+                <Text style={[styles.dropzoneHint, { color: colors.textSecondary }]}>
+                  CSV
+                </Text>
+              </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.row, { borderColor: colors.border }]} onPress={() => nav.navigate('Import')}>
-        <View style={styles.rowLeft}>
-          <Ionicons name="cloud-upload-outline" size={20} color={colors.text} />
-          <Text style={[styles.rowText, { color: colors.text }]}>{t('settings.import')}</Text>
-        </View>
-      </TouchableOpacity>
+              {error ? <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text> : null}
+            </>
+          )}
 
-      <TouchableOpacity style={[styles.row, { borderColor: colors.border }]} onPress={logout}>
-        <View style={styles.rowLeft}>
-          <Ionicons name="log-out-outline" size={20} color={colors.error} />
-          <Text style={[styles.rowText, { color: colors.error }]}>{t('settings.logout')}</Text>
+          {/* Loading */}
+          {loading && (
+            <View style={styles.loadingState}>
+              <Loader />
+              <Text style={[styles.loadingText, { color: colors.textSecondary }]}>{t('import.importing')}</Text>
+            </View>
+          )}
+
+          {/* Results */}
+          {result && (
+            <View>
+              <View style={styles.statsGrid}>
+                <View style={[styles.statCard, { backgroundColor: colors.background }]}>
+                  <Text style={[styles.statNumber, { color: '#16A34A' }]}>{result.imported}</Text>
+                  <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('import.imported')}</Text>
+                </View>
+                <View style={[styles.statCard, { backgroundColor: colors.background }]}>
+                  <Text style={[styles.statNumber, { color: colors.text }]}>{result.skipped}</Text>
+                  <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('import.skipped')}</Text>
+                </View>
+                <View style={[styles.statCard, { backgroundColor: colors.background }]}>
+                  <Text style={[styles.statNumber, { color: colors.error }]}>{result.failed}</Text>
+                  <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('import.failed')}</Text>
+                </View>
+              </View>
+
+              {result.details.length > 0 && (
+                <FlatList
+                  data={result.details}
+                  keyExtractor={(_, i) => String(i)}
+                  style={styles.detailsList}
+                  renderItem={({ item }) => (
+                    <View style={[styles.detailRow, { borderColor: colors.border }]}>
+                      <Text style={[styles.detailTitle, { color: colors.text }]} numberOfLines={1}>{item.title}</Text>
+                      <Text style={[styles.detailStatus, {
+                        color: item.status === 'imported' ? '#16A34A' : item.status === 'failed' ? colors.error : colors.textSecondary
+                      }]}>
+                        {item.status}
+                      </Text>
+                    </View>
+                  )}
+                />
+              )}
+
+              <TouchableOpacity style={[styles.resetBtn, { backgroundColor: colors.border }]} onPress={handleReset}>
+                <Text style={[styles.resetText, { color: colors.textSecondary }]}>{t('common.retry')}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-      </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, padding: 16 },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 20 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1 },
-  rowLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  rowText: { fontSize: 16 },
-  rowValue: { fontSize: 14 },
+  flex: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10 },
+  backBtn: { padding: 4 },
+  title: { fontSize: 24, fontWeight: 'bold' },
+  content: { flex: 1, paddingHorizontal: 16 },
+  card: { borderRadius: 12, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
+  cardTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 4 },
+  cardDescription: { fontSize: 14, marginBottom: 16 },
+  dropzone: { borderWidth: 2, borderStyle: 'dashed', borderRadius: 12, padding: 30, alignItems: 'center', gap: 8 },
+  dropzoneText: { fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  dropzoneHint: { fontSize: 14 },
+  errorText: { fontSize: 14, marginTop: 10 },
+  loadingState: { alignItems: 'center', paddingVertical: 20, gap: 10 },
+  loadingText: { fontSize: 14 },
+  statsGrid: { flexDirection: 'row', gap: 10, marginBottom: 16 },
+  statCard: { flex: 1, borderRadius: 8, padding: 12, alignItems: 'center' },
+  statNumber: { fontSize: 24, fontWeight: 'bold' },
+  statLabel: { fontSize: 14, marginTop: 4 },
+  detailsList: { maxHeight: 200 },
+  detailRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1 },
+  detailTitle: { fontSize: 14, flex: 1, marginRight: 8 },
+  detailStatus: { fontSize: 14 },
+  resetBtn: { marginTop: 16, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' },
+  resetText: { fontSize: 14, fontWeight: '500' },
 });

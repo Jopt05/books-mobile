@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Activity } from '../types/domain';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { UserAvatar } from './UserAvatar';
+import { StarRating } from './StarRating';
 
 interface ActivityCardProps {
   activity: Activity;
@@ -16,37 +18,97 @@ const ACTIVITY_KEYS: Record<string, string> = {
   REVIEWED: 'activity.reviewed',
 };
 
+function getTimeAgo(dateStr: string): string {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffMs = now - then;
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMin < 1) return 'ahora';
+  if (diffMin < 60) return `${diffMin}m`;
+  if (diffHours < 24) return `${diffHours}h`;
+  if (diffDays < 7) return `${diffDays}d`;
+  return new Date(dateStr).toLocaleDateString();
+}
+
 export function ActivityCard({ activity }: ActivityCardProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const navigation = useNavigation<any>();
 
   return (
-    <View style={[styles.container, { borderColor: colors.border }]}>
-      <UserAvatar uri={activity.user.avatar} size={36} />
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
+      {/* Avatar - navigates to profile */}
+      <TouchableOpacity onPress={() => navigation.navigate('PublicProfile', { username: activity.user.username })}>
+        <UserAvatar uri={activity.user.avatar} size={40} />
+      </TouchableOpacity>
+
+      {/* Content */}
       <View style={styles.content}>
         <Text style={[styles.text, { color: colors.text }]}>
-          <Text style={styles.username}>{activity.user.username}</Text>
-          {' '}{t(ACTIVITY_KEYS[activity.type] || activity.type)}
-        </Text>
-        <View style={styles.bookRow}>
-          {activity.bookCover && (
-            <Image source={{ uri: activity.bookCover }} style={styles.bookCover} />
-          )}
-          <Text style={[styles.bookTitle, { color: colors.textSecondary }]} numberOfLines={1}>
+          <Text
+            style={styles.username}
+            onPress={() => navigation.navigate('PublicProfile', { username: activity.user.username })}
+          >
+            {activity.user.username}
+          </Text>
+          {' '}{t(ACTIVITY_KEYS[activity.type] || activity.type)}{' '}
+          <Text
+            style={[styles.bookTitleText, { color: colors.text }]}
+            onPress={() => navigation.navigate('BookDetail', { bookId: activity.bookId })}
+          >
             {activity.bookTitle}
           </Text>
-        </View>
+        </Text>
+
+        {/* Rating for reviews */}
+        {activity.type === 'REVIEWED' && activity.metadata?.rating && (
+          <View style={styles.ratingRow}>
+            <StarRating rating={activity.metadata.rating} size={14} />
+          </View>
+        )}
+
+        {/* Time ago */}
+        <Text style={[styles.timeAgo, { color: colors.textSecondary }]}>
+          {getTimeAgo(activity.createdAt)}
+        </Text>
       </View>
+
+      {/* Book cover - navigates to book */}
+      {activity.bookCover && (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('BookDetail', { bookId: activity.bookId })}
+          style={[styles.coverWrap, { backgroundColor: colors.border }]}
+        >
+          <Image source={{ uri: activity.bookCover }} style={styles.cover} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', padding: 12, borderBottomWidth: 1 },
-  content: { flex: 1, marginLeft: 10 },
-  text: { fontSize: 14 },
-  username: { fontWeight: '600' },
-  bookRow: { flexDirection: 'row', alignItems: 'center', marginTop: 6 },
-  bookCover: { width: 30, height: 45, borderRadius: 2, marginRight: 8 },
-  bookTitle: { fontSize: 14, flex: 1 },
+  container: {
+    flexDirection: 'row',
+    padding: 12,
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
+    gap: 10,
+  },
+  content: { flex: 1 },
+  text: { fontSize: 14, lineHeight: 20 },
+  username: { fontWeight: '700' },
+  bookTitleText: { fontWeight: '600' },
+  ratingRow: { marginTop: 4 },
+  timeAgo: { fontSize: 14, marginTop: 4 },
+  coverWrap: { width: 44, height: 64, borderRadius: 6, overflow: 'hidden' },
+  cover: { width: '100%', height: '100%' },
 });

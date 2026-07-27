@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,7 +7,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useBooks } from '../hooks/useBooks';
 import { useReadingProgress } from '../hooks/useReadingProgress';
-import { useReadingStats } from '../hooks/useReadingStats';
 import { SearchBar } from '../components/SearchBar';
 import { BookCard } from '../components/BookCard';
 import { CurrentlyReading } from '../components/CurrentlyReading';
@@ -24,18 +23,31 @@ export function HomeScreen() {
   const nav = useNavigation<NavProp>();
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const { books, loading: searchLoading, error: searchError, search, query } = useBooks();
-  const { progress } = useReadingProgress();
-  const { stats } = useReadingStats();
+  const { books, loading: searchLoading, error: searchError, search, query, refresh: refreshBooks } = useBooks();
+  const { progress, refresh: refreshProgress } = useReadingProgress();
   const [streakKey, setStreakKey] = useState(0);
+  const [journalKey, setJournalKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refreshProgress(), refreshBooks()]);
+    setStreakKey((k) => k + 1);
+    setJournalKey((k) => k + 1);
+    setRefreshing(false);
+  }, [refreshProgress, refreshBooks]);
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       <AppHeader />
-
-      <ScrollView style={styles.flex} contentContainerStyle={styles.scrollContent}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
+      >
         {/* 1. Quick Journal Card (self-contained, like web) */}
-        <QuickJournalCard onEntryCreated={() => setStreakKey((k) => k + 1)} />
+        <QuickJournalCard key={journalKey} onEntryCreated={() => setStreakKey((k) => k + 1)} />
 
         {/* 2. Streak Banner (fetches its own data from /journal/streak) */}
         <StreakBanner key={streakKey} />
@@ -43,39 +55,36 @@ export function HomeScreen() {
         {/* 3. Currently Reading with progress bars */}
         {progress.length > 0 && <CurrentlyReading books={progress} />}
 
-        {/* 4. Reading Stats */}
-        {stats && <ReadingStats stats={stats} />}
+        {/* 4. Reading Stats (self-contained with period toggle) */}
+        <ReadingStats />
 
         {/* 5. Search Section (title + count + search bar) */}
         <View style={styles.searchSection}>
           <View style={styles.searchHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('tabs.home')}</Text>
-            {query ? (
-              <Text style={[styles.booksCount, { color: colors.textSecondary }]}>
-                {books.length} {t('search.placeholder').split(' ')[0]}
-              </Text>
-            ) : null}
+            <Text style={[styles.booksCount, { color: colors.textSecondary }]}>
+              {books.length} {t('search.placeholder').split(' ')[0]}
+            </Text>
           </View>
           <SearchBar onSearch={search} />
         </View>
 
         {/* 6. Search Results */}
-        {query ? (
-          searchLoading ? (
-            <Loader />
-          ) : searchError ? (
-            <Text style={[styles.message, { color: colors.error }]}>{searchError}</Text>
-          ) : books.length === 0 ? (
-            <Text style={[styles.message, { color: colors.textSecondary }]}>{t('search.noResults')}</Text>
-          ) : (
-            <View style={styles.bookGrid}>
-              {books.map((book) => (
-                <BookCard key={book.id} book={book} onPress={() => nav.navigate('BookDetail', { bookId: book.id })} />
-              ))}
-            </View>
-          )
-        ) : null}
+        {searchLoading ? (
+          <Loader />
+        ) : searchError ? (
+          <Text style={[styles.message, { color: colors.error }]}>{searchError}</Text>
+        ) : books.length === 0 ? (
+          <Text style={[styles.message, { color: colors.textSecondary }]}>{t('search.noResults')}</Text>
+        ) : (
+          <View style={styles.bookGrid}>
+            {books.map((book) => (
+              <BookCard key={book.id} book={book} onPress={() => nav.navigate('BookDetail', { bookId: book.id })} />
+            ))}
+          </View>
+        )}
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
