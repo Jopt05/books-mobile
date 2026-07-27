@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UserProfile } from '../types/user';
 import { getProfile, updateProfile } from '../api/users';
+import { useAuth } from '../context/AuthContext';
 
 interface UseProfileReturn {
   profile: UserProfile | null;
@@ -13,6 +14,7 @@ interface UseProfileReturn {
 }
 
 export function useProfile(): UseProfileReturn {
+  const { updateUser } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,12 +26,13 @@ export function useProfile(): UseProfileReturn {
     try {
       const data = await getProfile();
       setProfile(data);
+      updateUser({ avatar: data.avatar, username: data.username });
     } catch {
       setError('No se pudo cargar el perfil');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [updateUser]);
 
   const updateBio = useCallback(async (bio: string) => {
     setUpdating(true);
@@ -54,10 +57,11 @@ export function useProfile(): UseProfileReturn {
       } as any);
       const updated = await updateProfile(formData);
       setProfile(updated);
+      updateUser({ avatar: updated.avatar });
     } finally {
       setUpdating(false);
     }
-  }, []);
+  }, [updateUser]);
 
   useEffect(() => {
     refresh();

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import * as SecureStore from 'expo-secure-store';
 import { User, AuthResponse, LoginPayload, RegisterPayload } from '../types/auth';
 import * as authApi from '../api/auth';
+import { getProfile } from '../api/users';
 import { setOnLogout } from '../api/client';
 
 interface AuthContextValue {
@@ -11,6 +12,7 @@ interface AuthContextValue {
   login: (payload: LoginPayload) => Promise<void>;
   registerUser: (payload: RegisterPayload) => Promise<string>;
   logout: () => Promise<void>;
+  updateUser: (data: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -45,6 +47,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return response.message;
   }, []);
 
+  const updateUser = useCallback((data: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...data };
+      SecureStore.setItemAsync('user', JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
+  }, []);
+
   // Restore session on mount
   useEffect(() => {
     (async () => {
@@ -52,7 +63,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userStr = await SecureStore.getItemAsync('user');
         const token = await SecureStore.getItemAsync('accessToken');
         if (userStr && token) {
-          setUser(JSON.parse(userStr));
+          const stored = JSON.parse(userStr);
+          setUser(stored);
+
+          // Background sync: fetch fresh profile to update avatar/username
+          getProfile()
+            .then((fresh) => {
+              if (fresh.avatar !== stored.avatar || fresh.username !== stored.username) {
+                const updated = { ...stored, avatar: fresh.avatar, username: fresh.username };
+                setUser(updated);
+                SecureStore.setItemAsync('user', JSON.stringify(updated)).catch(() => {});
+              }
+            })
+            .catch(() => { /* silent */ });
         }
       } catch {
         // Invalid stored data, remain logged out
@@ -70,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, registerUser, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, registerUser, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
