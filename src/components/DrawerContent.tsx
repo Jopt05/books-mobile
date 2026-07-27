@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -22,8 +22,18 @@ export function DrawerContent({ navigation, state }: DrawerContentComponentProps
 
   const activeRoute = state.routes[state.index]?.name;
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.surface, borderRightColor: colors.border }]}>
+    <SafeAreaView style={[
+      styles.container, 
+      { 
+        backgroundColor: colors.surface, 
+        borderRightColor: colors.border ,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom
+      }
+    ]}>
       {/* Header - Logo */}
       <View style={styles.header}>
         <View style={styles.logoRow}>
@@ -113,7 +123,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 12,
     borderRightWidth: 1,
   },
   header: {
