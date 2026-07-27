@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Anaquel",
+    "slug": "books-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icono.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/icono.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anaquel.booksmobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icono.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.anaquel.booksmobile"
+    },
+    "web": {
+      "favicon": "./assets/icono.png"
+    }
+  }
+}
