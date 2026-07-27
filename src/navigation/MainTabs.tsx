@@ -1,9 +1,6 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Text } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
-import { useLanguage } from '../context/LanguageContext';
 import { HomeScreen } from '../screens/HomeScreen';
 import { BookDetailScreen } from '../screens/BookDetailScreen';
 import { FeedScreen } from '../screens/FeedScreen';
@@ -12,6 +9,8 @@ import { PublicProfileScreen } from '../screens/PublicProfileScreen';
 import { NetworkScreen } from '../screens/NetworkScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ImportScreen } from '../screens/ImportScreen';
+import { DrawerContent } from '../components/DrawerContent';
+import { useTheme } from '../hooks/useTheme';
 
 // Param lists
 export type HomeStackParamList = {
@@ -32,6 +31,11 @@ export type ProfileStackParamList = {
   Import: undefined;
   PublicProfileFromProfile: { username: string };
   BookDetailProfile: { bookId: string };
+};
+
+export type SettingsStackParamList = {
+  SettingsMain: undefined;
+  Import: undefined;
 };
 
 // Stacks
@@ -56,6 +60,16 @@ function FeedStack() {
   );
 }
 
+const SettingsStackNav = createNativeStackNavigator<SettingsStackParamList>();
+function SettingsStack() {
+  return (
+    <SettingsStackNav.Navigator screenOptions={{ headerShown: false }}>
+      <SettingsStackNav.Screen name="SettingsMain" component={SettingsScreen} />
+      <SettingsStackNav.Screen name="Import" component={ImportScreen} />
+    </SettingsStackNav.Navigator>
+  );
+}
+
 const ProfileStackNav = createNativeStackNavigator<ProfileStackParamList>();
 function ProfileStack() {
   return (
@@ -70,47 +84,28 @@ function ProfileStack() {
   );
 }
 
-// Tabs
-const Tab = createBottomTabNavigator();
+// Drawer
+const Drawer = createDrawerNavigator();
 
 export function MainTabs() {
   const { colors } = useTheme();
-  const { t } = useLanguage();
 
   return (
-    <Tab.Navigator
+    <Drawer.Navigator
+      drawerContent={(props) => <DrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { backgroundColor: colors.tabBar, borderTopColor: colors.border },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.tabBarInactive,
-        tabBarLabelStyle: { fontSize: 14 },
+        drawerStyle: {
+          width: 240,
+          backgroundColor: colors.surface,
+        },
+        swipeEnabled: true,
       }}
     >
-      <Tab.Screen
-        name="HomeTab"
-        component={HomeStack}
-        options={{
-          tabBarLabel: t('tabs.home'),
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🏠</Text>,
-        }}
-      />
-      <Tab.Screen
-        name="FeedTab"
-        component={FeedStack}
-        options={{
-          tabBarLabel: t('tabs.feed'),
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📰</Text>,
-        }}
-      />
-      <Tab.Screen
-        name="ProfileTab"
-        component={ProfileStack}
-        options={{
-          tabBarLabel: t('tabs.profile'),
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👤</Text>,
-        }}
-      />
-    </Tab.Navigator>
+      <Drawer.Screen name="HomeStack" component={HomeStack} />
+      <Drawer.Screen name="FeedStack" component={FeedStack} />
+      <Drawer.Screen name="SettingsStack" component={SettingsStack} />
+      <Drawer.Screen name="ProfileStack" component={ProfileStack} />
+    </Drawer.Navigator>
   );
 }

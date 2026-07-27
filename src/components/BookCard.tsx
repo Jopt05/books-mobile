@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../types/book';
 import { useTheme } from '../hooks/useTheme';
 
@@ -21,7 +22,7 @@ export function BookCard({ book, onPress }: BookCardProps) {
         <Image source={{ uri: book.coverUrl }} style={styles.cover} />
       ) : (
         <View style={[styles.coverPlaceholder, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>📚</Text>
+          <Ionicons name="book-outline" size={28} color={colors.textSecondary} />
         </View>
       )}
       <View style={styles.info}>
@@ -55,9 +56,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  placeholderText: {
-    fontSize: 24,
   },
   info: {
     flex: 1,

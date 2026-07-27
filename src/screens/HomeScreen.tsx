@@ -16,6 +16,7 @@ import { QuickJournalCard } from '../components/QuickJournalCard';
 import { StreakBanner } from '../components/StreakBanner';
 import { ReadingStats } from '../components/ReadingStats';
 import { Loader } from '../components/Loader';
+import { AppHeader } from '../components/AppHeader';
 import { HomeStackParamList } from '../navigation/MainTabs';
 
 type NavProp = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
@@ -43,6 +44,7 @@ export function HomeScreen() {
   if (query) {
     return (
       <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
+        <AppHeader />
         <SearchBar onSearch={search} />
         {searchLoading ? (
           <Loader />
@@ -67,6 +69,7 @@ export function HomeScreen() {
   // Default home view
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
+      <AppHeader />
       <SearchBar onSearch={search} />
       <FlatList
         data={[]}

@@ -15,29 +15,29 @@ export interface ThemeColors {
 }
 
 const lightColors: ThemeColors = {
-  background: '#FFFFFF',
-  surface: '#F5F5F5',
-  text: '#1A1A1A',
-  textSecondary: '#666666',
-  primary: '#6366F1',
-  border: '#E5E5E5',
+  background: '#F5F0E8',
+  surface: '#FAF6F0',
+  text: '#3D2E1E',
+  textSecondary: '#8C7B6B',
+  primary: '#C17B3A',
+  border: '#EDE8E0',
   error: '#EF4444',
   card: '#FFFFFF',
-  tabBar: '#FFFFFF',
-  tabBarInactive: '#9CA3AF',
+  tabBar: '#FAF6F0',
+  tabBarInactive: '#8C7B6B',
 };
 
 const darkColors: ThemeColors = {
-  background: '#121212',
-  surface: '#1E1E1E',
-  text: '#F5F5F5',
-  textSecondary: '#A3A3A3',
-  primary: '#818CF8',
-  border: '#2E2E2E',
+  background: '#1C1714',
+  surface: '#231E1A',
+  text: '#E8DFD4',
+  textSecondary: '#9C8B7A',
+  primary: '#D4915A',
+  border: '#3A322B',
   error: '#F87171',
-  card: '#1E1E1E',
-  tabBar: '#1A1A1A',
-  tabBarInactive: '#6B7280',
+  card: '#2A2420',
+  tabBar: '#231E1A',
+  tabBarInactive: '#9C8B7A',
 };
 
 interface ThemeContextValue {

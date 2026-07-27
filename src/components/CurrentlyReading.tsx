@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { ReadingProgress } from '../api/userBooks';
@@ -24,7 +25,7 @@ export function CurrentlyReading({ books }: CurrentlyReadingProps) {
               <Image source={{ uri: book.coverUrl }} style={styles.cover} />
             ) : (
               <View style={[styles.coverPlaceholder, { backgroundColor: colors.border }]}>
-                <Text style={{ fontSize: 16 }}>📖</Text>
+                <Ionicons name="book-outline" size={20} color={colors.textSecondary} />
               </View>
             )}
             <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>

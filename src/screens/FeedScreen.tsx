@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useFeed } from '../hooks/useFeed';
 import { ActivityCard } from '../components/ActivityCard';
+import { AppHeader } from '../components/AppHeader';
 import { Loader } from '../components/Loader';
 
 export function FeedScreen() {
@@ -17,6 +18,7 @@ export function FeedScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
+      <AppHeader />
       <View style={styles.tabs}>
         <TouchableOpacity style={[styles.tab, tab === 'personal' && { borderBottomColor: colors.primary, borderBottomWidth: 2 }]} onPress={() => setTab('personal')}>
           <Text style={[styles.tabText, { color: tab === 'personal' ? colors.primary : colors.textSecondary }]}>{t('feed.following')}</Text>

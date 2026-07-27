@@ -101,5 +101,12 @@
   "common.error": "Ocurrió un error",
   "common.retry": "Reintentar",
   "common.networkError": "No se pudo conectar al servidor",
-  "currentlyReading.title": "Leyendo actualmente"
+  "currentlyReading.title": "Leyendo actualmente",
+  "sidebar.sections": "Secciones",
+  "sidebar.books": "Libros",
+  "sidebar.feed": "Feed",
+  "sidebar.settings": "Configuración",
+  "sidebar.logOut": "Cerrar sesión",
+  "sidebar.logOutConfirmTitle": "Cerrar sesión",
+  "sidebar.logOutConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?"
 }

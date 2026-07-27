@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
 
 interface StarRatingProps {
@@ -19,9 +20,11 @@ export function StarRating({ rating, onRate, size = 20 }: StarRatingProps) {
           onPress={() => onRate?.(n)}
           style={{ padding: 2 }}
         >
-          <Text style={{ fontSize: size, color: n <= rating ? '#F59E0B' : colors.border }}>
-            ★
-          </Text>
+          <Ionicons
+            name={n <= rating ? 'star' : 'star-outline'}
+            size={size}
+            color={n <= rating ? '#F59E0B' : colors.border}
+          />
         </TouchableOpacity>
       ))}
     </View>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, View, Text, StyleSheet } from 'react-native';
+import { Image, View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
 
 interface UserAvatarProps {
@@ -16,7 +17,7 @@ export function UserAvatar({ uri, size }: UserAvatarProps) {
 
   return (
     <View style={[styles.placeholder, { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surface }]}>
-      <Text style={{ fontSize: size * 0.4 }}>👤</Text>
+      <Ionicons name="person-outline" size={size * 0.5} color={colors.textSecondary} />
     </View>
   );
 }

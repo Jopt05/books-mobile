@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -52,8 +53,9 @@ export function ProfileScreen() {
             <Text style={[styles.counter, { color: colors.text }]}>{stats?.followingCount || 0} {t('profile.following')}</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => nav.navigate('Settings')}>
-          <Text style={[styles.settingsLink, { color: colors.primary }]}>⚙️ {t('settings.title')}</Text>
+        <TouchableOpacity onPress={() => nav.navigate('Settings')} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Ionicons name="settings-outline" size={18} color={colors.primary} />
+          <Text style={[styles.settingsLink, { color: colors.primary }]}>{t('settings.title')}</Text>
         </TouchableOpacity>
       </View>
 

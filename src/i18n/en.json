@@ -101,5 +101,12 @@
   "common.error": "An error occurred",
   "common.retry": "Retry",
   "common.networkError": "Could not connect to server",
-  "currentlyReading.title": "Currently reading"
+  "currentlyReading.title": "Currently reading",
+  "sidebar.sections": "Sections",
+  "sidebar.books": "Books",
+  "sidebar.feed": "Feed",
+  "sidebar.settings": "Settings",
+  "sidebar.logOut": "Sign out",
+  "sidebar.logOutConfirmTitle": "Sign out",
+  "sidebar.logOutConfirmMessage": "Are you sure you want to sign out?"
 }

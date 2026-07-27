@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuthForm } from '../hooks/useAuthForm';
@@ -66,7 +67,7 @@ export function AuthScreen() {
               secureTextEntry={!showPassword}
             />
             <TouchableOpacity style={styles.eyeBtn} onPress={togglePassword}>
-              <Text style={{ fontSize: 16 }}>{showPassword ? '🙈' : '👁️'}</Text>
+              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
           {errors.password && <Text style={[styles.errorText, { color: colors.error }]}>{errors.password}</Text>}
