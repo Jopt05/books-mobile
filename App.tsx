@@ -1,11 +1,12 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import { ActivityIndicator, View, Text, TextInput } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts, RobotoCondensed_400Regular, RobotoCondensed_700Bold } from '@expo-google-fonts/roboto-condensed';
 import { AuthProvider } from './src/context/AuthContext';
 import { LanguageProvider } from './src/context/LanguageContext';
-import { ThemeProvider } from './src/context/ThemeContext';
+import { ThemeProvider, useThemeContext } from './src/context/ThemeContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { fonts } from './src/theme/typography';
 
@@ -32,12 +33,23 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <RootNavigator />
-          </AuthProvider>
-        </LanguageProvider>
+        <AppContent />
       </ThemeProvider>
     </GestureHandlerRootView>
+  );
+}
+
+function AppContent() {
+  const { isDark } = useThemeContext();
+
+  return (
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <LanguageProvider>
+        <AuthProvider>
+          <RootNavigator />
+        </AuthProvider>
+      </LanguageProvider>
+    </>
   );
 }
