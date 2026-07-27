@@ -150,7 +150,7 @@ export function ProfileScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  headerWrapper: { maxHeight: '45%' },
+  headerWrapper: { maxHeight: '50%' },
   headerScroll: {},
   headerContent: { alignItems: 'center', paddingVertical: 16, paddingHorizontal: 16 },
 
