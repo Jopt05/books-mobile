@@ -16,6 +16,7 @@ import { useTheme } from '../hooks/useTheme';
 export type HomeStackParamList = {
   Home: undefined;
   BookDetail: { bookId: string };
+  PublicProfile: { username: string };
 };
 
 export type FeedStackParamList = {
@@ -45,6 +46,7 @@ function HomeStack() {
     <HomeStackNav.Navigator screenOptions={{ headerShown: false }}>
       <HomeStackNav.Screen name="Home" component={HomeScreen} />
       <HomeStackNav.Screen name="BookDetail" component={BookDetailScreen} />
+      <HomeStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
     </HomeStackNav.Navigator>
   );
 }

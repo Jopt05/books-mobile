@@ -13,6 +13,7 @@ interface UseBookDetailReturn {
   loading: boolean;
   error: string;
   refreshUserBook: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 export function useBookDetail(bookId: string): UseBookDetailReturn {
@@ -50,5 +51,5 @@ export function useBookDetail(bookId: string): UseBookDetailReturn {
     fetchData();
   }, [fetchData]);
 
-  return { book, userBook, stats, loading, error, refreshUserBook };
+  return { book, userBook, stats, loading, error, refreshUserBook, refresh: fetchData };
 }

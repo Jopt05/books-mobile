@@ -28,12 +28,16 @@ export async function getBookStats(bookId: string): Promise<BookStats> {
   return data;
 }
 
+export interface UserReview extends Review {
+  book?: { title: string | null; cover: string | null } | null;
+}
+
 export async function getUserReviews(
   username: string,
   page: number = 1,
   limit: number = 10,
   includeBook: boolean = true
-): Promise<{ data: Review[]; total: number }> {
+): Promise<{ data: UserReview[]; meta: { total: number; page: number; totalPages: number } }> {
   const { data } = await client.get(`/reviews/user/${username}`, {
     params: { page, limit, includeBook },
   });
