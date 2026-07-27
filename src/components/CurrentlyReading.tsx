@@ -7,6 +7,8 @@ import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { ReadingProgress } from '../api/userBooks';
 import { secureUrl } from '../utils/secureUrl';
+import { StatusActionSheet } from './StatusActionSheet';
+import { useStatusSheet } from '../hooks/useStatusSheet';
 
 interface CurrentlyReadingProps {
   books: ReadingProgress[];
@@ -16,8 +18,17 @@ export function CurrentlyReading({ books }: CurrentlyReadingProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const navigation = useNavigation<any>();
+  const { sheetVisible, sheetTarget, open, close, changeStatus, remove } = useStatusSheet();
 
   if (books.length === 0) return null;
+
+  const handleStatusChange = async (status: any) => {
+    await changeStatus(status);
+  };
+
+  const handleRemove = async () => {
+    await remove();
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
@@ -31,6 +42,8 @@ export function CurrentlyReading({ books }: CurrentlyReadingProps) {
               style={styles.card}
               activeOpacity={0.7}
               onPress={() => navigation.navigate('BookDetail', { bookId: book.bookId })}
+              onLongPress={() => open({ id: book.id, title: book.title, status: 'READING' })}
+              delayLongPress={400}
             >
               {/* Cover */}
               <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
@@ -60,6 +73,15 @@ export function CurrentlyReading({ books }: CurrentlyReadingProps) {
           );
         })}
       </ScrollView>
+
+      <StatusActionSheet
+        visible={sheetVisible}
+        bookTitle={sheetTarget?.title || ''}
+        currentStatus={sheetTarget?.status || null}
+        onSelectStatus={handleStatusChange}
+        onRemove={handleRemove}
+        onClose={close}
+      />
     </View>
   );
 }

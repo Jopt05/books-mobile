@@ -126,5 +126,6 @@
   "quickJournal.pagePlaceholder": "Pg.",
   "quickJournal.errorInvalidProgress": "Enter a valid number",
   "quickJournal.errorPageExceeds": "Page cannot exceed the book's total pages",
-  "quickJournal.errorPercentageExceeds": "Percentage cannot exceed 100"
+  "quickJournal.errorPercentageExceeds": "Percentage cannot exceed 100",
+  "hint.longPress": "Hold a book to change its status"
 }
