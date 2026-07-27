@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { JournalEntry } from '../types/domain';
 import { createJournalEntry, getJournalEntries } from '../api/journal';
 import { getReadingProgress, ReadingProgress } from '../api/userBooks';
+
+export type ProgressMode = 'page' | 'percentage';
 
 export function useQuickJournal() {
   const [books, setBooks] = useState<ReadingProgress[]>([]);
@@ -10,6 +11,8 @@ export function useQuickJournal() {
   const [checkingToday, setCheckingToday] = useState(true);
   const [selectedBook, setSelectedBook] = useState<ReadingProgress | null>(null);
   const [content, setContent] = useState('');
+  const [progressMode, setProgressMode] = useState<ProgressMode>('page');
+  const [progressValue, setProgressValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -46,9 +49,47 @@ export function useQuickJournal() {
       setError('selectBook');
       return;
     }
-    if (!content.trim()) {
+
+    const trimmedContent = content.trim();
+    const numValue = progressValue ? parseFloat(progressValue) : undefined;
+
+    // Must have content or progress
+    if (!trimmedContent && !numValue) {
       setError('emptyContent');
       return;
+    }
+
+    // Validate numeric value
+    if (progressValue && (isNaN(Number(progressValue)) || Number(progressValue) <= 0)) {
+      setError('invalidProgress');
+      return;
+    }
+
+    // Validate page limit
+    if (progressMode === 'page' && numValue && selectedBook.pageCount && numValue > selectedBook.pageCount) {
+      setError('pageExceeds');
+      return;
+    }
+
+    // Validate percentage limit
+    if (progressMode === 'percentage' && numValue && numValue > 100) {
+      setError('percentageExceeds');
+      return;
+    }
+
+    // Compute page and percentage
+    const pageCount = selectedBook.pageCount;
+    let page: number | undefined;
+    let percentage: number | undefined;
+
+    if (numValue) {
+      if (progressMode === 'page') {
+        page = Math.round(numValue);
+        if (pageCount) percentage = Math.round((numValue / pageCount) * 100);
+      } else {
+        percentage = numValue;
+        if (pageCount) page = Math.round((numValue / 100) * pageCount);
+      }
     }
 
     setError('');
@@ -56,16 +97,19 @@ export function useQuickJournal() {
     try {
       await createJournalEntry({
         userBookId: selectedBook.id,
-        content: content.trim(),
+        content: trimmedContent || undefined,
+        page,
+        percentage,
       });
       setSubmitted(true);
       setContent('');
+      setProgressValue('');
     } catch {
       setError('saveFailed');
     } finally {
       setSaving(false);
     }
-  }, [selectedBook, content]);
+  }, [selectedBook, content, progressValue, progressMode]);
 
   const visible = !booksLoading && !checkingToday && books.length > 0 && !alreadyLoggedToday && !submitted;
 
@@ -76,6 +120,10 @@ export function useQuickJournal() {
     setSelectedBook,
     content,
     setContent,
+    progressMode,
+    setProgressMode,
+    progressValue,
+    setProgressValue,
     saving,
     error,
     submit,

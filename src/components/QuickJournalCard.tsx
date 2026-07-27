@@ -21,6 +21,10 @@ export function QuickJournalCard({ onEntryCreated }: QuickJournalCardProps) {
     setSelectedBook,
     content,
     setContent,
+    progressMode,
+    setProgressMode,
+    progressValue,
+    setProgressValue,
     saving,
     error,
     submit
@@ -38,9 +42,15 @@ export function QuickJournalCard({ onEntryCreated }: QuickJournalCardProps) {
     ? t('journal.quickEntry')
     : error === 'emptyContent'
       ? t('journal.content')
-      : error === 'saveFailed'
-        ? t('common.error')
-        : '';
+      : error === 'invalidProgress'
+        ? t('quickJournal.errorInvalidProgress')
+        : error === 'pageExceeds'
+          ? t('quickJournal.errorPageExceeds')
+          : error === 'percentageExceeds'
+            ? t('quickJournal.errorPercentageExceeds')
+            : error === 'saveFailed'
+              ? t('common.error')
+              : '';
 
   const handleSelectBook = (book: ReadingProgress) => {
     setSelectedBook(book);
@@ -82,6 +92,28 @@ export function QuickJournalCard({ onEntryCreated }: QuickJournalCardProps) {
         multiline
         numberOfLines={3}
       />
+
+      {/* Progress row */}
+      <View style={styles.progressRow}>
+        <TouchableOpacity
+          style={[styles.modeToggle, { backgroundColor: colors.border }]}
+          onPress={() => setProgressMode(progressMode === 'page' ? 'percentage' : 'page')}
+        >
+          <Text style={[styles.modeToggleText, { color: colors.textSecondary }]}>
+            {progressMode === 'page' ? t('quickJournal.modePage') : t('quickJournal.modePercentage')}
+          </Text>
+        </TouchableOpacity>
+        <TextInput
+          style={[styles.progressInput, { color: colors.text, backgroundColor: colors.background, borderColor: colors.border }]}
+          placeholder={progressMode === 'page'
+            ? (selectedBook?.pageCount ? `/ ${selectedBook.pageCount}` : t('quickJournal.pagePlaceholder'))
+            : '0–100'}
+          placeholderTextColor={colors.textSecondary}
+          value={progressValue}
+          onChangeText={setProgressValue}
+          keyboardType="numeric"
+        />
+      </View>
 
       {/* Error */}
       {error ? <Text style={[styles.errorText, { color: colors.error }]}>{errorMessage}</Text> : null}
@@ -176,6 +208,30 @@ const styles = StyleSheet.create({
     minHeight: 70,
     textAlignVertical: 'top',
     marginBottom: 10
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10
+  },
+  modeToggle: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8
+  },
+  modeToggleText: {
+    fontSize: 14,
+    fontFamily: fonts.bold
+  },
+  progressInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+    maxWidth: 120
   },
   errorText: {
     fontSize: 14,

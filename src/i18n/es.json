@@ -120,5 +120,11 @@
   "reading.addedToShelf": "Agregado a tu estantería",
   "reading.notInShelf": "No está en tu estantería",
   "journal.showJournal": "Diario de lectura",
-  "journal.hideJournal": "Ocultar diario"
+  "journal.hideJournal": "Ocultar diario",
+  "quickJournal.modePage": "Página",
+  "quickJournal.modePercentage": "Porcentaje",
+  "quickJournal.pagePlaceholder": "Pág.",
+  "quickJournal.errorInvalidProgress": "Ingresa un número válido",
+  "quickJournal.errorPageExceeds": "La página no puede exceder el total del libro",
+  "quickJournal.errorPercentageExceeds": "El porcentaje no puede exceder 100"
 }
