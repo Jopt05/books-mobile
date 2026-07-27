@@ -10,6 +10,7 @@ import { QuickJournalCard } from '../components/QuickJournalCard';
 import { StreakBanner } from '../components/StreakBanner';
 import { ReadingStats } from '../components/ReadingStats';
 import { QuickFeed } from '../components/QuickFeed';
+import { RecommendationsSection } from '../components/RecommendationsSection';
 import { AppHeader } from '../components/AppHeader';
 
 export function HomeScreen() {
@@ -43,6 +44,7 @@ export function HomeScreen() {
         <StreakBanner key={streakKey} />
         {progress.length > 0 && <CurrentlyReading books={progress} />}
         <ReadingStats />
+        <RecommendationsSection />
         <QuickFeed />
       </ScrollView>
       </KeyboardAvoidingView>

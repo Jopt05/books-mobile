@@ -134,5 +134,9 @@
   "quickJournal.errorPercentageExceeds": "Percentage cannot exceed 100",
   "hint.longPress": "Hold a book to change its status",
   "home.quickFeed": "Recent Activity",
-  "home.goToFeed": "Go to Feed"
+  "home.goToFeed": "Go to Feed",
+  "recommendations.socialTitle": "What your friends are reading",
+  "recommendations.trendingTitle": "Trending on Anaquel",
+  "recommendations.readBy": "Read by {user}",
+  "recommendations.readByMultiple": "Read by {user} and {count} more"
 }

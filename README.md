@@ -20,10 +20,10 @@ Mobile app for the books application built with React Native, Expo and TypeScrip
 
 ```
 src/
-├── api/          # HTTP services (client, auth, books, userBooks, feed, follows, journal, reviews, users, importBooks)
-├── components/   # Reusable components (BookCard, ActivityCard, AppHeader, SearchBar, ShelfButton, ReviewCard, etc.)
+├── api/          # HTTP services (client, auth, books, userBooks, feed, follows, journal, reviews, users, importBooks, recommendations)
+├── components/   # Reusable components (BookCard, ActivityCard, AppHeader, SearchBar, ShelfButton, ReviewCard, RecommendationsSection, etc.)
 ├── context/      # Providers (AuthContext, ThemeContext, LanguageContext)
-├── hooks/        # Custom hooks (useBooks, useBookDetail, useFeed, useProfile, useFollow, useJournal, etc.)
+├── hooks/        # Custom hooks (useBooks, useBookDetail, useFeed, useProfile, useFollow, useJournal, useRecommendations, etc.)
 ├── i18n/         # Translation files (en.json, es.json)
 ├── navigation/   # Navigation config (RootNavigator, AuthStack, MainTabs)
 ├── screens/      # Screen components (Home, BookDetail, Feed, Auth, Profile, Settings, etc.)
@@ -90,6 +90,7 @@ Available presets:
 - Currently Reading widget with progress bars
 - Reading stats (monthly/yearly)
 - Reading streak tracking
+- Recommendations: "What your friends are reading" (social) + "Trending on Anaquel" (popular)
 - Star rating and review system with spoiler handling
 - Goodreads CSV import
 - Pull-to-refresh on all screens
