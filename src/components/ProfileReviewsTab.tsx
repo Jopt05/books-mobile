@@ -8,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { getUserReviews, UserReview } from '../api/reviews';
 import { StarRating } from './StarRating';
 import { Loader } from './Loader';
+import { secureUrl } from '../utils/secureUrl';
 
 interface ProfileReviewsTabProps {
   username: string;
@@ -53,7 +54,7 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
                 onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}
                 style={[styles.coverWrap, { backgroundColor: colors.border }]}
               >
-                <Image source={{ uri: review.book.cover }} style={styles.coverImg} />
+                <Image source={{ uri: secureUrl(review.book.cover) }} style={styles.coverImg} />
               </TouchableOpacity>
             )}
             <View style={styles.info}>

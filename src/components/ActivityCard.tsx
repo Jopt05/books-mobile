@@ -7,6 +7,7 @@ import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { UserAvatar } from './UserAvatar';
 import { StarRating } from './StarRating';
+import { secureUrl } from '../utils/secureUrl';
 
 interface ActivityCardProps {
   activity: Activity;
@@ -83,7 +84,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           onPress={() => navigation.navigate('BookDetail', { bookId: activity.bookId })}
           style={[styles.coverWrap, { backgroundColor: colors.border }]}
         >
-          <Image source={{ uri: activity.bookCover }} style={styles.cover} />
+          <Image source={{ uri: secureUrl(activity.bookCover) }} style={styles.cover} />
         </TouchableOpacity>
       )}
     </View>

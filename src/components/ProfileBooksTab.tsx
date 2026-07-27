@@ -8,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { getUserBooks, getPublicUserBooks } from '../api/userBooks';
 import { Loader } from './Loader';
 import { UserBook, BookStatus } from '../types/domain';
+import { secureUrl } from '../utils/secureUrl';
 
 const STATUSES: BookStatus[] = ['READING', 'WANT_TO_READ', 'READ', 'DID_NOT_FINISH'];
 
@@ -72,7 +73,7 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
               >
                 <View style={[styles.cover, { backgroundColor: colors.border }]}>
                   {book.coverUrl ? (
-                    <Image source={{ uri: book.coverUrl }} style={styles.coverImg} />
+                    <Image source={{ uri: secureUrl(book.coverUrl) }} style={styles.coverImg} />
                   ) : (
                     <Ionicons name="book-outline" size={20} color={colors.textSecondary} />
                   )}

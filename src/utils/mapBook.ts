@@ -7,7 +7,7 @@ export function mapBookVolume(raw: BookVolume): Book {
     title: volumeInfo.title,
     authors: volumeInfo.authors ?? [],
     description: volumeInfo.description,
-    coverUrl: volumeInfo.imageLinks?.thumbnail ?? volumeInfo.imageLinks?.smallThumbnail,
+    coverUrl: (volumeInfo.imageLinks?.thumbnail ?? volumeInfo.imageLinks?.smallThumbnail)?.replace('http://', 'https://'),
     categories: volumeInfo.categories,
     pageCount: volumeInfo.pageCount,
     publishedDate: volumeInfo.publishedDate,

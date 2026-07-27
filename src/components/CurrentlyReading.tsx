@@ -6,6 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { ReadingProgress } from '../api/userBooks';
+import { secureUrl } from '../utils/secureUrl';
 
 interface CurrentlyReadingProps {
   books: ReadingProgress[];
@@ -34,7 +35,7 @@ export function CurrentlyReading({ books }: CurrentlyReadingProps) {
               {/* Cover */}
               <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
                 {book.coverUrl ? (
-                  <Image source={{ uri: book.coverUrl }} style={styles.cover} />
+                  <Image source={{ uri: secureUrl(book.coverUrl) }} style={styles.cover} />
                 ) : (
                   <View style={styles.coverPlaceholder}>
                     <Ionicons name="book-outline" size={24} color={colors.textSecondary} />
