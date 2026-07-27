@@ -1,34 +1,40 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getReadingStats, ReadingStats } from '../api/userBooks';
 
+export type StatsPeriod = 'month' | 'year';
+
 interface UseReadingStatsReturn {
   stats: ReadingStats | null;
+  period: StatsPeriod;
+  setPeriod: (p: StatsPeriod) => void;
   loading: boolean;
-  error: string;
-  refresh: (period?: string, date?: string) => Promise<void>;
 }
 
-export function useReadingStats(period?: string, date?: string): UseReadingStatsReturn {
+export function useReadingStats(): UseReadingStatsReturn {
   const [stats, setStats] = useState<ReadingStats | null>(null);
+  const [period, setPeriod] = useState<StatsPeriod>('year');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
-  const refresh = useCallback(async (p?: string, d?: string) => {
+  const now = new Date();
+  const dateParam = period === 'year'
+    ? `${now.getFullYear()}`
+    : `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+  const refresh = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
-      const data = await getReadingStats(p || period, d || date);
+      const data = await getReadingStats(period, dateParam);
       setStats(data);
     } catch {
-      setError('No se pudieron cargar las estadísticas');
+      // ignore
     } finally {
       setLoading(false);
     }
-  }, [period, date]);
+  }, [period, dateParam]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
-  return { stats, loading, error, refresh };
+  return { stats, period, setPeriod, loading };
 }

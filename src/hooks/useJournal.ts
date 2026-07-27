@@ -16,6 +16,11 @@ export function useJournal(userBookId: string): UseJournalReturn {
   const [error, setError] = useState('');
 
   const refresh = useCallback(async () => {
+    if (!userBookId) {
+      setEntries([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     try {

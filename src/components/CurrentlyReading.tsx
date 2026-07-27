@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { ReadingProgress } from '../api/userBooks';
@@ -12,41 +13,94 @@ interface CurrentlyReadingProps {
 export function CurrentlyReading({ books }: CurrentlyReadingProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const navigation = useNavigation<any>();
 
   if (books.length === 0) return null;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
       <Text style={[styles.title, { color: colors.text }]}>{t('currentlyReading.title')}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {books.map((book) => (
-          <View key={book.userBookId} style={[styles.card, { backgroundColor: colors.surface }]}>
-            {book.coverUrl ? (
-              <Image source={{ uri: book.coverUrl }} style={styles.cover} />
-            ) : (
-              <View style={[styles.coverPlaceholder, { backgroundColor: colors.border }]}>
-                <Ionicons name="book-outline" size={20} color={colors.textSecondary} />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {books.map((book) => {
+          const percentage = book.lastProgress?.percentage ?? 0;
+          return (
+            <TouchableOpacity
+              key={book.id}
+              style={styles.card}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('BookDetail', { bookId: book.bookId })}
+            >
+              {/* Cover */}
+              <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
+                {book.coverUrl ? (
+                  <Image source={{ uri: book.coverUrl }} style={styles.cover} />
+                ) : (
+                  <View style={styles.coverPlaceholder}>
+                    <Ionicons name="book-outline" size={24} color={colors.textSecondary} />
+                  </View>
+                )}
               </View>
-            )}
-            <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>
-              {book.title}
-            </Text>
-            <Text style={[styles.progress, { color: colors.textSecondary }]}>
-              {book.latestPercentage != null ? `${book.latestPercentage}%` : book.latestPage != null ? `p.${book.latestPage}` : '—'}
-            </Text>
-          </View>
-        ))}
+              {/* Title + Author */}
+              <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>
+                {book.title}
+              </Text>
+              <Text style={[styles.bookAuthor, { color: colors.textSecondary }]} numberOfLines={1}>
+                {book.author}
+              </Text>
+              {/* Progress Bar */}
+              <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
+                <View style={[styles.progressFill, { width: `${percentage}%`, backgroundColor: colors.primary }]} />
+              </View>
+              <Text style={[styles.progressText, { color: colors.textSecondary }]}>
+                {percentage}%
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 16 },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 10, paddingHorizontal: 16 },
-  card: { width: 100, marginLeft: 16, borderRadius: 8, padding: 8, alignItems: 'center' },
-  cover: { width: 60, height: 90, borderRadius: 4 },
-  coverPlaceholder: { width: 60, height: 90, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
-  bookTitle: { fontSize: 14, marginTop: 6, textAlign: 'center' },
-  progress: { fontSize: 14, marginTop: 2 },
+  container: {
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
+  scrollContent: { gap: 12 },
+  card: { width: 130 },
+  coverContainer: {
+    width: 130,
+    height: 185,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  cover: { width: '100%', height: '100%' },
+  coverPlaceholder: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bookTitle: { fontSize: 14, fontWeight: '600', marginTop: 8 },
+  bookAuthor: { fontSize: 14, marginTop: 2 },
+  progressBar: {
+    height: 5,
+    borderRadius: 3,
+    marginTop: 6,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressText: { fontSize: 14, marginTop: 3 },
 });

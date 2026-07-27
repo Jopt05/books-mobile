@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { BookStatus, UserBook } from '../types/domain';
 import { Book } from '../types/book';
 import { createUserBook, updateUserBook, updateUserBookDates, deleteUserBook } from '../api/userBooks';
@@ -17,6 +17,11 @@ export function useShelfButton(initialUserBook: UserBook | null = null): UseShel
   const [userBook, setUserBook] = useState<UserBook | null>(initialUserBook);
   const [loading, setLoading] = useState(false);
 
+  // Sync when initialUserBook changes (e.g. after async load)
+  React.useEffect(() => {
+    setUserBook(initialUserBook);
+  }, [initialUserBook]);
+
   const addToShelf = useCallback(async (book: Book, status: BookStatus) => {
     setLoading(true);
     try {
@@ -25,6 +30,7 @@ export function useShelfButton(initialUserBook: UserBook | null = null): UseShel
         title: book.title,
         author: book.authors.join(', '),
         coverUrl: book.coverUrl || null,
+        pageCount: book.pageCount,
         status,
       });
       setUserBook(created);

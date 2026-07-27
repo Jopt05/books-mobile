@@ -108,5 +108,13 @@
   "sidebar.settings": "Settings",
   "sidebar.logOut": "Sign out",
   "sidebar.logOutConfirmTitle": "Sign out",
-  "sidebar.logOutConfirmMessage": "Are you sure you want to sign out?"
+  "sidebar.logOutConfirmMessage": "Are you sure you want to sign out?",
+  "reading.yourReading": "Your reading",
+  "reading.startedOn": "Started on",
+  "reading.finishedOn": "Finished on",
+  "reading.droppedOn": "Dropped on",
+  "reading.addedToShelf": "Added to your shelf",
+  "reading.notInShelf": "Not in your shelf",
+  "journal.showJournal": "Reading journal",
+  "journal.hideJournal": "Hide journal"
 }

@@ -108,5 +108,13 @@
   "sidebar.settings": "Configuración",
   "sidebar.logOut": "Cerrar sesión",
   "sidebar.logOutConfirmTitle": "Cerrar sesión",
-  "sidebar.logOutConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?"
+  "sidebar.logOutConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?",
+  "reading.yourReading": "Tu lectura",
+  "reading.startedOn": "Empezado el",
+  "reading.finishedOn": "Terminado el",
+  "reading.droppedOn": "Abandonado el",
+  "reading.addedToShelf": "Agregado a tu estantería",
+  "reading.notInShelf": "No está en tu estantería",
+  "journal.showJournal": "Diario de lectura",
+  "journal.hideJournal": "Ocultar diario"
 }

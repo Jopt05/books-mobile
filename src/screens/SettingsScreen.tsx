@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { AppHeader } from '../components/AppHeader';
 import { ProfileStackParamList } from '../navigation/MainTabs';
 
 type NavProp = NativeStackNavigationProp<ProfileStackParamList, 'Settings'>;
@@ -19,6 +20,7 @@ export function SettingsScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
+      <AppHeader />
       <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
 
       <TouchableOpacity style={[styles.row, { borderColor: colors.border }]} onPress={toggle}>

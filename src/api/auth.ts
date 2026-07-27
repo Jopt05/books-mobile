@@ -6,13 +6,16 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
   return data;
 }
 
-export async function register(payload: RegisterPayload): Promise<AuthResponse> {
-  const { data } = await client.post<AuthResponse>('/auth/register', payload);
+export async function register(payload: RegisterPayload): Promise<{ message: string }> {
+  const { data } = await client.post<{ message: string }>('/auth/register', payload);
   return data;
 }
 
 export async function refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string }> {
-  const { data } = await client.post('/auth/refresh', { refreshToken: token });
+  // Backend uses JwtRefreshGuard — the refresh token goes as Bearer in header
+  const { data } = await client.post('/auth/refresh', null, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return data;
 }
 

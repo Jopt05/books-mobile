@@ -90,7 +90,8 @@ export function useAuthForm(): UseAuthFormReturn {
       if (isLogin) {
         await login({ email: email.trim(), password });
       } else {
-        await registerUser({ email: email.trim(), username: username.trim(), password });
+        const message = await registerUser({ email: email.trim(), username: username.trim(), password });
+        setSuccessMessage(message);
       }
     } catch (error: any) {
       const message = error?.response?.data?.message || 'Ocurrió un error. Inténtalo de nuevo.';

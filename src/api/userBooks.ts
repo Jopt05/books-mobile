@@ -6,24 +6,24 @@ export interface CreateUserBookPayload {
   title: string;
   author: string;
   coverUrl?: string | null;
-  status: BookStatus;
+  pageCount?: number;
+  status?: BookStatus;
 }
 
 export interface ReadingProgress {
-  userBookId: string;
+  id: string;
+  bookId: string;
   title: string;
   author: string;
   coverUrl: string | null;
-  bookId: string;
-  latestPage: number | null;
-  latestPercentage: number | null;
-  totalPages: number | null;
+  pageCount: number | null;
+  startedAt: string | null;
+  lastProgress: { percentage: number; page: number | null } | null;
 }
 
 export interface ReadingStats {
   booksRead: number;
-  booksReading: number;
-  totalPages: number;
+  pagesRead: number;
 }
 
 export async function createUserBook(payload: CreateUserBookPayload): Promise<UserBook> {

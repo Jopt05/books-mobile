@@ -3,8 +3,6 @@ import * as SecureStore from 'expo-secure-store';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
-console.log(API_URL)
-
 const client = axios.create({
   baseURL: API_URL,
   timeout: 30000,
@@ -71,7 +69,10 @@ client.interceptors.response.use(
         throw new Error('No refresh token');
       }
 
-      const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+      // Backend expects the refreshToken as Bearer token in Authorization header
+      const { data } = await axios.post(`${API_URL}/auth/refresh`, null, {
+        headers: { Authorization: `Bearer ${refreshToken}` },
+      });
 
       await SecureStore.setItemAsync('accessToken', data.accessToken);
       await SecureStore.setItemAsync('refreshToken', data.refreshToken);
