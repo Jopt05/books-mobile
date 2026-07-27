@@ -2,6 +2,7 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
+import { SearchScreen } from '../screens/SearchScreen';
 import { BookDetailScreen } from '../screens/BookDetailScreen';
 import { FeedScreen } from '../screens/FeedScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
@@ -15,6 +16,12 @@ import { useTheme } from '../hooks/useTheme';
 // Param lists
 export type HomeStackParamList = {
   Home: undefined;
+  BookDetail: { bookId: string };
+  PublicProfile: { username: string };
+};
+
+export type SearchStackParamList = {
+  Search: undefined;
   BookDetail: { bookId: string };
   PublicProfile: { username: string };
 };
@@ -52,6 +59,17 @@ function HomeStack() {
       <HomeStackNav.Screen name="BookDetail" component={BookDetailScreen} />
       <HomeStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
     </HomeStackNav.Navigator>
+  );
+}
+
+const SearchStackNav = createNativeStackNavigator<SearchStackParamList>();
+function SearchStack() {
+  return (
+    <SearchStackNav.Navigator screenOptions={{ headerShown: false }}>
+      <SearchStackNav.Screen name="Search" component={SearchScreen} />
+      <SearchStackNav.Screen name="BookDetail" component={BookDetailScreen} />
+      <SearchStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
+    </SearchStackNav.Navigator>
   );
 }
 
@@ -112,6 +130,7 @@ export function MainTabs() {
       }}
     >
       <Drawer.Screen name="HomeStack" component={HomeStack} />
+      <Drawer.Screen name="SearchStack" component={SearchStack} />
       <Drawer.Screen name="FeedStack" component={FeedStack} />
       <Drawer.Screen name="SettingsStack" component={SettingsStack} />
       <Drawer.Screen name="ProfileStack" component={ProfileStack} />

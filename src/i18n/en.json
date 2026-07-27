@@ -21,6 +21,9 @@
   "auth.errors.passwordMin": "Password must be at least 6 characters",
   "search.placeholder": "Search by title or author",
   "search.noResults": "No results found",
+  "search.title": "Search",
+  "search.empty": "Search for books to get started",
+  "search.resultsFound": "results found",
   "book.authors": "Authors",
   "book.categories": "Categories",
   "book.pages": "Pages",
@@ -107,6 +110,8 @@
   "common.networkError": "Could not connect to server",
   "currentlyReading.title": "Currently reading",
   "sidebar.sections": "Sections",
+  "sidebar.home": "Home",
+  "sidebar.search": "Search",
   "sidebar.books": "Books",
   "sidebar.feed": "Feed",
   "sidebar.settings": "Settings",
@@ -127,5 +132,7 @@
   "quickJournal.errorInvalidProgress": "Enter a valid number",
   "quickJournal.errorPageExceeds": "Page cannot exceed the book's total pages",
   "quickJournal.errorPercentageExceeds": "Percentage cannot exceed 100",
-  "hint.longPress": "Hold a book to change its status"
+  "hint.longPress": "Hold a book to change its status",
+  "home.quickFeed": "Recent Activity",
+  "home.goToFeed": "Go to Feed"
 }

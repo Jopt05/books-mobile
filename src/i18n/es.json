@@ -21,6 +21,9 @@
   "auth.errors.passwordMin": "La contraseña debe tener al menos 6 caracteres",
   "search.placeholder": "Buscar por título o autor",
   "search.noResults": "No se encontraron resultados",
+  "search.title": "Buscar",
+  "search.empty": "Busca libros para empezar",
+  "search.resultsFound": "resultados encontrados",
   "book.authors": "Autores",
   "book.categories": "Categorías",
   "book.pages": "Páginas",
@@ -107,6 +110,8 @@
   "common.networkError": "No se pudo conectar al servidor",
   "currentlyReading.title": "Leyendo actualmente",
   "sidebar.sections": "Secciones",
+  "sidebar.home": "Inicio",
+  "sidebar.search": "Buscar",
   "sidebar.books": "Libros",
   "sidebar.feed": "Feed",
   "sidebar.settings": "Configuración",
@@ -127,5 +132,7 @@
   "quickJournal.errorInvalidProgress": "Ingresa un número válido",
   "quickJournal.errorPageExceeds": "La página no puede exceder el total del libro",
   "quickJournal.errorPercentageExceeds": "El porcentaje no puede exceder 100",
-  "hint.longPress": "Mantén presionado un libro para cambiar su estado"
+  "hint.longPress": "Mantén presionado un libro para cambiar su estado",
+  "home.quickFeed": "Actividad reciente",
+  "home.goToFeed": "Ir al Feed"
 }
