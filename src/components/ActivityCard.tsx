@@ -43,7 +43,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
       {/* Avatar - navigates to profile */}
-      <TouchableOpacity onPress={() => navigation.navigate('PublicProfile', { username: activity.user.username })}>
+      <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { username: activity.user.username })}>
         <UserAvatar uri={activity.user.avatar} size={40} />
       </TouchableOpacity>
 
@@ -52,7 +52,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
         <Text style={[styles.text, { color: colors.text }]}>
           <Text
             style={styles.username}
-            onPress={() => navigation.navigate('PublicProfile', { username: activity.user.username })}
+            onPress={() => navigation.navigate('UserProfile', { username: activity.user.username })}
           >
             {activity.user.username}
           </Text>

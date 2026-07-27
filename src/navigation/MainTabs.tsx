@@ -5,43 +5,39 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { SearchScreen } from '../screens/SearchScreen';
 import { BookDetailScreen } from '../screens/BookDetailScreen';
 import { FeedScreen } from '../screens/FeedScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
-import { PublicProfileScreen } from '../screens/PublicProfileScreen';
+import { UserProfileScreen } from '../screens/UserProfileScreen';
 import { NetworkScreen } from '../screens/NetworkScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ImportScreen } from '../screens/ImportScreen';
 import { DrawerContent } from '../components/DrawerContent';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../context/AuthContext';
 
 // Param lists
 export type HomeStackParamList = {
   Home: undefined;
   BookDetail: { bookId: string };
-  PublicProfile: { username: string };
+  UserProfile: { username: string };
 };
 
 export type SearchStackParamList = {
   Search: undefined;
   BookDetail: { bookId: string };
-  PublicProfile: { username: string };
+  UserProfile: { username: string };
 };
 
 export type FeedStackParamList = {
   Feed: undefined;
-  PublicProfile: { username: string };
+  UserProfile: { username: string };
   BookDetail: { bookId: string };
-  BookDetailFeed: { bookId: string };
   Network: { username: string };
 };
 
 export type ProfileStackParamList = {
-  Profile: undefined;
+  UserProfile: { username: string };
   Network: { username: string };
   Settings: undefined;
   Import: undefined;
-  PublicProfileFromProfile: { username: string };
-  PublicProfile: { username: string };
-  BookDetailProfile: { bookId: string };
   BookDetail: { bookId: string };
 };
 
@@ -57,7 +53,7 @@ function HomeStack() {
     <HomeStackNav.Navigator screenOptions={{ headerShown: false }}>
       <HomeStackNav.Screen name="Home" component={HomeScreen} />
       <HomeStackNav.Screen name="BookDetail" component={BookDetailScreen} />
-      <HomeStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
+      <HomeStackNav.Screen name="UserProfile" component={UserProfileScreen} />
     </HomeStackNav.Navigator>
   );
 }
@@ -68,7 +64,7 @@ function SearchStack() {
     <SearchStackNav.Navigator screenOptions={{ headerShown: false }}>
       <SearchStackNav.Screen name="Search" component={SearchScreen} />
       <SearchStackNav.Screen name="BookDetail" component={BookDetailScreen} />
-      <SearchStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
+      <SearchStackNav.Screen name="UserProfile" component={UserProfileScreen} />
     </SearchStackNav.Navigator>
   );
 }
@@ -78,7 +74,7 @@ function FeedStack() {
   return (
     <FeedStackNav.Navigator screenOptions={{ headerShown: false }}>
       <FeedStackNav.Screen name="Feed" component={FeedScreen} />
-      <FeedStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
+      <FeedStackNav.Screen name="UserProfile" component={UserProfileScreen} />
       <FeedStackNav.Screen name="BookDetail" component={BookDetailScreen} />
       <FeedStackNav.Screen name="Network" component={NetworkScreen} />
     </FeedStackNav.Navigator>
@@ -97,15 +93,17 @@ function SettingsStack() {
 
 const ProfileStackNav = createNativeStackNavigator<ProfileStackParamList>();
 function ProfileStack() {
+  const { user } = useAuth();
   return (
     <ProfileStackNav.Navigator screenOptions={{ headerShown: false }}>
-      <ProfileStackNav.Screen name="Profile" component={ProfileScreen} />
+      <ProfileStackNav.Screen
+        name="UserProfile"
+        component={UserProfileScreen}
+        initialParams={{ username: user?.username || '' }}
+      />
       <ProfileStackNav.Screen name="Network" component={NetworkScreen} />
       <ProfileStackNav.Screen name="Settings" component={SettingsScreen} />
       <ProfileStackNav.Screen name="Import" component={ImportScreen} />
-      <ProfileStackNav.Screen name="PublicProfileFromProfile" component={PublicProfileScreen} />
-      <ProfileStackNav.Screen name="PublicProfile" component={PublicProfileScreen} />
-      <ProfileStackNav.Screen name="BookDetailProfile" component={BookDetailScreen} />
       <ProfileStackNav.Screen name="BookDetail" component={BookDetailScreen} />
     </ProfileStackNav.Navigator>
   );
@@ -124,9 +122,9 @@ export function MainTabs() {
         headerShown: false,
         drawerStyle: {
           width: 240,
-          backgroundColor: colors.surface
+          backgroundColor: colors.surface,
         },
-        swipeEnabled: true
+        swipeEnabled: true,
       }}
     >
       <Drawer.Screen name="HomeStack" component={HomeStack} />

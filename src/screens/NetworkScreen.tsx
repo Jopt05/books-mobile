@@ -37,7 +37,7 @@ function UserList({ users, emptyMessage }: { users: FollowUser[]; emptyMessage: 
       renderItem={({ item }) => (
         <TouchableOpacity
           style={[listStyles.card, { backgroundColor: colors.surface }]}
-          onPress={() => navigation.navigate('PublicProfile', { username: item.username })}
+          onPress={() => navigation.navigate('UserProfile', { username: item.username })}
           activeOpacity={0.7}
         >
           <UserAvatar uri={item.avatar} size={48} />
