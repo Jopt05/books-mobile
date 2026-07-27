@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Anaquel",
-    "slug": "books-mobile",
+    "slug": "anaquel",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icono.png",
@@ -28,6 +28,12 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2dafdfbe-7075-41d6-a1c2-e897e2cec9f0"
+      }
+    },
+    "owner": "jopt05"
   }
 }
