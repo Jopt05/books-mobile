@@ -40,7 +40,7 @@ export function DrawerContent({ navigation, state }: DrawerContentComponentProps
       <View style={styles.header}>
         <View style={styles.logoRow}>
           <Image source={require('../../assets/icono.png')} style={styles.logo} />
-          <Text style={[styles.appName, { color: colors.text }]}>Anaquel</Text>
+          <Text style={[styles.appName, { color: colors.text }]}>Librerio</Text>
         </View>
       </View>
 

@@ -1,5 +1,5 @@
 {
-  "app.name": "Anaquel",
+  "app.name": "Librerio",
   "tabs.home": "Home",
   "tabs.feed": "Feed",
   "tabs.profile": "Profile",
@@ -136,7 +136,7 @@
   "home.quickFeed": "Recent Activity",
   "home.goToFeed": "Go to Feed",
   "recommendations.socialTitle": "What your friends are reading",
-  "recommendations.trendingTitle": "Trending on Anaquel",
+  "recommendations.trendingTitle": "Trending on Librerio",
   "recommendations.readBy": "Read by {user}",
   "recommendations.readByMultiple": "Read by {user} and {count} more"
 }

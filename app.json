@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Anaquel",
-    "slug": "anaquel",
+    "name": "Librerio",
+    "slug": "librerio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icono.png",
