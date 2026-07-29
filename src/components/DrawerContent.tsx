@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Linking } from 'react-native';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -108,6 +108,12 @@ export function DrawerContent({ navigation, state }: DrawerContentComponentProps
           <Ionicons name="log-out-outline" size={16} color="#FFFFFF" />
           <Text style={styles.logoutText}>{t('sidebar.logOut')}</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => Linking.openURL('https://jopt05-amber.vercel.app/')}>
+          <Text style={[styles.devCredit, { color: colors.textSecondary }]}>
+            Developed by <Text style={{ color: colors.primary }}>Jesús Puentes</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <ConfirmModal
@@ -207,5 +213,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontFamily: fonts.bold
+  },
+  devCredit: {
+    fontSize: 12,
+    fontFamily: fonts.regular,
+    textAlign: 'center',
+    marginTop: 8
   }
 });
