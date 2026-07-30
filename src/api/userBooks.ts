@@ -47,6 +47,18 @@ export async function getUserBooks(status?: BookStatus): Promise<UserBook[]> {
   return data;
 }
 
+export interface PaginatedUserBooks {
+  data: UserBook[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
+export async function getUserBooksPaginated(status: BookStatus, page: number, limit: number): Promise<PaginatedUserBooks> {
+  const { data } = await client.get<PaginatedUserBooks>('/user-books', {
+    params: { status, page, limit },
+  });
+  return data;
+}
+
 export async function getReadingProgress(): Promise<ReadingProgress[]> {
   const { data } = await client.get<ReadingProgress[]>('/user-books/reading-progress');
   return data;
@@ -62,6 +74,13 @@ export async function getReadingStats(period?: string, date?: string): Promise<R
 export async function getPublicUserBooks(username: string, status?: BookStatus): Promise<UserBook[]> {
   const { data } = await client.get<UserBook[]>(`/user-books/public/${username}`, {
     params: status ? { status } : undefined,
+  });
+  return data;
+}
+
+export async function getPublicUserBooksPaginated(username: string, status: BookStatus, page: number, limit: number): Promise<PaginatedUserBooks> {
+  const { data } = await client.get<PaginatedUserBooks>(`/user-books/public/${username}`, {
+    params: { status, page, limit },
   });
   return data;
 }
