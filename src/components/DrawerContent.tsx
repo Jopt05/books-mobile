@@ -39,7 +39,7 @@ export function DrawerContent({ navigation, state }: DrawerContentComponentProps
       {/* Header - Logo */}
       <View style={styles.header}>
         <View style={styles.logoRow}>
-          <Image source={require('../../assets/icono.png')} style={styles.logo} />
+          <Image source={isDark ? require('../../assets/Modo Oscuro.png') : require('../../assets/Modo Claro.png')} style={styles.logo} />
           <Text style={[styles.appName, { color: colors.text }]}>Librerio</Text>
         </View>
       </View>

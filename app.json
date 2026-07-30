@@ -4,11 +4,11 @@
     "slug": "librerio",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icono.png",
+    "icon": "./assets/Modo Claro.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/icono.png",
+      "image": "./assets/Modo Claro.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,13 +18,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icono.png",
+        "foregroundImage": "./assets/Modo Claro.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.anaquel.booksmobile"
     },
     "web": {
-      "favicon": "./assets/icono.png"
+      "favicon": "./assets/Modo Claro.png"
     },
     "plugins": [
       "expo-font"
