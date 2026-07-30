@@ -110,7 +110,7 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
 
       {sections.map((section) => (
         <View key={section.status as string} style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.label}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.label} ({section.books.length})</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
             {section.books.map((book) => (
               <TouchableOpacity

@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -9,6 +8,8 @@ import { getUserReviews, UserReview } from '../api/reviews';
 import { StarRating } from './StarRating';
 import { Loader } from './Loader';
 import { secureUrl } from '../utils/secureUrl';
+
+const LIMIT = 5;
 
 interface ProfileReviewsTabProps {
   username: string;
@@ -19,23 +20,45 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
   const { t } = useLanguage();
   const navigation = useNavigation<any>();
   const [reviews, setReviews] = useState<UserReview[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [spoilerRevealed, setSpoilerRevealed] = useState<Record<string, boolean>>({});
+  const pageRef = useRef(1);
+  const hasMoreRef = useRef(true);
 
-  const fetchReviews = useCallback(async (p: number) => {
+  const fetchInitial = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getUserReviews(username, p, 5, true);
+      const res = await getUserReviews(username, 1, LIMIT, true);
       setReviews(res.data);
-      setTotalPages(res.meta.totalPages);
-      setPage(p);
+      pageRef.current = 1;
+      hasMoreRef.current = res.meta.page < res.meta.totalPages;
     } catch { /* ignore */ }
     finally { setLoading(false); }
   }, [username]);
 
-  useEffect(() => { fetchReviews(1); }, [fetchReviews]);
+  const loadMore = useCallback(async () => {
+    if (!hasMoreRef.current || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = pageRef.current + 1;
+      const res = await getUserReviews(username, nextPage, LIMIT, true);
+      setReviews((prev) => [...prev, ...res.data]);
+      pageRef.current = nextPage;
+      hasMoreRef.current = res.meta.page < res.meta.totalPages;
+    } catch { /* ignore */ }
+    finally { setLoadingMore(false); }
+  }, [username, loadingMore]);
+
+  useEffect(() => { fetchInitial(); }, [fetchInitial]);
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
+    const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+    if (distanceFromBottom < 300 && hasMoreRef.current && !loadingMore) {
+      loadMore();
+    }
+  };
 
   if (loading) return <Loader />;
 
@@ -44,11 +67,15 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      onScroll={handleScroll}
+      scrollEventThrottle={400}
+    >
       {reviews.map((review) => (
         <View key={review.id} style={[styles.card, { backgroundColor: colors.card }]}>
           <View style={styles.row}>
-            {/* Book cover */}
             {review.book?.cover && (
               <TouchableOpacity
                 onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}
@@ -58,20 +85,17 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
               </TouchableOpacity>
             )}
             <View style={styles.info}>
-              {/* Book title */}
               {review.book?.title && (
                 <TouchableOpacity onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}>
                   <Text style={[styles.bookTitle, { color: colors.text }]}>{review.book.title}</Text>
                 </TouchableOpacity>
               )}
-              {/* Rating + date */}
               <View style={styles.ratingRow}>
                 <StarRating rating={review.rating} size={16} />
                 <Text style={[styles.date, { color: colors.textSecondary }]}>
                   {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                 </Text>
               </View>
-              {/* Content / Spoiler */}
               {review.content && (
                 review.hasSpoilers && !spoilerRevealed[review.id] ? (
                   <TouchableOpacity
@@ -89,16 +113,9 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
         </View>
       ))}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <View style={styles.pagination}>
-          <TouchableOpacity onPress={() => fetchReviews(page - 1)} disabled={page <= 1} style={{ opacity: page <= 1 ? 0.4 : 1 }}>
-            <Ionicons name="chevron-back" size={20} color={colors.primary} />
-          </TouchableOpacity>
-          <Text style={[styles.pageText, { color: colors.textSecondary }]}>{page} / {totalPages}</Text>
-          <TouchableOpacity onPress={() => fetchReviews(page + 1)} disabled={page >= totalPages} style={{ opacity: page >= totalPages ? 0.4 : 1 }}>
-            <Ionicons name="chevron-forward" size={20} color={colors.primary} />
-          </TouchableOpacity>
+      {loadingMore && (
+        <View style={styles.loadingMore}>
+          <ActivityIndicator size="small" color={colors.primary} />
         </View>
       )}
     </ScrollView>
@@ -119,7 +136,6 @@ const styles = StyleSheet.create({
   reviewContent: { fontSize: 14, marginTop: 4 },
   spoiler: { padding: 10, borderRadius: 8, alignItems: 'center', marginTop: 4 },
   spoilerText: { fontSize: 14, fontFamily: fonts.bold },
-  pagination: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, paddingVertical: 12 },
-  pageText: { fontSize: 14 },
-  empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 }
+  loadingMore: { alignItems: 'center', paddingVertical: 16 },
+  empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 },
 });

@@ -9,13 +9,19 @@ import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useImport } from '../hooks/useImport';
 import { Loader } from '../components/Loader';
+import type { ImportSource } from '../api/importBooks';
 
 export function SettingsScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const { result, loading, error, importFile, reset } = useImport();
+  const { source, setSource, result, loading, error, importFile, reset } = useImport();
   const [fileName, setFileName] = useState<string | null>(null);
+
+  const sources: { key: ImportSource; label: string }[] = [
+    { key: 'goodreads', label: 'Goodreads' },
+    { key: 'hardcover', label: 'Hardcover' },
+  ];
 
   const handlePickFile = async () => {
     const res = await DocumentPicker.getDocumentAsync({ type: 'text/csv' });
@@ -39,6 +45,11 @@ export function SettingsScreen() {
     setFileName(null);
   };
 
+  const handleSourceChange = (s: ImportSource) => {
+    setSource(s);
+    handleReset();
+  };
+
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       {/* Header */}
@@ -57,6 +68,31 @@ export function SettingsScreen() {
             {t('settings.import')}
           </Text>
 
+          {/* Source tabs */}
+          {!result && !loading && (
+            <View style={styles.tabs}>
+              {sources.map((s) => (
+                <TouchableOpacity
+                  key={s.key}
+                  style={[
+                    styles.tab,
+                    { backgroundColor: source === s.key ? colors.primary : colors.border },
+                  ]}
+                  onPress={() => handleSourceChange(s.key)}
+                >
+                  <Text
+                    style={[
+                      styles.tabText,
+                      { color: source === s.key ? '#FFFFFF' : colors.textSecondary },
+                    ]}
+                  >
+                    {s.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
           {!result && !loading && (
             <>
               {/* Dropzone */}
@@ -69,7 +105,7 @@ export function SettingsScreen() {
                   {fileName || t('import.selectFile')}
                 </Text>
                 <Text style={[styles.dropzoneHint, { color: colors.textSecondary }]}>
-                  CSV
+                  {source === 'hardcover' ? 'Hardcover CSV' : 'Goodreads CSV'}
                 </Text>
               </TouchableOpacity>
 
@@ -141,6 +177,9 @@ const styles = StyleSheet.create({
   card: { borderRadius: 12, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
   cardTitle: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 4 },
   cardDescription: { fontSize: 14, marginBottom: 16 },
+  tabs: { flexDirection: 'row', gap: 8, marginBottom: 16 },
+  tab: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
+  tabText: { fontSize: 14, fontFamily: fonts.bold },
   dropzone: { borderWidth: 2, borderStyle: 'dashed', borderRadius: 12, padding: 30, alignItems: 'center', gap: 8 },
   dropzoneText: { fontSize: 14, fontFamily: fonts.bold, textAlign: 'center' },
   dropzoneHint: { fontSize: 14 },
@@ -156,5 +195,5 @@ const styles = StyleSheet.create({
   detailTitle: { fontSize: 14, flex: 1, marginRight: 8 },
   detailStatus: { fontSize: 14 },
   resetBtn: { marginTop: 16, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' },
-  resetText: { fontSize: 14, fontFamily: fonts.bold }
+  resetText: { fontSize: 14, fontFamily: fonts.bold },
 });
