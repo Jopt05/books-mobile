@@ -47,6 +47,7 @@
   "journal.submit": "Save entry",
   "journal.history": "Reading history",
   "journal.delete": "Delete entry",
+  "journal.loadMore": "View more entries",
   "streak.title": "Reading streak",
   "streak.days": "consecutive days",
   "stats.booksRead": "Books read",

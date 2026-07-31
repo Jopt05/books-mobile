@@ -47,6 +47,7 @@
   "journal.submit": "Guardar entrada",
   "journal.history": "Historial de lectura",
   "journal.delete": "Eliminar entrada",
+  "journal.loadMore": "Ver más entradas",
   "streak.title": "Racha de lectura",
   "streak.days": "días consecutivos",
   "stats.booksRead": "Libros leídos",

@@ -278,7 +278,7 @@ export function BookDetailScreen() {
                   color={colors.primary}
                 />
                 <Text style={[styles.journalToggleText, { color: colors.primary }]}>
-                  {journal.expanded ? t('journal.hideJournal') : t('journal.history')}
+                  {journal.expanded ? t('journal.hideJournal') : t('journal.history')}{journal.entryCount != null && journal.entryCount > 0 ? ` (${journal.entryCount})` : ''}
                 </Text>
               </TouchableOpacity>
 
@@ -292,33 +292,46 @@ export function BookDetailScreen() {
                       {t('reviews.noReviews')}
                     </Text>
                   ) : (
-                    journal.entries.map((entry) => (
-                      <View key={entry.id} style={[styles.journalEntry, { borderColor: colors.border }]}>
-                        <View style={styles.journalEntryHeader}>
-                          <Text style={[styles.journalDate, { color: colors.textSecondary }]}>
-                            {new Date(entry.createdAt).toLocaleDateString(undefined, {
-                              year: 'numeric', month: 'short', day: 'numeric'
-                            })}
-                          </Text>
-                          <TouchableOpacity onPress={() => journal.removeEntry(entry.id)} style={styles.journalDeleteBtn}>
-                            <Ionicons name="trash-outline" size={14} color={colors.error} />
-                          </TouchableOpacity>
-                        </View>
-                        {entry.content && (
-                          <Text style={[styles.journalContent, { color: colors.text }]}>{entry.content}</Text>
-                        )}
-                        {(entry.page || entry.percentage != null) && (
-                          <View style={styles.journalMetaRow}>
-                            <Ionicons name="book-outline" size={14} color={colors.textSecondary} />
-                            <Text style={[styles.journalMeta, { color: colors.textSecondary }]}>
-                              {entry.page ? ` p. ${entry.page}` : ''}
-                              {entry.page && entry.percentage != null ? ' · ' : ''}
-                              {entry.percentage != null ? `${entry.percentage}%` : ''}
+                    <>
+                      {journal.entries.map((entry) => (
+                        <View key={entry.id} style={[styles.journalEntry, { borderColor: colors.border }]}>
+                          <View style={styles.journalEntryHeader}>
+                            <Text style={[styles.journalDate, { color: colors.textSecondary }]}>
+                              {new Date(entry.createdAt).toLocaleDateString(undefined, {
+                                year: 'numeric', month: 'short', day: 'numeric'
+                              })}
                             </Text>
+                            <TouchableOpacity onPress={() => journal.removeEntry(entry.id)} style={styles.journalDeleteBtn}>
+                              <Ionicons name="trash-outline" size={14} color={colors.error} />
+                            </TouchableOpacity>
                           </View>
-                        )}
-                      </View>
-                    ))
+                          {entry.content && (
+                            <Text style={[styles.journalContent, { color: colors.text }]}>{entry.content}</Text>
+                          )}
+                          {(entry.page || entry.percentage != null) && (
+                            <View style={styles.journalMetaRow}>
+                              <Ionicons name="book-outline" size={14} color={colors.textSecondary} />
+                              <Text style={[styles.journalMeta, { color: colors.textSecondary }]}>
+                                {entry.page ? ` p. ${entry.page}` : ''}
+                                {entry.page && entry.percentage != null ? ' · ' : ''}
+                                {entry.percentage != null ? `${entry.percentage}%` : ''}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      ))}
+                      {journal.hasMore && (
+                        <TouchableOpacity
+                          onPress={journal.loadMore}
+                          disabled={journal.loadingMore}
+                          style={styles.loadMoreBtn}
+                        >
+                          <Text style={[styles.loadMoreText, { color: colors.primary, opacity: journal.loadingMore ? 0.5 : 1 }]}>
+                            {journal.loadingMore ? '...' : t('journal.loadMore')}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </>
                   )}
                 </View>
               )}
@@ -495,6 +508,8 @@ const styles = StyleSheet.create({
   journalMeta: { fontSize: 14 },
   journalLoadingText: { fontSize: 14 },
   journalEmptyText: { fontSize: 14 },
+  loadMoreBtn: { paddingVertical: 10, alignItems: 'center' },
+  loadMoreText: { fontSize: 14, fontFamily: fonts.bold },
 
   // Meta
   metaGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: 20 },

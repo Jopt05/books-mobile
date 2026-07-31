@@ -1,49 +1,42 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { JournalEntry } from '../types/domain';
-import { getJournalByBook, createJournalEntry, deleteJournalEntry } from '../api/journal';
+import { getJournalByBook, getJournalCountByBook, createJournalEntry, deleteJournalEntry } from '../api/journal';
 
 export type ProgressMode = 'page' | 'percentage';
 
-interface UseJournalReturn {
-  entries: JournalEntry[];
-  loading: boolean;
-  error: string;
-  content: string;
-  setContent: (v: string) => void;
-  progressValue: string;
-  setProgressValue: (v: string) => void;
-  progressMode: ProgressMode;
-  setProgressMode: (m: ProgressMode) => void;
-  saving: boolean;
-  expanded: boolean;
-  toggleExpanded: () => void;
-  submit: () => Promise<void>;
-  removeEntry: (id: string) => Promise<void>;
-}
+const PAGE_LIMIT = 5;
 
-export function useJournal(userBookId: string, pageCount?: number): UseJournalReturn {
+export function useJournal(userBookId: string, pageCount?: number) {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [entryCount, setEntryCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [content, setContent] = useState('');
   const [progressValue, setProgressValue] = useState('');
   const [progressMode, setProgressMode] = useState<ProgressMode>('page');
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const pageRef = useRef(1);
+  const hasMoreRef = useRef(false);
 
-  const toggleExpanded = useCallback(() => setExpanded((v) => !v), []);
+  // Fetch count on mount
+  useEffect(() => {
+    if (!userBookId) return;
+    getJournalCountByBook(userBookId)
+      .then(res => setEntryCount(res.count))
+      .catch(() => {});
+  }, [userBookId]);
 
-  const refresh = useCallback(async () => {
-    if (!userBookId) {
-      setEntries([]);
-      setLoading(false);
-      return;
-    }
+  const loadEntries = useCallback(async () => {
+    if (!userBookId) return;
     setLoading(true);
     setError('');
     try {
-      const data = await getJournalByBook(userBookId);
-      setEntries(data);
+      const res = await getJournalByBook(userBookId, 1, PAGE_LIMIT);
+      setEntries(res.data);
+      pageRef.current = 1;
+      hasMoreRef.current = res.meta.page < res.meta.totalPages;
     } catch {
       setError('No se pudieron cargar las entradas');
     } finally {
@@ -51,9 +44,30 @@ export function useJournal(userBookId: string, pageCount?: number): UseJournalRe
     }
   }, [userBookId]);
 
+  const loadMore = useCallback(async () => {
+    if (!hasMoreRef.current || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = pageRef.current + 1;
+      const res = await getJournalByBook(userBookId, nextPage, PAGE_LIMIT);
+      setEntries(prev => [...prev, ...res.data]);
+      pageRef.current = nextPage;
+      hasMoreRef.current = res.meta.page < res.meta.totalPages;
+    } catch { /* ignore */ }
+    finally { setLoadingMore(false); }
+  }, [userBookId, loadingMore]);
+
+  const toggleExpanded = useCallback(() => {
+    if (!expanded && entries.length === 0) {
+      loadEntries();
+    }
+    setExpanded(v => !v);
+  }, [expanded, entries.length, loadEntries]);
+
   const submit = useCallback(async () => {
     if (!userBookId) return;
     setSaving(true);
+    setError('');
     try {
       const numVal = progressValue ? parseInt(progressValue, 10) : undefined;
       let page: number | undefined;
@@ -75,7 +89,8 @@ export function useJournal(userBookId: string, pageCount?: number): UseJournalRe
         page,
         percentage,
       });
-      setEntries((prev) => [entry, ...prev]);
+      setEntries(prev => [entry, ...prev]);
+      setEntryCount(prev => (prev ?? 0) + 1);
       setContent('');
       setProgressValue('');
     } catch {
@@ -87,16 +102,16 @@ export function useJournal(userBookId: string, pageCount?: number): UseJournalRe
 
   const removeEntry = useCallback(async (id: string) => {
     await deleteJournalEntry(id);
-    setEntries((prev) => prev.filter((e) => e.id !== id));
+    setEntries(prev => prev.filter(e => e.id !== id));
+    setEntryCount(prev => (prev ?? 1) - 1);
   }, []);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  const hasMore = hasMoreRef.current;
 
   return {
-    entries, loading, error, content, setContent,
-    progressValue, setProgressValue, progressMode, setProgressMode,
-    saving, expanded, toggleExpanded, submit, removeEntry,
+    entries, entryCount, loading, loadingMore, hasMore, error,
+    content, setContent, progressValue, setProgressValue,
+    progressMode, setProgressMode, saving, expanded,
+    toggleExpanded, loadMore, submit, removeEntry,
   };
 }

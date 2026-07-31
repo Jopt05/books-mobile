@@ -9,6 +9,11 @@ export interface CreateJournalPayload {
   isPublic?: boolean;
 }
 
+export interface PaginatedJournal {
+  data: JournalEntry[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
 export async function createJournalEntry(payload: CreateJournalPayload): Promise<JournalEntry> {
   const { data } = await client.post<JournalEntry>('/journal', payload);
   return data;
@@ -21,8 +26,15 @@ export async function getJournalEntries(limit?: number): Promise<JournalEntry[]>
   return data;
 }
 
-export async function getJournalByBook(userBookId: string): Promise<JournalEntry[]> {
-  const { data } = await client.get<JournalEntry[]>(`/journal/book/${userBookId}`);
+export async function getJournalByBook(userBookId: string, page?: number, limit?: number): Promise<PaginatedJournal> {
+  const { data } = await client.get<PaginatedJournal>(`/journal/book/${userBookId}`, {
+    params: { ...(page && { page }), ...(limit && { limit }) },
+  });
+  return data;
+}
+
+export async function getJournalCountByBook(userBookId: string): Promise<{ count: number }> {
+  const { data } = await client.get<{ count: number }>(`/journal/book/${userBookId}/count`);
   return data;
 }
 
