@@ -12,6 +12,7 @@ import { useProfilePage } from '../hooks/useProfilePage';
 import { useFollow } from '../hooks/useFollow';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { Loader } from '../components/Loader';
+import { FadeIn } from '../components/FadeIn';
 import { AppHeader } from '../components/AppHeader';
 import { SwipeTabs, SwipeTab } from '../components/SwipeTabs';
 import { ProfileBooksTab } from '../components/ProfileBooksTab';
@@ -102,55 +103,58 @@ export function UserProfileScreen() {
           )}
 
           {/* Avatar */}
-          <View style={styles.profileCenter}>
-            <TouchableOpacity onPress={isOwner ? handlePickAvatar : undefined} disabled={!isOwner}>
-              {profile?.avatar ? (
-                <Image source={{ uri: profile.avatar }} style={styles.avatar} />
-              ) : (
-                <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-                  <Text style={styles.avatarInitial}>{profile?.username?.charAt(0).toUpperCase()}</Text>
-                </View>
-              )}
-              {isOwner && (
-                <View style={[styles.avatarBadge, { backgroundColor: colors.primary }]}>
-                  <Ionicons name="camera-outline" size={14} color="#FFFFFF" />
-                </View>
-              )}
-            </TouchableOpacity>
-
-            <Text style={[styles.username, { color: colors.text }]}>{profile?.username}</Text>
-
-            {/* Counters */}
-            <View style={styles.counters}>
-              <TouchableOpacity onPress={() => navigation.navigate('Network', { username })}>
-                <Text style={[styles.counter, { color: colors.text }]}>
-                  <Text style={styles.counterBold}>{stats?.followersCount || 0}</Text> {t('profile.followers')}
-                </Text>
+          <FadeIn direction="none">
+            <View style={styles.profileCenter}>
+              <TouchableOpacity onPress={isOwner ? handlePickAvatar : undefined} disabled={!isOwner}>
+                {profile?.avatar ? (
+                  <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+                ) : (
+                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+                    <Text style={styles.avatarInitial}>{profile?.username?.charAt(0).toUpperCase()}</Text>
+                  </View>
+                )}
+                {isOwner && (
+                  <View style={[styles.avatarBadge, { backgroundColor: colors.primary }]}>
+                    <Ionicons name="camera-outline" size={14} color="#FFFFFF" />
+                  </View>
+                )}
               </TouchableOpacity>
-              <Text style={[styles.dot, { color: colors.textSecondary }]}>·</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Network', { username })}>
-                <Text style={[styles.counter, { color: colors.text }]}>
-                  <Text style={styles.counterBold}>{stats?.followingCount || 0}</Text> {t('profile.following')}
-                </Text>
-              </TouchableOpacity>
+
+              <Text style={[styles.username, { color: colors.text }]}>{profile?.username}</Text>
+
+              {/* Counters */}
+              <View style={styles.counters}>
+                <TouchableOpacity onPress={() => navigation.navigate('Network', { username })}>
+                  <Text style={[styles.counter, { color: colors.text }]}>
+                    <Text style={styles.counterBold}>{stats?.followersCount || 0}</Text> {t('profile.followers')}
+                  </Text>
+                </TouchableOpacity>
+                <Text style={[styles.dot, { color: colors.textSecondary }]}>·</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Network', { username })}>
+                  <Text style={[styles.counter, { color: colors.text }]}>
+                    <Text style={styles.counterBold}>{stats?.followingCount || 0}</Text> {t('profile.following')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Follow button (non-owner only) */}
+              {user && !isOwner && (
+                <TouchableOpacity
+                  style={[styles.followBtn, { backgroundColor: stats?.isFollowing ? colors.border : colors.primary }]}
+                  onPress={() => stats?.isFollowing ? setShowUnfollowModal(true) : follow()}
+                  disabled={toggling}
+                >
+                  <Text style={[styles.followText, { color: stats?.isFollowing ? colors.textSecondary : '#FFFFFF' }]}>
+                    {stats?.isFollowing ? t('follow.unfollow') : t('follow.follow')}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
-
-            {/* Follow button (non-owner only) */}
-            {user && !isOwner && (
-              <TouchableOpacity
-                style={[styles.followBtn, { backgroundColor: stats?.isFollowing ? colors.border : colors.primary }]}
-                onPress={() => stats?.isFollowing ? setShowUnfollowModal(true) : follow()}
-                disabled={toggling}
-              >
-                <Text style={[styles.followText, { color: stats?.isFollowing ? colors.textSecondary : '#FFFFFF' }]}>
-                  {stats?.isFollowing ? t('follow.unfollow') : t('follow.follow')}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
+          </FadeIn>
 
           {/* Bio */}
-          <View style={styles.bioSection}>
+          <FadeIn delay={150} direction="up">
+            <View style={styles.bioSection}>
             <View style={styles.bioHeader}>
               <Text style={[styles.bioTitle, { color: colors.text }]}>{t('profile.bio')}</Text>
               {isOwner && !editing && (
@@ -190,6 +194,7 @@ export function UserProfileScreen() {
               <Text style={[styles.bioText, { color: colors.textSecondary }]}>{profile?.bio || t('profile.noBio')}</Text>
             )}
           </View>
+          </FadeIn>
         </ScrollView>
       </View>
 

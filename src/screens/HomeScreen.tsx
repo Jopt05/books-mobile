@@ -12,6 +12,7 @@ import { ReadingStats } from '../components/ReadingStats';
 import { QuickFeed } from '../components/QuickFeed';
 import { RecommendationsSection } from '../components/RecommendationsSection';
 import { AppHeader } from '../components/AppHeader';
+import { FadeIn } from '../components/FadeIn';
 
 export function HomeScreen() {
   const { colors } = useTheme();
@@ -38,14 +39,35 @@ export function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
       >
-        <Text style={[styles.title, { color: colors.text }]}>{t('tabs.home')}</Text>
+        <FadeIn direction="none">
+          <Text style={[styles.title, { color: colors.text }]}>{t('tabs.home')}</Text>
+        </FadeIn>
 
-        <QuickJournalCard key={journalKey} onEntryCreated={() => setStreakKey((k) => k + 1)} />
-        <StreakBanner key={streakKey} />
-        {progress.length > 0 && <CurrentlyReading books={progress} />}
-        <ReadingStats />
-        <RecommendationsSection />
-        <QuickFeed />
+        <FadeIn delay={50} direction="up">
+          <QuickJournalCard key={journalKey} onEntryCreated={() => setStreakKey((k) => k + 1)} />
+        </FadeIn>
+
+        <FadeIn delay={100} direction="up">
+          <StreakBanner key={streakKey} />
+        </FadeIn>
+
+        {progress.length > 0 && (
+          <FadeIn delay={150} direction="up">
+            <CurrentlyReading books={progress} />
+          </FadeIn>
+        )}
+
+        <FadeIn delay={200} direction="up">
+          <ReadingStats />
+        </FadeIn>
+
+        <FadeIn delay={250} direction="up">
+          <RecommendationsSection />
+        </FadeIn>
+
+        <FadeIn delay={300} direction="up">
+          <QuickFeed />
+        </FadeIn>
       </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
