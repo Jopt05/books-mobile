@@ -67,6 +67,8 @@
   "reviews.noReviews": "Aún no hay reseñas",
   "reviews.average": "Promedio",
   "reviews.count": "reseñas",
+  "reviews.showMore": "Ver más",
+  "reviews.showLess": "Ver menos",
   "feed.following": "Siguiendo",
   "feed.global": "Global",
   "feed.empty": "No hay actividad reciente",

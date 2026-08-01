@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Review } from '../types/domain';
@@ -8,6 +8,12 @@ import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { StarRating } from './StarRating';
 import { UserAvatar } from './UserAvatar';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const MAX_LINES = 3;
 
 interface ReviewCardProps {
   review: Review;
@@ -20,6 +26,13 @@ export function ReviewCard({ review, isOwn = false, onDelete }: ReviewCardProps)
   const { t } = useLanguage();
   const navigation = useNavigation<any>();
   const [spoilerRevealed, setSpoilerRevealed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [showToggle, setShowToggle] = useState(false);
+
+  const toggleExpanded = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
 
   const date = new Date(review.createdAt).toLocaleDateString(undefined, {
     year: 'numeric', month: 'short', day: 'numeric'
@@ -58,7 +71,26 @@ export function ReviewCard({ review, isOwn = false, onDelete }: ReviewCardProps)
               <Text style={[styles.spoilerBtn, { color: colors.primary }]}>{t('reviews.spoilers')}</Text>
             </TouchableOpacity>
           ) : (
-            <Text style={[styles.content, { color: colors.text }]}>{review.content}</Text>
+            <>
+              <Text
+                style={[styles.content, { color: colors.text }]}
+                numberOfLines={expanded ? undefined : MAX_LINES}
+                onTextLayout={(e) => {
+                  if (e.nativeEvent.lines.length > MAX_LINES) {
+                    setShowToggle(true);
+                  }
+                }}
+              >
+                {review.content}
+              </Text>
+              {showToggle && (
+                <TouchableOpacity onPress={toggleExpanded} style={styles.toggleBtn}>
+                  <Text style={[styles.toggleText, { color: colors.primary }]}>
+                    {expanded ? t('reviews.showLess') : t('reviews.showMore')}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </>
           )}
         </View>
       )}
@@ -76,5 +108,7 @@ const styles = StyleSheet.create({
   contentArea: { marginTop: 8 },
   spoilerOverlay: { padding: 12, borderRadius: 8, alignItems: 'center' },
   spoilerBtn: { fontSize: 14, fontFamily: fonts.bold },
-  content: { fontSize: 16 }
+  content: { fontSize: 16 },
+  toggleBtn: { marginTop: 4 },
+  toggleText: { fontSize: 14, fontFamily: fonts.bold },
 });
