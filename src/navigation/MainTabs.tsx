@@ -5,6 +5,9 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { SearchScreen } from '../screens/SearchScreen';
 import { BookDetailScreen } from '../screens/BookDetailScreen';
 import { FeedScreen } from '../screens/FeedScreen';
+import { DiscussionsScreen } from '../screens/DiscussionsScreen';
+import { DiscussionDetailScreen } from '../screens/DiscussionDetailScreen';
+import { CreateDiscussionScreen } from '../screens/CreateDiscussionScreen';
 import { UserProfileScreen } from '../screens/UserProfileScreen';
 import { NetworkScreen } from '../screens/NetworkScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
@@ -31,6 +34,14 @@ export type FeedStackParamList = {
   UserProfile: { username: string };
   BookDetail: { bookId: string };
   Network: { username: string };
+};
+
+export type DiscussionsStackParamList = {
+  Discussions: undefined;
+  DiscussionDetail: { discussionId: string };
+  CreateDiscussion: undefined;
+  UserProfile: { username: string };
+  BookDetail: { bookId: string };
 };
 
 export type ProfileStackParamList = {
@@ -78,6 +89,19 @@ function FeedStack() {
       <FeedStackNav.Screen name="BookDetail" component={BookDetailScreen} />
       <FeedStackNav.Screen name="Network" component={NetworkScreen} />
     </FeedStackNav.Navigator>
+  );
+}
+
+const DiscussionsStackNav = createNativeStackNavigator<DiscussionsStackParamList>();
+function DiscussionsStack() {
+  return (
+    <DiscussionsStackNav.Navigator screenOptions={{ headerShown: false }}>
+      <DiscussionsStackNav.Screen name="Discussions" component={DiscussionsScreen} />
+      <DiscussionsStackNav.Screen name="DiscussionDetail" component={DiscussionDetailScreen} />
+      <DiscussionsStackNav.Screen name="CreateDiscussion" component={CreateDiscussionScreen} />
+      <DiscussionsStackNav.Screen name="UserProfile" component={UserProfileScreen} />
+      <DiscussionsStackNav.Screen name="BookDetail" component={BookDetailScreen} />
+    </DiscussionsStackNav.Navigator>
   );
 }
 
@@ -130,6 +154,7 @@ export function MainTabs() {
       <Drawer.Screen name="HomeStack" component={HomeStack} />
       <Drawer.Screen name="SearchStack" component={SearchStack} />
       <Drawer.Screen name="FeedStack" component={FeedStack} />
+      <Drawer.Screen name="DiscussionsStack" component={DiscussionsStack} />
       <Drawer.Screen name="SettingsStack" component={SettingsStack} />
       <Drawer.Screen name="ProfileStack" component={ProfileStack} />
     </Drawer.Navigator>

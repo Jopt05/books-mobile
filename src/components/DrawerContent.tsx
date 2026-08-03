@@ -13,6 +13,7 @@ const NAV_ITEMS: { icon: keyof typeof Ionicons.glyphMap; labelKey: string; route
   { icon: 'home-outline', labelKey: 'sidebar.home', route: 'HomeStack' },
   { icon: 'search-outline', labelKey: 'sidebar.search', route: 'SearchStack' },
   { icon: 'newspaper-outline', labelKey: 'sidebar.feed', route: 'FeedStack' },
+  { icon: 'chatbubbles-outline', labelKey: 'sidebar.discussions', route: 'DiscussionsStack' },
   { icon: 'settings-outline', labelKey: 'sidebar.settings', route: 'SettingsStack' },
 ];
 
