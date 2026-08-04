@@ -8,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useDiscussions } from '../hooks/useDiscussions';
 import { DiscussionCard } from '../components/DiscussionCard';
 import { AppHeader } from '../components/AppHeader';
+import { FadeIn } from '../components/FadeIn';
 import { Loader } from '../components/Loader';
 import { fonts } from '../theme/typography';
 
@@ -35,12 +36,14 @@ export function DiscussionsScreen() {
     setRefreshing(false);
   }, [refresh]);
 
-  const renderItem = ({ item }: { item: typeof discussions[0] }) => (
-    <DiscussionCard
-      discussion={item}
-      onLike={() => toggleLike(item.id)}
-      onPress={() => (navigation as any).push('DiscussionDetail', { discussionId: item.id })}
-    />
+  const renderItem = ({ item, index }: { item: typeof discussions[0]; index: number }) => (
+    <FadeIn delay={index * 60} direction="up">
+      <DiscussionCard
+        discussion={item}
+        onLike={() => toggleLike(item.id)}
+        onPress={() => (navigation as any).push('DiscussionDetail', { discussionId: item.id })}
+      />
+    </FadeIn>
   );
 
   return (

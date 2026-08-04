@@ -8,6 +8,7 @@ import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useImport } from '../hooks/useImport';
+import { FadeIn } from '../components/FadeIn';
 import { Loader } from '../components/Loader';
 import type { ImportSource } from '../api/importBooks';
 
@@ -62,6 +63,7 @@ export function SettingsScreen() {
 
       <View style={styles.content}>
         {/* Import Section Card */}
+        <FadeIn direction="up">
         <View style={[styles.card, { backgroundColor: colors.card }]}>
           <Text style={[styles.cardTitle, { color: colors.text }]}>{t('import.title')}</Text>
           <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
@@ -163,6 +165,7 @@ export function SettingsScreen() {
             </View>
           )}
         </View>
+        </FadeIn>
       </View>
     </SafeAreaView>
   );

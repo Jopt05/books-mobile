@@ -9,6 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useFeed } from '../hooks/useFeed';
 import { ActivityCard } from '../components/ActivityCard';
 import { AppHeader } from '../components/AppHeader';
+import { FadeIn } from '../components/FadeIn';
 import { Loader } from '../components/Loader';
 
 type FeedTab = 'personal' | 'global';
@@ -46,7 +47,11 @@ function FeedList({ type }: { type: FeedTab }) {
     <FlatList
       data={activities}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <ActivityCard activity={item} />}
+      renderItem={({ item, index }) => (
+        <FadeIn delay={index * 60} direction="up">
+          <ActivityCard activity={item} />
+        </FadeIn>
+      )}
       onEndReached={() => { if (hasMore && !loadingMore) loadMore(); }}
       onEndReachedThreshold={0.3}
       ListFooterComponent={loadingMore ? <Loader /> : null}
