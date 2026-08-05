@@ -14,6 +14,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const MAX_LINES = 3;
+const CHAR_THRESHOLD = 120;
 
 interface ReviewCardProps {
   review: Review;
@@ -27,7 +28,8 @@ export function ReviewCard({ review, isOwn = false, onDelete }: ReviewCardProps)
   const navigation = useNavigation<any>();
   const [spoilerRevealed, setSpoilerRevealed] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [showToggle, setShowToggle] = useState(false);
+
+  const shouldShowToggle = !!(review.content && review.content.length > CHAR_THRESHOLD);
 
   const toggleExpanded = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -75,15 +77,10 @@ export function ReviewCard({ review, isOwn = false, onDelete }: ReviewCardProps)
               <Text
                 style={[styles.content, { color: colors.text }]}
                 numberOfLines={expanded ? undefined : MAX_LINES}
-                onTextLayout={(e) => {
-                  if (e.nativeEvent.lines.length > MAX_LINES) {
-                    setShowToggle(true);
-                  }
-                }}
               >
                 {review.content}
               </Text>
-              {showToggle && (
+              {shouldShowToggle && (
                 <TouchableOpacity onPress={toggleExpanded} style={styles.toggleBtn}>
                   <Text style={[styles.toggleText, { color: colors.primary }]}>
                     {expanded ? t('reviews.showLess') : t('reviews.showMore')}

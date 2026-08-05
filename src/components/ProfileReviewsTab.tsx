@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -9,7 +9,13 @@ import { StarRating } from './StarRating';
 import { Loader } from './Loader';
 import { secureUrl } from '../utils/secureUrl';
 
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 const LIMIT = 5;
+const MAX_LINES = 3;
+const CHAR_THRESHOLD = 120;
 
 interface ProfileReviewsTabProps {
   username: string;
@@ -23,6 +29,7 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [spoilerRevealed, setSpoilerRevealed] = useState<Record<string, boolean>>({});
+  const [expandedReviews, setExpandedReviews] = useState<Record<string, boolean>>({});
   const pageRef = useRef(1);
   const hasMoreRef = useRef(true);
 
@@ -105,7 +112,27 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
                     <Text style={[styles.spoilerText, { color: colors.primary }]}>{t('reviews.spoilers')}</Text>
                   </TouchableOpacity>
                 ) : (
-                  <Text style={[styles.reviewContent, { color: colors.text }]} numberOfLines={3}>{review.content}</Text>
+                  <View>
+                    <Text
+                      style={[styles.reviewContent, { color: colors.text }]}
+                      numberOfLines={expandedReviews[review.id] ? undefined : MAX_LINES}
+                    >
+                      {review.content}
+                    </Text>
+                    {review.content.length > CHAR_THRESHOLD && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                          setExpandedReviews((s) => ({ ...s, [review.id]: !s[review.id] }));
+                        }}
+                        style={styles.toggleBtn}
+                      >
+                        <Text style={[styles.toggleText, { color: colors.primary }]}>
+                          {expandedReviews[review.id] ? t('reviews.showLess') : t('reviews.showMore')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 )
               )}
             </View>
@@ -136,6 +163,8 @@ const styles = StyleSheet.create({
   reviewContent: { fontSize: 14, marginTop: 4 },
   spoiler: { padding: 10, borderRadius: 8, alignItems: 'center', marginTop: 4 },
   spoilerText: { fontSize: 14, fontFamily: fonts.bold },
+  toggleBtn: { marginTop: 4 },
+  toggleText: { fontSize: 14, fontFamily: fonts.bold },
   loadingMore: { alignItems: 'center', paddingVertical: 16 },
   empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 },
 });
