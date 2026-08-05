@@ -39,7 +39,7 @@ export interface Review {
   user: { id: string; username: string; avatar: string | null };
 }
 
-export type ActivityType = 'ADDED_TO_SHELF' | 'STARTED_READING' | 'FINISHED_READING' | 'REVIEWED';
+export type ActivityType = 'ADDED_TO_SHELF' | 'STARTED_READING' | 'FINISHED_READING' | 'REVIEWED' | 'STARTED_DISCUSSION';
 
 export interface Activity {
   id: string;

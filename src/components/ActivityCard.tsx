@@ -17,7 +17,8 @@ const ACTIVITY_KEYS: Record<string, string> = {
   ADDED_TO_SHELF: 'activity.addedToShelf',
   STARTED_READING: 'activity.startedReading',
   FINISHED_READING: 'activity.finishedReading',
-  REVIEWED: 'activity.reviewed'
+  REVIEWED: 'activity.reviewed',
+  STARTED_DISCUSSION: 'activity.startedDiscussion'
 };
 
 function getTimeAgo(dateStr: string): string {
@@ -48,7 +49,17 @@ export function ActivityCard({ activity }: ActivityCardProps) {
       </TouchableOpacity>
 
       {/* Content */}
-      <View style={styles.content}>
+      <TouchableOpacity
+        style={styles.content}
+        activeOpacity={0.7}
+        onPress={() => {
+          if (activity.type === 'STARTED_DISCUSSION' && activity.metadata?.discussionId) {
+            navigation.navigate('DiscussionDetail', { discussionId: activity.metadata.discussionId });
+          } else {
+            navigation.navigate('BookDetail', { bookId: activity.bookId });
+          }
+        }}
+      >
         <Text style={[styles.text, { color: colors.text }]}>
           <Text
             style={styles.username}
@@ -57,10 +68,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             {activity.user.username}
           </Text>
           {' '}{t(ACTIVITY_KEYS[activity.type] || activity.type)}{' '}
-          <Text
-            style={[styles.bookTitleText, { color: colors.text }]}
-            onPress={() => navigation.navigate('BookDetail', { bookId: activity.bookId })}
-          >
+          <Text style={[styles.bookTitleText, { color: colors.text }]}>
             {activity.bookTitle}
           </Text>
         </Text>
@@ -76,12 +84,18 @@ export function ActivityCard({ activity }: ActivityCardProps) {
         <Text style={[styles.timeAgo, { color: colors.textSecondary }]}>
           {getTimeAgo(activity.createdAt)}
         </Text>
-      </View>
+      </TouchableOpacity>
 
-      {/* Book cover - navigates to book */}
+      {/* Book cover */}
       {activity.bookCover && (
         <TouchableOpacity
-          onPress={() => navigation.navigate('BookDetail', { bookId: activity.bookId })}
+          onPress={() => {
+            if (activity.type === 'STARTED_DISCUSSION' && activity.metadata?.discussionId) {
+              navigation.navigate('DiscussionDetail', { discussionId: activity.metadata.discussionId });
+            } else {
+              navigation.navigate('BookDetail', { bookId: activity.bookId });
+            }
+          }}
           style={[styles.coverWrap, { backgroundColor: colors.border }]}
         >
           <Image source={{ uri: secureUrl(activity.bookCover) }} style={styles.cover} />

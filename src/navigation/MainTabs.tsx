@@ -34,6 +34,7 @@ export type FeedStackParamList = {
   UserProfile: { username: string };
   BookDetail: { bookId: string };
   Network: { username: string };
+  DiscussionDetail: { discussionId: string };
 };
 
 export type DiscussionsStackParamList = {
@@ -88,6 +89,7 @@ function FeedStack() {
       <FeedStackNav.Screen name="UserProfile" component={UserProfileScreen} />
       <FeedStackNav.Screen name="BookDetail" component={BookDetailScreen} />
       <FeedStackNav.Screen name="Network" component={NetworkScreen} />
+      <FeedStackNav.Screen name="DiscussionDetail" component={DiscussionDetailScreen} />
     </FeedStackNav.Navigator>
   );
 }

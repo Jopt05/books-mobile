@@ -199,7 +199,7 @@ export function DiscussionDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
         <FlatList
           data={replies}
           keyExtractor={(item) => item.id}
