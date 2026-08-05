@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, FlatList, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,7 +8,7 @@ import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useProfileBooks } from '../hooks/useProfileBooks';
 import { Loader } from './Loader';
-import { BookStatus } from '../types/domain';
+import { BookStatus, UserBook } from '../types/domain';
 import { secureUrl } from '../utils/secureUrl';
 import { StatusActionSheet } from './StatusActionSheet';
 import { useStatusSheet } from '../hooks/useStatusSheet';
@@ -28,14 +28,6 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
   const [showHint, setShowHint] = useState(false);
   const hintOpacity = useRef(new Animated.Value(0)).current;
   const { sheetVisible, sheetTarget, open, close, changeStatus, remove } = useStatusSheet();
-
-  const handleHorizontalScroll = (status: BookStatus) => (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
-    const distanceFromEnd = contentSize.width - layoutMeasurement.width - contentOffset.x;
-    if (distanceFromEnd < 200) {
-      loadMore(status);
-    }
-  };
 
   useEffect(() => {
     if (!isOwn || sections.length === 0) return;
@@ -85,16 +77,16 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
       {sections.map((section) => (
         <View key={section.status as string} style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.label} ({section.total})</Text>
-          <ScrollView
+          <FlatList
             horizontal
+            data={section.books}
+            keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.scroll}
-            onScroll={handleHorizontalScroll(section.status)}
-            scrollEventThrottle={400}
-          >
-            {section.books.map((book) => (
+            onEndReached={() => loadMore(section.status)}
+            onEndReachedThreshold={0.5}
+            renderItem={({ item: book }) => (
               <TouchableOpacity
-                key={book.id}
                 style={styles.card}
                 onPress={() => navigation.navigate('BookDetail', { bookId: book.bookId })}
                 onLongPress={isOwn ? () => open({ id: book.id, title: book.title, status: book.status }) : undefined}
@@ -110,14 +102,13 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
                 <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>{book.title}</Text>
                 <Text style={[styles.bookAuthor, { color: colors.textSecondary }]} numberOfLines={1}>{book.author}</Text>
               </TouchableOpacity>
-            ))}
-
-            {section.loadingMore && (
-              <View style={styles.loadingMore}>
-                <ActivityIndicator size="small" color={colors.primary} />
-              </View>
             )}
-          </ScrollView>
+            ListFooterComponent={section.loadingMore ? (
+              <View style={styles.loadingMore}>
+                <Loader />
+              </View>
+            ) : null}
+          />
         </View>
       ))}
 

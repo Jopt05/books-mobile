@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
@@ -19,7 +19,7 @@ export function RecommendationsSection() {
 
   if (loading || (social.length === 0 && trending.length === 0)) return null;
 
-  const renderCover = (coverUrl: string | null, title: string) => (
+  const renderCover = (coverUrl: string | null) => (
     <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
       {coverUrl ? (
         <Image source={{ uri: coverUrl }} style={styles.cover} />
@@ -38,15 +38,19 @@ export function RecommendationsSection() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             {t('recommendations.socialTitle')}
           </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-            {social.map((item) => (
+          <FlatList
+            horizontal
+            data={social}
+            keyExtractor={(item) => item.bookId}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+            renderItem={({ item }) => (
               <TouchableOpacity
-                key={item.bookId}
                 style={styles.card}
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate('BookDetail', { bookId: item.bookId })}
               >
-                {renderCover(item.coverUrl, item.title)}
+                {renderCover(item.coverUrl)}
                 <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>
                   {item.title}
                 </Text>
@@ -61,8 +65,8 @@ export function RecommendationsSection() {
                         .replace('{count}', String(item.count - 1))}
                 </Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+            )}
+          />
         </View>
       )}
 
@@ -71,16 +75,20 @@ export function RecommendationsSection() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             {t('recommendations.trendingTitle')}
           </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-            {trending.map((item) => (
+          <FlatList
+            horizontal
+            data={trending}
+            keyExtractor={(item) => item.bookId}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+            renderItem={({ item }) => (
               <TouchableOpacity
-                key={item.bookId}
                 style={styles.card}
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate('BookDetail', { bookId: item.bookId })}
               >
                 <View>
-                  {renderCover(item.coverUrl, item.title)}
+                  {renderCover(item.coverUrl)}
                   <View style={[styles.badge, { backgroundColor: colors.primary }]}>
                     <Text style={styles.badgeText}>{item.count}</Text>
                   </View>
@@ -92,8 +100,8 @@ export function RecommendationsSection() {
                   {item.author}
                 </Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+            )}
+          />
         </View>
       )}
     </View>

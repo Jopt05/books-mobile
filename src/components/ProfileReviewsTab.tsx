@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -59,93 +59,83 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
 
   useEffect(() => { fetchInitial(); }, [fetchInitial]);
 
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
-    const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
-    if (distanceFromBottom < 300 && hasMoreRef.current && !loadingMore) {
-      loadMore();
-    }
-  };
-
   if (loading) return <Loader />;
 
   if (reviews.length === 0) {
     return <Text style={[styles.empty, { color: colors.textSecondary }]}>{t('reviews.noReviews')}</Text>;
   }
 
-  return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      onScroll={handleScroll}
-      scrollEventThrottle={400}
-    >
-      {reviews.map((review) => (
-        <View key={review.id} style={[styles.card, { backgroundColor: colors.card }]}>
-          <View style={styles.row}>
-            {review.book?.cover && (
-              <TouchableOpacity
-                onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}
-                style={[styles.coverWrap, { backgroundColor: colors.border }]}
-              >
-                <Image source={{ uri: secureUrl(review.book.cover) }} style={styles.coverImg} />
-              </TouchableOpacity>
-            )}
-            <View style={styles.info}>
-              {review.book?.title && (
-                <TouchableOpacity onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}>
-                  <Text style={[styles.bookTitle, { color: colors.text }]}>{review.book.title}</Text>
-                </TouchableOpacity>
-              )}
-              <View style={styles.ratingRow}>
-                <StarRating rating={review.rating} size={16} />
-                <Text style={[styles.date, { color: colors.textSecondary }]}>
-                  {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                </Text>
-              </View>
-              {review.content && (
-                review.hasSpoilers && !spoilerRevealed[review.id] ? (
-                  <TouchableOpacity
-                    onPress={() => setSpoilerRevealed((s) => ({ ...s, [review.id]: true }))}
-                    style={[styles.spoiler, { backgroundColor: colors.background + 'DD' }]}
-                  >
-                    <Text style={[styles.spoilerText, { color: colors.primary }]}>{t('reviews.spoilers')}</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <View>
-                    <Text
-                      style={[styles.reviewContent, { color: colors.text }]}
-                      numberOfLines={expandedReviews[review.id] ? undefined : MAX_LINES}
-                    >
-                      {review.content}
-                    </Text>
-                    {review.content.length > CHAR_THRESHOLD && (
-                      <TouchableOpacity
-                        onPress={() => {
-                          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                          setExpandedReviews((s) => ({ ...s, [review.id]: !s[review.id] }));
-                        }}
-                        style={styles.toggleBtn}
-                      >
-                        <Text style={[styles.toggleText, { color: colors.primary }]}>
-                          {expandedReviews[review.id] ? t('reviews.showLess') : t('reviews.showMore')}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                )
-              )}
-            </View>
+  const renderItem = ({ item: review }: { item: UserReview }) => (
+    <View style={[styles.card, { backgroundColor: colors.card }]}>
+      <View style={styles.row}>
+        {review.book?.cover && (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}
+            style={[styles.coverWrap, { backgroundColor: colors.border }]}
+          >
+            <Image source={{ uri: secureUrl(review.book.cover) }} style={styles.coverImg} />
+          </TouchableOpacity>
+        )}
+        <View style={styles.info}>
+          {review.book?.title && (
+            <TouchableOpacity onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}>
+              <Text style={[styles.bookTitle, { color: colors.text }]}>{review.book.title}</Text>
+            </TouchableOpacity>
+          )}
+          <View style={styles.ratingRow}>
+            <StarRating rating={review.rating} size={16} />
+            <Text style={[styles.date, { color: colors.textSecondary }]}>
+              {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+            </Text>
           </View>
+          {review.content && (
+            review.hasSpoilers && !spoilerRevealed[review.id] ? (
+              <TouchableOpacity
+                onPress={() => setSpoilerRevealed((s) => ({ ...s, [review.id]: true }))}
+                style={[styles.spoiler, { backgroundColor: colors.background + 'DD' }]}
+              >
+                <Text style={[styles.spoilerText, { color: colors.primary }]}>{t('reviews.spoilers')}</Text>
+              </TouchableOpacity>
+            ) : (
+              <View>
+                <Text
+                  style={[styles.reviewContent, { color: colors.text }]}
+                  numberOfLines={expandedReviews[review.id] ? undefined : MAX_LINES}
+                >
+                  {review.content}
+                </Text>
+                {review.content.length > CHAR_THRESHOLD && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                      setExpandedReviews((s) => ({ ...s, [review.id]: !s[review.id] }));
+                    }}
+                    style={styles.toggleBtn}
+                  >
+                    <Text style={[styles.toggleText, { color: colors.primary }]}>
+                      {expandedReviews[review.id] ? t('reviews.showLess') : t('reviews.showMore')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )
+          )}
         </View>
-      ))}
+      </View>
+    </View>
+  );
 
-      {loadingMore && (
-        <View style={styles.loadingMore}>
-          <ActivityIndicator size="small" color={colors.primary} />
-        </View>
-      )}
-    </ScrollView>
+  return (
+    <FlatList
+      data={reviews}
+      keyExtractor={(item) => item.id}
+      renderItem={renderItem}
+      onEndReached={() => { if (hasMoreRef.current && !loadingMore) loadMore(); }}
+      onEndReachedThreshold={0.3}
+      ListFooterComponent={loadingMore ? <Loader /> : null}
+      contentContainerStyle={styles.content}
+      style={styles.container}
+    />
   );
 }
 
@@ -165,6 +155,5 @@ const styles = StyleSheet.create({
   spoilerText: { fontSize: 14, fontFamily: fonts.bold },
   toggleBtn: { marginTop: 4 },
   toggleText: { fontSize: 14, fontFamily: fonts.bold },
-  loadingMore: { alignItems: 'center', paddingVertical: 16 },
   empty: { fontSize: 16, textAlign: 'center', paddingVertical: 30 },
 });
