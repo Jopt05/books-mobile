@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { BookStatus } from '../types/domain';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface StatusActionSheetProps {
   visible: boolean;
@@ -32,11 +33,12 @@ export function StatusActionSheet({
 }: StatusActionSheetProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
-        <View style={[styles.sheet, { backgroundColor: colors.card }]}>
+        <View style={[styles.sheet, { backgroundColor: colors.card, paddingBottom: insets.bottom + 2 }]}>
           {/* Book title */}
           <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
             {bookTitle}

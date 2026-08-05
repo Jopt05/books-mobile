@@ -33,8 +33,8 @@ export function DrawerContent({ navigation, state }: DrawerContentComponentProps
       { 
         backgroundColor: colors.surface, 
         borderRightColor: colors.border ,
-        paddingTop: insets.top + 15,
-        paddingBottom: insets.bottom
+        paddingTop: insets.top,
+        paddingBottom: 10
       }
     ]}>
       {/* Header - Logo */}
