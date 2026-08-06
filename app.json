@@ -4,38 +4,38 @@
     "slug": "librerio",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Modo Claro.png",
+    "icon": "./assets/ios/iTunesArtwork@2x.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/Modo Claro.png",
+      "image": "./assets/ios/iTunesArtwork@2x.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1C1714"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anaquel.booksmobile"
+      "bundleIdentifier": "com.librerio.myapp"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/Modo Claro.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/play/mipmap-xxxhdpi/ic_launcher_foreground.png",
+        "backgroundColor": "#1C1714"
       },
-      "package": "com.anaquel.booksmobile"
+      "package": "com.librerio.myapp"
     },
     "web": {
-      "favicon": "./assets/Modo Claro.png"
+      "favicon": "./assets/play/playstore-icon.png"
     },
     "plugins": [
       "expo-font",
       "@react-native-community/datetimepicker",
       "expo-secure-store"
     ],
+    "owner": "jopt05",
     "extra": {
       "eas": {
-        "projectId": "2dafdfbe-7075-41d6-a1c2-e897e2cec9f0"
+        "projectId": "524c0bb7-e597-4a9f-b8d3-b76370ffdba9"
       }
-    },
-    "owner": "jopt05"
+    }
   }
 }
