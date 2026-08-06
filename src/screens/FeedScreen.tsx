@@ -88,6 +88,9 @@ export function FeedScreen() {
           {route.title}
         </Text>
       )}
+      activeColor={colors.primary}
+      inactiveColor={colors.textSecondary}
+      labelStyle={styles.tabLabel}
       pressColor={colors.border}
     />
   );

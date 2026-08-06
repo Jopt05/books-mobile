@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -15,15 +15,12 @@ import { ConfirmModal } from '../components/ConfirmModal';
 import { Loader } from '../components/Loader';
 import { fonts } from '../theme/typography';
 
-type RouteParams = { DiscussionDetail: { discussionId: string } };
-
 export function DiscussionDetailScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { user } = useAuth();
-  const navigation = useNavigation();
-  const route = useRoute<RouteProp<RouteParams, 'DiscussionDetail'>>();
-  const { discussionId } = route.params;
+  const router = useRouter();
+  const { discussionId } = useLocalSearchParams<{ discussionId: string }>();
 
   const {
     discussion,
@@ -63,7 +60,7 @@ export function DiscussionDetailScreen() {
   const handleDelete = async () => {
     setShowDeleteModal(false);
     await removeDiscussion();
-    navigation.goBack();
+    router.back();
   };
 
   if (loading) {
@@ -77,7 +74,7 @@ export function DiscussionDetailScreen() {
   if (error || !discussion) {
     return (
       <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.errorText, { color: colors.error }]}>{error || 'Not found'}</Text>
@@ -95,7 +92,7 @@ export function DiscussionDetailScreen() {
         <View style={styles.authorRow}>
           <TouchableOpacity
             style={[styles.avatar, { backgroundColor: colors.primary }]}
-            onPress={() => (navigation as any).push('UserProfile', { username: discussion.user.username })}
+            onPress={() => router.push(`/(main)/user/${discussion.user.username}`)}
           >
             {discussion.user.avatar ? (
               <Image source={{ uri: discussion.user.avatar }} style={styles.avatarImg} />
@@ -126,7 +123,7 @@ export function DiscussionDetailScreen() {
         {discussion.bookCover && discussion.bookTitle ? (
           <TouchableOpacity
             style={[styles.bookRow, { backgroundColor: colors.surface }]}
-            onPress={() => (navigation as any).push('BookDetail', { bookId: discussion.bookId })}
+            onPress={() => router.push(`/(main)/book/${discussion.bookId}`)}
           >
             <Image source={{ uri: discussion.bookCover }} style={styles.bookCover} />
             <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>{discussion.bookTitle}</Text>
@@ -193,7 +190,7 @@ export function DiscussionDetailScreen() {
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       {/* Back button */}
       <View style={[styles.topBar, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
           <Text style={[styles.backText, { color: colors.textSecondary }]}>{t('discussions.back')}</Text>
         </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, useWindowDimensions, StyleSheet } from 'react-native';
+import { useWindowDimensions, StyleSheet } from 'react-native';
 import { TabView, TabBar, SceneRendererProps, NavigationState } from 'react-native-tab-view';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -41,11 +41,9 @@ export function SwipeTabs({ tabs, initialIndex = 0, onIndexChange }: SwipeTabsPr
       {...props}
       style={{ backgroundColor: 'transparent', elevation: 0, shadowOpacity: 0 }}
       indicatorStyle={{ backgroundColor: colors.primary, height: 3, borderRadius: 2 }}
-      renderLabel={({ route, focused }) => (
-        <Text style={[styles.tabLabel, { color: focused ? colors.primary : colors.textSecondary }]}>
-          {route.title}
-        </Text>
-      )}
+      activeColor={colors.primary}
+      inactiveColor={colors.textSecondary}
+      labelStyle={styles.tabLabel}
       pressColor={colors.border}
     />
   );

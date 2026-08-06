@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, LayoutAnimation, Platform, UIManager } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
@@ -24,7 +24,7 @@ interface ProfileReviewsTabProps {
 export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation<any>();
+  const navigation = useRouter();
   const [reviews, setReviews] = useState<UserReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -70,7 +70,7 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
       <View style={styles.row}>
         {review.book?.cover && (
           <TouchableOpacity
-            onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}
+            onPress={() => navigation.push(`/(main)/book/${review.bookId}`)}
             style={[styles.coverWrap, { backgroundColor: colors.border }]}
           >
             <Image source={{ uri: secureUrl(review.book.cover) }} style={styles.coverImg} />
@@ -78,7 +78,7 @@ export function ProfileReviewsTab({ username }: ProfileReviewsTabProps) {
         )}
         <View style={styles.info}>
           {review.book?.title && (
-            <TouchableOpacity onPress={() => navigation.navigate('BookDetail', { bookId: review.bookId })}>
+            <TouchableOpacity onPress={() => navigation.push(`/(main)/book/${review.bookId}`)}>
               <Text style={[styles.bookTitle, { color: colors.text }]}>{review.book.title}</Text>
             </TouchableOpacity>
           )}

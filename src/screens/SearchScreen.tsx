@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
@@ -11,13 +10,10 @@ import { BookCard } from '../components/BookCard';
 import { Loader } from '../components/Loader';
 import { AppHeader } from '../components/AppHeader';
 import { fonts } from '../theme/typography';
-import { SearchStackParamList } from '../navigation/MainTabs';
 import { Ionicons } from '@expo/vector-icons';
 
-type NavProp = NativeStackNavigationProp<SearchStackParamList, 'Search'>;
-
 export function SearchScreen() {
-  const nav = useNavigation<NavProp>();
+  const router = useRouter();
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { books, loading, loadingMore, error, searched, hasMore, search, loadMore } = useSearchBooks();
@@ -59,7 +55,7 @@ export function SearchScreen() {
         ) : (
           <View style={styles.bookGrid}>
             {books.map((book) => (
-              <BookCard key={book.id} book={book} onPress={() => nav.navigate('BookDetail', { bookId: book.id })} />
+              <BookCard key={book.id} book={book} onPress={() => router.push(`/(main)/book/${book.id}`)} />
             ))}
 
             {loadingMore && (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
@@ -17,7 +17,7 @@ interface CurrentlyReadingProps {
 export function CurrentlyReading({ books }: CurrentlyReadingProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation<any>();
+  const navigation = useRouter();
   const { sheetVisible, sheetTarget, open, close, changeStatus, remove } = useStatusSheet();
 
   if (books.length === 0) return null;
@@ -41,7 +41,7 @@ export function CurrentlyReading({ books }: CurrentlyReadingProps) {
               key={book.id}
               style={styles.card}
               activeOpacity={0.7}
-              onPress={() => navigation.navigate('BookDetail', { bookId: book.bookId })}
+              onPress={() => navigation.push(`/(main)/book/${book.bookId}`)}
               onLongPress={() => open({ id: book.id, title: book.title, status: 'READING' })}
               delayLongPress={400}
             >

@@ -26,10 +26,12 @@
     "web": {
       "favicon": "./assets/play/playstore-icon.png"
     },
+    "scheme": "librerio",
     "plugins": [
       "expo-font",
       "@react-native-community/datetimepicker",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-router"
     ],
     "owner": "jopt05",
     "extra": {

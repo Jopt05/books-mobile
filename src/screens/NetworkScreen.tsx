@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -11,14 +11,11 @@ import { UserAvatar } from '../components/UserAvatar';
 import { Loader } from '../components/Loader';
 import { SwipeTabs, SwipeTab } from '../components/SwipeTabs';
 import { FollowUser } from '../api/follows';
-import { ProfileStackParamList } from '../navigation/MainTabs';
-
-type RouteParams = RouteProp<ProfileStackParamList, 'Network'>;
 
 // Reusable user list component for each tab
 function UserList({ users, emptyMessage }: { users: FollowUser[]; emptyMessage: string }) {
   const { colors } = useTheme();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   if (users.length === 0) {
     return (
@@ -37,7 +34,7 @@ function UserList({ users, emptyMessage }: { users: FollowUser[]; emptyMessage: 
       renderItem={({ item }) => (
         <TouchableOpacity
           style={[listStyles.card, { backgroundColor: colors.surface }]}
-          onPress={() => navigation.navigate('UserProfile', { username: item.username })}
+          onPress={() => router.push(`/(main)/user/${item.username}`)}
           activeOpacity={0.7}
         >
           <UserAvatar uri={item.avatar} size={48} />
@@ -66,9 +63,8 @@ function FollowingTab({ following, t }: { following: FollowUser[]; t: (k: string
 }
 
 export function NetworkScreen() {
-  const route = useRoute<RouteParams>();
-  const navigation = useNavigation();
-  const { username } = route.params;
+  const { username } = useLocalSearchParams<{ username: string }>();
+  const router = useRouter();
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { followers, following, loading } = useNetwork(username);
@@ -84,7 +80,7 @@ export function NetworkScreen() {
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       {/* Header with back + title + username */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color={colors.textSecondary} />
         </TouchableOpacity>
         <Text style={[styles.title, { color: colors.text }]}>{t('network.followers')}</Text>

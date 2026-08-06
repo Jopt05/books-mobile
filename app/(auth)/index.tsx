@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useAuthForm } from '../hooks/useAuthForm';
-import { useTheme } from '../hooks/useTheme';
-import { fonts } from '../theme/typography';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuthForm } from '../../src/hooks/useAuthForm';
+import { useTheme } from '../../src/hooks/useTheme';
+import { fonts } from '../../src/theme/typography';
+import { useLanguage } from '../../src/context/LanguageContext';
 
-export function AuthScreen() {
-  const nav = useRouter();
+export default function AuthScreen() {
+  const router = useRouter();
   const { colors } = useTheme();
   const { t } = useLanguage();
   const {
@@ -79,7 +79,7 @@ export function AuthScreen() {
         </TouchableOpacity>
 
         {isLogin && (
-          <TouchableOpacity onPress={() => nav.push('/(auth)/forgot-password')}>
+          <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
             <Text style={[styles.link, { color: colors.primary }]}>{t('auth.forgotPassword')}</Text>
           </TouchableOpacity>
         )}

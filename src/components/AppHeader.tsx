@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { useRouter, useNavigation } from 'expo-router';
+import { DrawerActions } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { UserAvatar } from './UserAvatar';
 import { useAuth } from '../context/AuthContext';
 
 export function AppHeader() {
   const navigation = useNavigation();
+  const router = useRouter();
   const { colors } = useTheme();
   const { user } = useAuth();
 
@@ -16,7 +18,7 @@ export function AppHeader() {
       <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
         <Ionicons name="menu-outline" size={26} color={colors.text} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => (navigation as any).navigate('ProfileStack')}>
+      <TouchableOpacity onPress={() => router.push('/(main)/(profile)')}>
         <UserAvatar uri={user?.avatar || null} size={32} />
       </TouchableOpacity>
     </View>

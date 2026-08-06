@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, FlatList, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -23,7 +23,7 @@ interface ProfileBooksTabProps {
 export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation<any>();
+  const navigation = useRouter();
   const { sections, loading, loadMore, refresh } = useProfileBooks(username, isOwn);
   const [showHint, setShowHint] = useState(false);
   const hintOpacity = useRef(new Animated.Value(0)).current;
@@ -88,7 +88,7 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
             renderItem={({ item: book }) => (
               <TouchableOpacity
                 style={styles.card}
-                onPress={() => navigation.navigate('BookDetail', { bookId: book.bookId })}
+                onPress={() => navigation.push(`/(main)/book/${book.bookId}`)}
                 onLongPress={isOwn ? () => open({ id: book.id, title: book.title, status: book.status }) : undefined}
                 delayLongPress={400}
               >

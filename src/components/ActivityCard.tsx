@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { Activity } from '../types/domain';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -39,12 +39,12 @@ function getTimeAgo(dateStr: string): string {
 export function ActivityCard({ activity }: ActivityCardProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation<any>();
+  const navigation = useRouter();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
       {/* Avatar - navigates to profile */}
-      <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { username: activity.user.username })}>
+      <TouchableOpacity onPress={() => navigation.push(`/(main)/user/${activity.user.username}`)}>
         <UserAvatar uri={activity.user.avatar} size={40} />
       </TouchableOpacity>
 
@@ -54,16 +54,16 @@ export function ActivityCard({ activity }: ActivityCardProps) {
         activeOpacity={0.7}
         onPress={() => {
           if (activity.type === 'STARTED_DISCUSSION' && activity.metadata?.discussionId) {
-            navigation.navigate('DiscussionDetail', { discussionId: activity.metadata.discussionId });
+            navigation.push(`/(main)/discussion/${activity.metadata.discussionId}`);
           } else {
-            navigation.navigate('BookDetail', { bookId: activity.bookId });
+            navigation.push(`/(main)/book/${activity.bookId}`);
           }
         }}
       >
         <Text style={[styles.text, { color: colors.text }]}>
           <Text
             style={styles.username}
-            onPress={() => navigation.navigate('UserProfile', { username: activity.user.username })}
+            onPress={() => navigation.push(`/(main)/user/${activity.user.username}`)}
           >
             {activity.user.username}
           </Text>
@@ -91,9 +91,9 @@ export function ActivityCard({ activity }: ActivityCardProps) {
         <TouchableOpacity
           onPress={() => {
             if (activity.type === 'STARTED_DISCUSSION' && activity.metadata?.discussionId) {
-              navigation.navigate('DiscussionDetail', { discussionId: activity.metadata.discussionId });
+              navigation.push(`/(main)/discussion/${activity.metadata.discussionId}`);
             } else {
-              navigation.navigate('BookDetail', { bookId: activity.bookId });
+              navigation.push(`/(main)/book/${activity.bookId}`);
             }
           }}
           style={[styles.coverWrap, { backgroundColor: colors.border }]}

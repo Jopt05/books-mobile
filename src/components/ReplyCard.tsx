@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { fonts } from '../theme/typography';
@@ -26,7 +26,7 @@ function formatDate(dateStr: string): string {
 export function ReplyCard({ reply, isOwn, onLike, onDelete }: Props) {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation();
+  const navigation = useRouter();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
@@ -36,7 +36,7 @@ export function ReplyCard({ reply, isOwn, onLike, onDelete }: Props) {
         <View style={styles.authorRow}>
           <TouchableOpacity
             style={[styles.avatar, { backgroundColor: colors.primary }]}
-            onPress={() => (navigation as any).push('UserProfile', { username: reply.user.username })}
+            onPress={() => navigation.push(`/(main)/user/${reply.user.username}`)}
           >
             {reply.user.avatar ? (
               <Image source={{ uri: reply.user.avatar }} style={styles.avatarImg} />
@@ -67,7 +67,7 @@ export function ReplyCard({ reply, isOwn, onLike, onDelete }: Props) {
       {reply.bookCover && reply.bookTitle ? (
         <TouchableOpacity
           style={[styles.bookRow, { backgroundColor: colors.background }]}
-          onPress={() => (navigation as any).push('BookDetail', { bookId: reply.bookId })}
+          onPress={() => navigation.push(`/(main)/book/${reply.bookId}`)}
         >
           <Image source={{ uri: reply.bookCover }} style={styles.bookCover} />
           <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>

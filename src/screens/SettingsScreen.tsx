@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
 import { useTheme } from '../hooks/useTheme';
@@ -16,7 +16,7 @@ import { deactivateAccount } from '../api/users';
 import type { ImportSource } from '../api/importBooks';
 
 export function SettingsScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { source, setSource, result, loading, error, importFile, reset } = useImport();
@@ -61,7 +61,7 @@ export function SettingsScreen() {
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color={colors.textSecondary} />
         </TouchableOpacity>
         <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>

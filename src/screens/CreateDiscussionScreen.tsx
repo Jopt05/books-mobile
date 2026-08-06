@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { createDiscussion } from '../api/discussions';
@@ -18,7 +18,7 @@ import type { Book } from '../types/book';
 export function CreateDiscussionScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -76,7 +76,7 @@ export function CreateDiscussionScreen() {
         bookTitle: selectedBook?.title,
         bookCover: selectedBook?.coverUrl,
       });
-      (navigation as any).replace('DiscussionDetail', { discussionId: res.id });
+      router.replace(`/(main)/discussion/${res.id}`);
     } catch {
       setErrors({ title: t('discussions.errorCreate') });
     } finally {
@@ -88,7 +88,7 @@ export function CreateDiscussionScreen() {
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       {/* Top bar */}
       <View style={[styles.topBar, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
           <Text style={[styles.backText, { color: colors.textSecondary }]}>{t('discussions.back')}</Text>
         </TouchableOpacity>

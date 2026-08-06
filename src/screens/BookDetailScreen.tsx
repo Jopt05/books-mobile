@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, Image, ScrollView, TextInput, TouchableOpacity, StyleSheet, useWindowDimensions, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import RenderHtml from 'react-native-render-html';
-import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -19,14 +19,10 @@ import { EditableDate } from '../components/EditableDate';
 import { Loader } from '../components/Loader';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { BookStatus } from '../types/domain';
-import { HomeStackParamList } from '../navigation/MainTabs';
-
-type RouteParams = RouteProp<HomeStackParamList, 'BookDetail'>;
 
 export function BookDetailScreen() {
-  const route = useRoute<RouteParams>();
-  const navigation = useNavigation();
-  const { bookId } = route.params;
+  const { bookId } = useLocalSearchParams<{ bookId: string }>();
+  const router = useRouter();
   const { colors } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
   const { t } = useLanguage();
@@ -89,7 +85,7 @@ export function BookDetailScreen() {
         }
       >
         {/* Back button */}
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
           <Text style={[styles.backText, { color: colors.textSecondary }]}>Atrás</Text>
         </TouchableOpacity>

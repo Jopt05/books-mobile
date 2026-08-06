@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../hooks/useTheme';
@@ -18,15 +18,15 @@ import { SwipeTabs, SwipeTab } from '../components/SwipeTabs';
 import { ProfileBooksTab } from '../components/ProfileBooksTab';
 import { ProfileReviewsTab } from '../components/ProfileReviewsTab';
 
-type RouteParams = RouteProp<{ UserProfile: { username: string } }, 'UserProfile'>;
+type RouteParams = { username?: string };
 
 export function UserProfileScreen() {
-  const route = useRoute<RouteParams>();
-  const navigation = useNavigation<any>();
-  const { username } = route.params;
+  const params = useLocalSearchParams<RouteParams>();
+  const router = useRouter();
+  const { user } = useAuth();
+  const username = params.username || user?.username || '';
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const { user } = useAuth();
 
   const {
     profile,
@@ -96,7 +96,7 @@ export function UserProfileScreen() {
         >
           {/* Back button (non-owner only) */}
           {!isOwner && (
-            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+            <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
               <Text style={[styles.backText, { color: colors.textSecondary }]}>Atrás</Text>
             </TouchableOpacity>
@@ -124,13 +124,13 @@ export function UserProfileScreen() {
 
               {/* Counters */}
               <View style={styles.counters}>
-                <TouchableOpacity onPress={() => navigation.navigate('Network', { username })}>
+                <TouchableOpacity onPress={() => router.push(`/(main)/network/${username}`)}>
                   <Text style={[styles.counter, { color: colors.text }]}>
                     <Text style={styles.counterBold}>{stats?.followersCount || 0}</Text> {t('profile.followers')}
                   </Text>
                 </TouchableOpacity>
                 <Text style={[styles.dot, { color: colors.textSecondary }]}>·</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Network', { username })}>
+                <TouchableOpacity onPress={() => router.push(`/(main)/network/${username}`)}>
                   <Text style={[styles.counter, { color: colors.text }]}>
                     <Text style={styles.counterBold}>{stats?.followingCount || 0}</Text> {t('profile.following')}
                   </Text>
@@ -153,7 +153,7 @@ export function UserProfileScreen() {
           </FadeIn>
 
           {/* Bio */}
-          <FadeIn delay={150} direction="up">
+          <FadeIn delay={150} direction="up" style={{ width: '100%' }}>
             <View style={styles.bioSection}>
             <View style={styles.bioHeader}>
               <Text style={[styles.bioTitle, { color: colors.text }]}>{t('profile.bio')}</Text>

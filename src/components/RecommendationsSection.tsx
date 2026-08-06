@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useRecommendations } from '../hooks/useRecommendations';
@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 export function RecommendationsSection() {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation<any>();
+  const navigation = useRouter();
   const { social, trending, loading, refresh } = useRecommendations();
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export function RecommendationsSection() {
               <TouchableOpacity
                 style={styles.card}
                 activeOpacity={0.7}
-                onPress={() => navigation.navigate('BookDetail', { bookId: item.bookId })}
+                onPress={() => navigation.push(`/(main)/book/${item.bookId}`)}
               >
                 {renderCover(item.coverUrl)}
                 <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>
@@ -85,7 +85,7 @@ export function RecommendationsSection() {
               <TouchableOpacity
                 style={styles.card}
                 activeOpacity={0.7}
-                onPress={() => navigation.navigate('BookDetail', { bookId: item.bookId })}
+                onPress={() => navigation.push(`/(main)/book/${item.bookId}`)}
               >
                 <View>
                   {renderCover(item.coverUrl)}

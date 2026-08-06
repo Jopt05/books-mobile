@@ -3,36 +3,40 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Linking } from 'react-
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter, useSegments } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { ConfirmModal } from './ConfirmModal';
 
-const NAV_ITEMS: { icon: keyof typeof Ionicons.glyphMap; labelKey: string; route: string }[] = [
-  { icon: 'home-outline', labelKey: 'sidebar.home', route: 'HomeStack' },
-  { icon: 'search-outline', labelKey: 'sidebar.search', route: 'SearchStack' },
-  { icon: 'newspaper-outline', labelKey: 'sidebar.feed', route: 'FeedStack' },
-  { icon: 'chatbubbles-outline', labelKey: 'sidebar.discussions', route: 'DiscussionsStack' },
-  { icon: 'settings-outline', labelKey: 'sidebar.settings', route: 'SettingsStack' },
+const NAV_ITEMS: { icon: keyof typeof Ionicons.glyphMap; labelKey: string; route: string; segment: string }[] = [
+  { icon: 'home-outline', labelKey: 'sidebar.home', route: '/(main)/(home)', segment: '(home)' },
+  { icon: 'search-outline', labelKey: 'sidebar.search', route: '/(main)/(search)', segment: '(search)' },
+  { icon: 'newspaper-outline', labelKey: 'sidebar.feed', route: '/(main)/(feed)', segment: '(feed)' },
+  { icon: 'chatbubbles-outline', labelKey: 'sidebar.discussions', route: '/(main)/(discussions)', segment: '(discussions)' },
+  { icon: 'settings-outline', labelKey: 'sidebar.settings', route: '/(main)/(settings)', segment: '(settings)' },
 ];
 
-export function DrawerContent({ navigation, state }: DrawerContentComponentProps) {
+export function DrawerContent({ navigation }: DrawerContentComponentProps) {
   const { colors, isDark, toggle } = useTheme();
   const { locale, setLocale, t } = useLanguage();
   const { user, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-
-  const activeRoute = state.routes[state.index]?.name;
+  const router = useRouter();
+  const segments = useSegments() as string[];
 
   const insets = useSafeAreaInsets();
+
+  // Determine active segment from current route
+  const activeSegment = segments.length > 1 ? segments[1] : '';
 
   return (
     <SafeAreaView style={[
       styles.container, 
       { 
         backgroundColor: colors.surface, 
-        borderRightColor: colors.border ,
+        borderRightColor: colors.border,
         paddingTop: insets.top,
         paddingBottom: 10
       }
@@ -51,15 +55,18 @@ export function DrawerContent({ navigation, state }: DrawerContentComponentProps
           {t('sidebar.sections')}
         </Text>
         {NAV_ITEMS.map((item) => {
-          const isActive = activeRoute === item.route;
+          const isActive = activeSegment === item.segment;
           return (
             <TouchableOpacity
-              key={item.route}
+              key={item.segment}
               style={[
                 styles.navItem,
                 isActive && { backgroundColor: colors.primary + '1A' },
               ]}
-              onPress={() => navigation.navigate(item.route)}
+              onPress={() => {
+                router.push(item.route as any);
+                navigation.closeDrawer();
+              }}
             >
               <Ionicons
                 name={item.icon}
@@ -199,7 +206,7 @@ const styles = StyleSheet.create({
   langToggle: {
     fontSize: 14,
     fontFamily: fonts.bold
-    },
+  },
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',

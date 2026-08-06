@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useDiscussions } from '../hooks/useDiscussions';
@@ -17,7 +17,7 @@ type SortType = 'recent' | 'popular';
 export function DiscussionsScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation();
+  const router = useRouter();
   const [sort, setSort] = useState<SortType>('recent');
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -41,7 +41,7 @@ export function DiscussionsScreen() {
       <DiscussionCard
         discussion={item}
         onLike={() => toggleLike(item.id)}
-        onPress={() => (navigation as any).push('DiscussionDetail', { discussionId: item.id })}
+        onPress={() => router.push(`/(main)/discussion/${item.id}`)}
       />
     </FadeIn>
   );
@@ -55,7 +55,7 @@ export function DiscussionsScreen() {
         <Text style={[styles.title, { color: colors.text }]}>{t('discussions.title')}</Text>
         <TouchableOpacity
           style={[styles.newBtn, { backgroundColor: colors.primary }]}
-          onPress={() => (navigation as any).push('CreateDiscussion')}
+          onPress={() => router.push('/(main)/(discussions)/create')}
         >
           <Ionicons name="add" size={18} color="#FFFFFF" />
           <Text style={styles.newBtnText}>{t('discussions.new')}</Text>

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useTheme } from '../hooks/useTheme';
-import { fonts } from '../theme/typography';
-import { useLanguage } from '../context/LanguageContext';
-import { forgotPassword } from '../api/auth';
+import { useTheme } from '../../src/hooks/useTheme';
+import { fonts } from '../../src/theme/typography';
+import { useLanguage } from '../../src/context/LanguageContext';
+import { forgotPassword } from '../../src/api/auth';
 
-export function ForgotPasswordScreen() {
-  const nav = useRouter();
+export default function ForgotPasswordScreen() {
+  const router = useRouter();
   const { colors } = useTheme();
   const { t } = useLanguage();
   const [email, setEmail] = useState('');
@@ -61,7 +61,7 @@ export function ForgotPasswordScreen() {
         <Text style={styles.buttonText}>{loading ? t('common.loading') : t('auth.sendReset')}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => nav.back()}>
+      <TouchableOpacity onPress={() => router.back()}>
         <Text style={[styles.link, { color: colors.primary }]}>← {t('auth.login')}</Text>
       </TouchableOpacity>
     </View>
