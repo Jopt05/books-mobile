@@ -44,7 +44,7 @@ export function HomeScreen() {
         </FadeIn>
 
         <FadeIn delay={50} direction="up">
-          <QuickJournalCard key={journalKey} onEntryCreated={() => setStreakKey((k) => k + 1)} />
+          <QuickJournalCard key={journalKey} onEntryCreated={() => { setStreakKey((k) => k + 1); refreshProgress(); }} />
         </FadeIn>
 
         <FadeIn delay={100} direction="up">
