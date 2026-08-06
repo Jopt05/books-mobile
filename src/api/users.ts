@@ -17,3 +17,7 @@ export async function getPublicProfile(username: string): Promise<UserProfile> {
   const { data } = await client.get<UserProfile>(`/users/public/${username}`);
   return data;
 }
+
+export async function deactivateAccount(): Promise<void> {
+  await client.post('/users/deactivate');
+}

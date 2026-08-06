@@ -7,9 +7,12 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { useImport } from '../hooks/useImport';
 import { FadeIn } from '../components/FadeIn';
 import { Loader } from '../components/Loader';
+import { ConfirmModal } from '../components/ConfirmModal';
+import { deactivateAccount } from '../api/users';
 import type { ImportSource } from '../api/importBooks';
 
 export function SettingsScreen() {
@@ -17,7 +20,10 @@ export function SettingsScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { source, setSource, result, loading, error, importFile, reset } = useImport();
+  const { logout } = useAuth();
   const [fileName, setFileName] = useState<string | null>(null);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
 
   const sources: { key: ImportSource; label: string }[] = [
     { key: 'goodreads', label: 'Goodreads' },
@@ -166,7 +172,42 @@ export function SettingsScreen() {
           )}
         </View>
         </FadeIn>
+
+        {/* Deactivate account */}
+        <FadeIn delay={100} direction="up">
+          <View style={[styles.card, styles.deactivateCard, { backgroundColor: colors.card, borderColor: colors.error + '40' }]}>
+            <Text style={[styles.cardTitle, { color: colors.error }]}>{t('settings.deactivateTitle')}</Text>
+            <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+              {t('settings.deactivateDesc')}
+            </Text>
+            <TouchableOpacity
+              style={[styles.deactivateBtn, { backgroundColor: colors.error + '1A' }]}
+              onPress={() => setShowDeactivateModal(true)}
+            >
+              <Text style={[styles.deactivateBtnText, { color: colors.error }]}>
+                {t('settings.deactivateBtn')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </FadeIn>
       </View>
+
+      <ConfirmModal
+        visible={showDeactivateModal}
+        title={t('settings.deactivateTitle')}
+        message={t('settings.deactivateConfirm')}
+        onConfirm={async () => {
+          setShowDeactivateModal(false);
+          setDeactivating(true);
+          try {
+            await deactivateAccount();
+            logout();
+          } catch {
+            setDeactivating(false);
+          }
+        }}
+        onCancel={() => setShowDeactivateModal(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -199,4 +240,7 @@ const styles = StyleSheet.create({
   detailStatus: { fontSize: 14 },
   resetBtn: { marginTop: 16, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' },
   resetText: { fontSize: 14, fontFamily: fonts.bold },
+  deactivateCard: { marginTop: 16, borderWidth: 1 },
+  deactivateBtn: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' },
+  deactivateBtnText: { fontSize: 14, fontFamily: fonts.bold },
 });
