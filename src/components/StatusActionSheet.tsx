@@ -37,7 +37,7 @@ export function StatusActionSheet({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
+      <TouchableOpacity style={[styles.overlay, { paddingBottom: insets.bottom }]} activeOpacity={1} onPress={onClose}>
         <View style={[styles.sheet, { backgroundColor: colors.card }]}>
           {/* Book title */}
           <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>
