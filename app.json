@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/ios/iTunesArtwork@2x.png",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/ios/iTunesArtwork@2x.png",
       "resizeMode": "contain",
