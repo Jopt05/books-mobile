@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
+import { useTheme } from '../hooks/useTheme';
 
 export function Loader() {
+  const { colors } = useTheme();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Image source={require('../../assets/loader.gif')} style={styles.gif} />
     </View>
   );
