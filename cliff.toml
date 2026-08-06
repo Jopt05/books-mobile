@@ -1,0 +1,40 @@
+[changelog]
+header = """
+# Changelog
+
+Todos los cambios notables de este proyecto se documentan en este archivo.
+
+"""
+body = """
+{% if version %}\
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+    ## [Sin release]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | upper_first }}
+    {% for commit in commits %}
+        - {{ commit.message | upper_first }}\
+    {% endfor %}
+{% endfor %}\n
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+split_commits = false
+commit_parsers = [
+    { message = "^feat", group = "✨ Nuevas funcionalidades" },
+    { message = "^fix", group = "🐛 Correcciones" },
+    { message = "^refactor", group = "♻️ Refactorización" },
+    { message = "^style", group = "🎨 Estilos" },
+    { message = "^perf", group = "⚡ Rendimiento" },
+    { message = "^docs", group = "📝 Documentación" },
+    { message = "^test", group = "🧪 Tests" },
+    { message = "^chore", group = "🔧 Mantenimiento" },
+    { message = "^ci", group = "👷 CI/CD" },
+    { message = "^build", group = "📦 Build" },
+]
+filter_commits = false
+tag_pattern = "v[0-9].*"

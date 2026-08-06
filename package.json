@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "test": "jest",
     "lint": "eslint .",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "tsc --noEmit",
+    "changelog": "npx git-cliff -o CHANGELOG.md"
   },
   "dependencies": {
     "@expo-google-fonts/roboto-condensed": "^0.4.2",
