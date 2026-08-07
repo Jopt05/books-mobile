@@ -9,8 +9,8 @@ import { useLanguage } from '../../src/context/LanguageContext';
 
 export default function AuthScreen() {
   const router = useRouter();
-  const { colors } = useTheme();
-  const { t } = useLanguage();
+  const { isDark, colors, toggle: toggleTheme } = useTheme();
+  const { locale, setLocale, t } = useLanguage();
   const {
     isLogin, email, setEmail, username, setUsername, password, setPassword,
     showPassword, togglePassword, errors, generalError, loading, handleSubmit, toggleMode
@@ -18,6 +18,12 @@ export default function AuthScreen() {
 
   return (
     <KeyboardAvoidingView style={[styles.flex, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <TouchableOpacity style={styles.themeBtn} onPress={toggleTheme}>
+        <Ionicons name={isDark ? 'sunny-outline' : 'moon-outline'} size={22} color={colors.text} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.langBtn} onPress={() => setLocale(locale === 'es' ? 'en' : 'es')}>
+        <Text style={[styles.langText, { color: colors.text }]}>{locale === 'es' ? 'EN' : 'ES'}</Text>
+      </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={[styles.title, { color: colors.text }]}>{t('app.name')}</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
@@ -106,5 +112,8 @@ const styles = StyleSheet.create({
   generalError: { fontSize: 14, textAlign: 'center', marginBottom: 12 },
   submitBtn: { padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 8 },
   submitText: { color: '#FFFFFF', fontSize: 16, fontFamily: fonts.bold },
-  link: { fontSize: 14, textAlign: 'center', marginTop: 16 }
+  link: { fontSize: 14, textAlign: 'center', marginTop: 16 },
+  themeBtn: { position: 'absolute', top: 52, right: 20, zIndex: 10, padding: 8 },
+  langBtn: { position: 'absolute', top: 52, right: 60, zIndex: 10, padding: 8 },
+  langText: { fontSize: 15, fontFamily: fonts.bold }
 });

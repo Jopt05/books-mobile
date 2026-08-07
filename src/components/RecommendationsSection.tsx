@@ -19,17 +19,20 @@ export function RecommendationsSection() {
 
   if (loading || (social.length === 0 && trending.length === 0)) return null;
 
-  const renderCover = (coverUrl: string | null) => (
-    <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
-      {coverUrl ? (
-        <Image source={{ uri: coverUrl }} style={styles.cover} />
-      ) : (
-        <View style={styles.coverPlaceholder}>
-          <Ionicons name="book-outline" size={24} color={colors.textSecondary} />
-        </View>
-      )}
-    </View>
-  );
+  const renderCover = (coverUrl: string | null) => {
+    const secureUrl = coverUrl?.replace('http://', 'https://') || null;
+    return (
+      <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
+        {secureUrl ? (
+          <Image source={{ uri: secureUrl }} style={styles.cover} />
+        ) : (
+          <View style={styles.coverPlaceholder}>
+            <Ionicons name="book-outline" size={24} color={colors.textSecondary} />
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
