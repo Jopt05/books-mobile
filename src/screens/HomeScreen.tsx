@@ -20,6 +20,7 @@ export function HomeScreen() {
   const { progress, refresh: refreshProgress } = useReadingProgress();
   const [streakKey, setStreakKey] = useState(0);
   const [journalKey, setJournalKey] = useState(0);
+  const [recsKey, setRecsKey] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -27,6 +28,7 @@ export function HomeScreen() {
     await refreshProgress();
     setStreakKey((k) => k + 1);
     setJournalKey((k) => k + 1);
+    setRecsKey((k) => k + 1);
     setRefreshing(false);
   }, [refreshProgress]);
 
@@ -62,7 +64,7 @@ export function HomeScreen() {
         </FadeIn>
 
         <FadeIn delay={250} direction="up">
-          <RecommendationsSection />
+          <RecommendationsSection key={recsKey} />
         </FadeIn>
 
         <FadeIn delay={300} direction="up">
