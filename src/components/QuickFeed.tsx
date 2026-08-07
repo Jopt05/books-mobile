@@ -7,12 +7,13 @@ import { useQuickFeed } from '../hooks/useQuickFeed';
 import { ActivityCard } from './ActivityCard';
 import { Loader } from './Loader';
 import { fonts } from '../theme/typography';
+import { useRouter } from 'expo-router';
 
 export function QuickFeed() {
   const { activities, loading, refresh } = useQuickFeed();
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const navigation = useNavigation<any>();
+  const navigation = useRouter();
 
   useEffect(() => {
     refresh();
@@ -29,7 +30,7 @@ export function QuickFeed() {
       ))}
       <TouchableOpacity
         style={[styles.button, { backgroundColor: colors.primary }]}
-        onPress={() => navigation.navigate('FeedStack')}
+        onPress={() => navigation.push('/(main)/(feed)/')}
       >
         <Text style={styles.buttonText}>{t('home.goToFeed')}</Text>
       </TouchableOpacity>
