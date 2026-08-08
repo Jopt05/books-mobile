@@ -21,6 +21,7 @@ export default function MainLayout() {
       <Drawer.Screen name="(home)" options={{ drawerLabel: 'Home' }} />
       <Drawer.Screen name="(search)" options={{ drawerLabel: 'Search' }} />
       <Drawer.Screen name="(feed)" options={{ drawerLabel: 'Feed' }} />
+      <Drawer.Screen name="(recommendations)" options={{ drawerLabel: 'Recommendations' }} />
       <Drawer.Screen name="(discussions)" options={{ drawerLabel: 'Discussions' }} />
       <Drawer.Screen name="(settings)" options={{ drawerLabel: 'Settings' }} />
       <Drawer.Screen name="(profile)" options={{ drawerLabel: 'Profile' }} />

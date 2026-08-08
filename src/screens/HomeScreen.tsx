@@ -10,7 +10,6 @@ import { QuickJournalCard } from '../components/QuickJournalCard';
 import { StreakBanner } from '../components/StreakBanner';
 import { ReadingStats } from '../components/ReadingStats';
 import { QuickFeed } from '../components/QuickFeed';
-import { RecommendationsSection } from '../components/RecommendationsSection';
 import { AppHeader } from '../components/AppHeader';
 import { FadeIn } from '../components/FadeIn';
 
@@ -20,7 +19,6 @@ export function HomeScreen() {
   const { progress, refresh: refreshProgress } = useReadingProgress();
   const [streakKey, setStreakKey] = useState(0);
   const [journalKey, setJournalKey] = useState(0);
-  const [recsKey, setRecsKey] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -28,7 +26,6 @@ export function HomeScreen() {
     await refreshProgress();
     setStreakKey((k) => k + 1);
     setJournalKey((k) => k + 1);
-    setRecsKey((k) => k + 1);
     setRefreshing(false);
   }, [refreshProgress]);
 
@@ -64,10 +61,6 @@ export function HomeScreen() {
         </FadeIn>
 
         <FadeIn delay={250} direction="up">
-          <RecommendationsSection key={recsKey} />
-        </FadeIn>
-
-        <FadeIn delay={300} direction="up">
           <QuickFeed />
         </FadeIn>
       </ScrollView>

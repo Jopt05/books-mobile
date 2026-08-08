@@ -11,11 +11,11 @@ export function useRecommendations() {
     setLoading(true);
     try {
       const [socialRes, trendingRes] = await Promise.all([
-        getSocialRecommendations(),
-        getTrendingBooks(),
+        getSocialRecommendations(1, 10),
+        getTrendingBooks(1, 10),
       ]);
-      setSocial(socialRes.data);
-      setTrending(trendingRes.data);
+      setSocial(socialRes.data.data);
+      setTrending(trendingRes.data.data);
     } catch {
       // silent
     } finally {

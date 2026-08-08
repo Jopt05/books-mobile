@@ -14,6 +14,7 @@ const NAV_ITEMS: { icon: keyof typeof Ionicons.glyphMap; labelKey: string; route
   { icon: 'home-outline', labelKey: 'sidebar.home', route: '/(main)/(home)', segment: '(home)' },
   { icon: 'search-outline', labelKey: 'sidebar.search', route: '/(main)/(search)', segment: '(search)' },
   { icon: 'newspaper-outline', labelKey: 'sidebar.feed', route: '/(main)/(feed)', segment: '(feed)' },
+  { icon: 'bulb-outline', labelKey: 'sidebar.recommendations', route: '/(main)/(recommendations)', segment: '(recommendations)' },
   { icon: 'chatbubbles-outline', labelKey: 'sidebar.discussions', route: '/(main)/(discussions)', segment: '(discussions)' },
   { icon: 'settings-outline', labelKey: 'sidebar.settings', route: '/(main)/(settings)', segment: '(settings)' },
 ];
