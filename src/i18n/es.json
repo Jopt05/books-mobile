@@ -178,5 +178,22 @@
   "discussions.submit": "Crear discusión",
   "discussions.creating": "Creando...",
   "discussions.errorTitleRequired": "El título es obligatorio",
-  "discussions.errorCreate": "No se pudo crear la discusión"
+  "discussions.errorCreate": "No se pudo crear la discusión",
+  "report.title": "Reportar un problema",
+  "report.description": "¿Encontraste un error, tienes una sugerencia o ves contenido incorrecto? Cuéntanos.",
+  "report.button": "Enviar reporte",
+  "report.modalTitle": "Reportar un problema",
+  "report.typeLabel": "Tipo",
+  "report.typeBug": "Error",
+  "report.typeSuggestion": "Sugerencia",
+  "report.typeWrongContent": "Contenido incorrecto",
+  "report.typeOther": "Otro",
+  "report.descriptionLabel": "Descripción",
+  "report.descriptionPlaceholder": "Describe el problema o sugerencia...",
+  "report.submit": "Enviar",
+  "report.successTitle": "Reporte enviado",
+  "report.successMessage": "¡Gracias por tu feedback! Lo revisaremos pronto.",
+  "report.errorDescriptionRequired": "Describe el problema",
+  "report.errorDescriptionMax": "La descripción es muy larga (máx. 2000 caracteres)",
+  "report.errorFailed": "No se pudo enviar el reporte. Intenta de nuevo."
 }

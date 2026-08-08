@@ -178,5 +178,22 @@
   "discussions.submit": "Create discussion",
   "discussions.creating": "Creating...",
   "discussions.errorTitleRequired": "Title is required",
-  "discussions.errorCreate": "Could not create discussion"
+  "discussions.errorCreate": "Could not create discussion",
+  "report.title": "Report a problem",
+  "report.description": "Found a bug, have a suggestion, or see incorrect content? Let us know.",
+  "report.button": "Send report",
+  "report.modalTitle": "Report a problem",
+  "report.typeLabel": "Type",
+  "report.typeBug": "Bug",
+  "report.typeSuggestion": "Suggestion",
+  "report.typeWrongContent": "Incorrect content",
+  "report.typeOther": "Other",
+  "report.descriptionLabel": "Description",
+  "report.descriptionPlaceholder": "Describe the issue or suggestion...",
+  "report.submit": "Send",
+  "report.successTitle": "Report sent",
+  "report.successMessage": "Thanks for your feedback! We'll review it soon.",
+  "report.errorDescriptionRequired": "Please describe the issue",
+  "report.errorDescriptionMax": "Description is too long (max 2000 characters)",
+  "report.errorFailed": "Could not send the report. Please try again."
 }

@@ -12,6 +12,7 @@ import { useImport } from '../hooks/useImport';
 import { FadeIn } from '../components/FadeIn';
 import { Loader } from '../components/Loader';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { ReportModal } from '../components/ReportModal';
 import { deactivateAccount } from '../api/users';
 import type { ImportSource } from '../api/importBooks';
 
@@ -24,6 +25,7 @@ export function SettingsScreen() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const sources: { key: ImportSource; label: string }[] = [
     { key: 'goodreads', label: 'Goodreads' },
@@ -173,6 +175,27 @@ export function SettingsScreen() {
         </View>
         </FadeIn>
 
+        {/* Report a problem */}
+        <FadeIn delay={50} direction="up">
+          <View style={[styles.card, styles.reportCard, { backgroundColor: colors.card }]}>
+            <View style={styles.reportRow}>
+              <Ionicons name="bug-outline" size={22} color={colors.primary} style={{ marginTop: 2 }} />
+              <View style={styles.reportContent}>
+                <Text style={[styles.cardTitle, { color: colors.text }]}>{t('report.title')}</Text>
+                <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>{t('report.description')}</Text>
+                <TouchableOpacity
+                  style={[styles.reportBtn, { backgroundColor: colors.border }]}
+                  onPress={() => setShowReportModal(true)}
+                >
+                  <Text style={[styles.reportBtnText, { color: colors.textSecondary }]}>{t('report.button')}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </FadeIn>
+
+        <ReportModal visible={showReportModal} onClose={() => setShowReportModal(false)} />
+
         {/* Deactivate account */}
         <FadeIn delay={100} direction="up">
           <View style={[styles.card, styles.deactivateCard, { backgroundColor: colors.card, borderColor: colors.error + '40' }]}>
@@ -243,4 +266,9 @@ const styles = StyleSheet.create({
   deactivateCard: { marginTop: 16, borderWidth: 1 },
   deactivateBtn: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start' },
   deactivateBtnText: { fontSize: 14, fontFamily: fonts.bold },
+  reportCard: { marginTop: 16 },
+  reportRow: { flexDirection: 'row', gap: 12 },
+  reportContent: { flex: 1 },
+  reportBtn: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, alignSelf: 'flex-start', marginTop: 4 },
+  reportBtnText: { fontSize: 14, fontFamily: fonts.bold },
 });
