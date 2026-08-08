@@ -12,8 +12,10 @@ interface UseSearchBooksReturn {
   error: string;
   searched: boolean;
   hasMore: boolean;
-  search: (query: string) => void;
+  category: string | undefined;
+  search: (query: string, cat?: string) => void;
   loadMore: () => void;
+  selectCategory: (cat: string | undefined) => void;
 }
 
 export function useSearchBooks(): UseSearchBooksReturn {
@@ -22,21 +24,24 @@ export function useSearchBooks(): UseSearchBooksReturn {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
+  const [category, setCategory] = useState<string | undefined>(undefined);
 
   const queryRef = useRef('');
+  const categoryRef = useRef<string | undefined>(undefined);
   const startIndexRef = useRef(0);
   const hasMoreRef = useRef(false);
   const totalRef = useRef(0);
 
-  const search = useCallback(async (query: string) => {
+  const search = useCallback(async (query: string, cat?: string) => {
     if (!query.trim()) return;
     queryRef.current = query.trim();
+    categoryRef.current = cat;
     startIndexRef.current = 0;
     setLoading(true);
     setError('');
     setSearched(true);
     try {
-      const response = await searchBooks(queryRef.current, PAGE_SIZE, 0);
+      const response = await searchBooks(queryRef.current, PAGE_SIZE, 0, cat);
       const items = (response.items || []).map(mapBookVolume);
       totalRef.current = response.totalItems || 0;
       startIndexRef.current = items.length;
@@ -54,7 +59,7 @@ export function useSearchBooks(): UseSearchBooksReturn {
     if (!hasMoreRef.current || loadingMore) return;
     setLoadingMore(true);
     try {
-      const response = await searchBooks(queryRef.current, PAGE_SIZE, startIndexRef.current);
+      const response = await searchBooks(queryRef.current, PAGE_SIZE, startIndexRef.current, categoryRef.current);
       const items = (response.items || []).map(mapBookVolume);
       if (items.length === 0) {
         hasMoreRef.current = false;
@@ -70,7 +75,14 @@ export function useSearchBooks(): UseSearchBooksReturn {
     }
   }, [loadingMore]);
 
+  const selectCategory = useCallback((cat: string | undefined) => {
+    setCategory(cat);
+    if (queryRef.current) {
+      search(queryRef.current, cat);
+    }
+  }, [search]);
+
   const hasMore = hasMoreRef.current;
 
-  return { books, loading, loadingMore, error, searched, hasMore, search, loadMore };
+  return { books, loading, loadingMore, error, searched, hasMore, category, search, loadMore, selectCategory };
 }

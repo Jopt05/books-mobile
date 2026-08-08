@@ -4,10 +4,11 @@ import { BookVolume, BooksResponse } from '../types/book';
 export async function searchBooks(
   query: string,
   maxResults: number = 20,
-  startIndex: number = 0
+  startIndex: number = 0,
+  category?: string,
 ): Promise<BooksResponse> {
   const { data } = await client.get<BooksResponse>('/books/search', {
-    params: { q: query, maxResults, startIndex },
+    params: { q: query, maxResults, startIndex, ...(category && { category }) },
   });
   return data;
 }
