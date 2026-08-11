@@ -3,11 +3,13 @@ import {
   getSocialRecommendations,
   getTrendingBooks,
   getFavoriteAuthors,
+  getCategoryRecommendations,
 } from '../api/recommendations';
 import type {
   SocialRecommendation,
   TrendingBook,
   FavoriteAuthorGroup,
+  CategoryGroup,
 } from '../api/recommendations';
 
 function usePaginatedList<T>(
@@ -56,6 +58,7 @@ export function useRecommendationsPage() {
   const social = usePaginatedList<SocialRecommendation>(getSocialRecommendations, 10);
   const trending = usePaginatedList<TrendingBook>(getTrendingBooks, 10);
   const authors = usePaginatedList<FavoriteAuthorGroup>(getFavoriteAuthors, 3);
+  const categories = usePaginatedList<CategoryGroup>(getCategoryRecommendations, 3);
 
-  return { social, trending, authors };
+  return { social, trending, authors, categories };
 }

@@ -27,6 +27,17 @@ export interface FavoriteAuthorGroup {
   }[];
 }
 
+export interface CategoryGroup {
+  category: string;
+  booksRead: number;
+  books: {
+    bookId: string;
+    title: string;
+    authors: string[];
+    coverUrl: string | null;
+  }[];
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   page: number;
@@ -46,5 +57,10 @@ export const getTrendingBooks = (page = 1, limit = 10) =>
 
 export const getFavoriteAuthors = (page = 1, limit = 3) =>
   client.get<PaginatedResponse<FavoriteAuthorGroup>>('/recommendations/favorite-authors', {
+    params: { page, limit },
+  });
+
+export const getCategoryRecommendations = (page = 1, limit = 3) =>
+  client.get<PaginatedResponse<CategoryGroup>>('/recommendations/by-categories', {
     params: { page, limit },
   });

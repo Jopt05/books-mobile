@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useEffect, useCallback, useState } from 'react';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
@@ -51,12 +51,26 @@ function BookCard({
 export function RecommendationsScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const { social, trending, authors } = useRecommendationsPage();
+  const { social, trending, authors, categories } = useRecommendationsPage();
 
   useEffect(() => {
     social.refresh();
     trending.refresh();
     authors.refresh();
+    categories.refresh();
+  }, []);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([
+      social.refresh(),
+      trending.refresh(),
+      authors.refresh(),
+      categories.refresh(),
+    ]);
+    setRefreshing(false);
   }, []);
 
   const renderFooter = useCallback((loading: boolean) => {
@@ -71,7 +85,18 @@ export function RecommendationsScreen() {
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       <AppHeader />
-      <ScrollView style={styles.flex} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+      >
         <Text style={[styles.pageTitle, { color: colors.text }]}>
           {t('recommendations.pageTitle')}
         </Text>
@@ -180,6 +205,49 @@ export function RecommendationsScreen() {
           )}
           {authors.loading && <ActivityIndicator color={colors.primary} style={styles.loader} />}
         </View>
+
+        {/* By Categories */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t('recommendations.categoriesTitle')}
+          </Text>
+          {categories.items.length === 0 && !categories.loading && (
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              {t('recommendations.emptyCategories')}
+            </Text>
+          )}
+          {categories.items.map((group) => (
+            <View key={group.category} style={styles.authorGroup}>
+              <Text style={[styles.authorName, { color: colors.text }]}>{group.category}</Text>
+              <Text style={[styles.categoryCount, { color: colors.textSecondary }]}>
+                {t('recommendations.booksReadInCategory').replace('{count}', String(group.booksRead))}
+              </Text>
+              <FlatList
+                horizontal
+                data={group.books}
+                keyExtractor={(item) => item.bookId}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.listContent}
+                renderItem={({ item }) => (
+                  <BookCard
+                    bookId={item.bookId}
+                    title={item.title}
+                    subtitle={item.authors.join(', ')}
+                    coverUrl={item.coverUrl}
+                  />
+                )}
+              />
+            </View>
+          ))}
+          {categories.hasMore && !categories.loading && (
+            <TouchableOpacity onPress={categories.loadMore} style={styles.loadMoreBtn}>
+              <Text style={[styles.loadMoreText, { color: colors.primary }]}>
+                {t('recommendations.loadMoreCategories')}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {categories.loading && <ActivityIndicator color={colors.primary} style={styles.loader} />}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -203,7 +271,8 @@ const styles = StyleSheet.create({
   badge: { position: 'absolute', top: 8, right: 8, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
   badgeText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
   authorGroup: { marginBottom: 16 },
-  authorName: { fontSize: 16, fontFamily: fonts.bold, paddingHorizontal: 16, marginBottom: 8 },
+  authorName: { fontSize: 16, fontFamily: fonts.bold, paddingHorizontal: 16, marginBottom: 4 },
+  categoryCount: { fontSize: 14, paddingHorizontal: 16, marginBottom: 8 },
   loadMoreBtn: { paddingHorizontal: 16, paddingVertical: 8 },
   loadMoreText: { fontSize: 14, fontFamily: fonts.bold },
   loader: { marginTop: 8 },
