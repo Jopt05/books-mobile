@@ -77,20 +77,20 @@ export function DiscussionsScreen() {
       </View>
 
       {/* Sort tabs */}
-      <View style={styles.sortRow}>
+      <View style={[styles.sortRow, { borderBottomColor: colors.border }]}>
         <TouchableOpacity
-          style={[styles.sortBtn, sort === 'recent' && { backgroundColor: colors.primary }]}
+          style={[styles.sortBtn, sort === 'recent' && { borderBottomColor: colors.primary }]}
           onPress={() => setSort('recent')}
         >
-          <Text style={[styles.sortText, { color: sort === 'recent' ? '#FFFFFF' : colors.textSecondary }]}>
+          <Text style={[styles.sortText, { color: sort === 'recent' ? colors.primary : colors.textSecondary }]}>
             {t('discussions.sortRecent')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.sortBtn, sort === 'popular' && { backgroundColor: colors.primary }]}
+          style={[styles.sortBtn, sort === 'popular' && { borderBottomColor: colors.primary }]}
           onPress={() => setSort('popular')}
         >
-          <Text style={[styles.sortText, { color: sort === 'popular' ? '#FFFFFF' : colors.textSecondary }]}>
+          <Text style={[styles.sortText, { color: sort === 'popular' ? colors.primary : colors.textSecondary }]}>
             {t('discussions.sortPopular')}
           </Text>
         </TouchableOpacity>
@@ -173,14 +173,15 @@ const styles = StyleSheet.create({
   },
   sortRow: {
     flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    marginHorizontal: 16,
     marginBottom: 12,
   },
   sortBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
   },
   sortText: {
     fontSize: 14,
