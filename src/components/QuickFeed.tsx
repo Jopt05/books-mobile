@@ -10,7 +10,7 @@ import { fonts } from '../theme/typography';
 import { useRouter } from 'expo-router';
 
 export function QuickFeed() {
-  const { activities, loading, refresh } = useQuickFeed();
+  const { activities, loading, isGlobal, refresh } = useQuickFeed();
   const { colors } = useTheme();
   const { t } = useLanguage();
   const navigation = useRouter();
@@ -25,6 +25,9 @@ export function QuickFeed() {
   return (
     <View style={styles.container}>
       <Text style={[styles.title, { color: colors.text }]}>{t('home.quickFeed')}</Text>
+      {isGlobal && (
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{t('home.quickFeedGlobal')}</Text>
+      )}
       {activities.map((activity) => (
         <ActivityCard key={activity.id} activity={activity} />
       ))}
@@ -40,7 +43,8 @@ export function QuickFeed() {
 
 const styles = StyleSheet.create({
   container: { marginTop: 24, marginBottom: 16 },
-  title: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 12, paddingHorizontal: 16 },
+  title: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 4, paddingHorizontal: 16 },
+  subtitle: { fontSize: 14, fontFamily: fonts.regular, marginBottom: 12, paddingHorizontal: 16 },
   button: { marginHorizontal: 16, marginTop: 12, paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
   buttonText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
 });

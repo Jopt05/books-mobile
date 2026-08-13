@@ -10,16 +10,20 @@ import { QuickJournalCard } from '../components/QuickJournalCard';
 import { StreakBanner } from '../components/StreakBanner';
 import { ReadingStats } from '../components/ReadingStats';
 import { QuickFeed } from '../components/QuickFeed';
+import { EmptyHomeState } from '../components/EmptyHomeState';
 import { AppHeader } from '../components/AppHeader';
 import { FadeIn } from '../components/FadeIn';
 
 export function HomeScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const { progress, refresh: refreshProgress } = useReadingProgress();
+  const { progress, loading, refresh: refreshProgress } = useReadingProgress();
   const [streakKey, setStreakKey] = useState(0);
   const [journalKey, setJournalKey] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+
+  const hasBooks = !loading && progress.length > 0;
+  const showEmpty = !loading && progress.length === 0;
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -42,25 +46,37 @@ export function HomeScreen() {
           <Text style={[styles.title, { color: colors.text }]}>{t('tabs.home')}</Text>
         </FadeIn>
 
-        <FadeIn delay={50} direction="up">
-          <QuickJournalCard key={journalKey} onEntryCreated={() => { setStreakKey((k) => k + 1); refreshProgress(); }} />
-        </FadeIn>
+        {hasBooks && (
+          <FadeIn delay={50} direction="up">
+            <QuickJournalCard key={journalKey} onEntryCreated={() => { setStreakKey((k) => k + 1); refreshProgress(); }} />
+          </FadeIn>
+        )}
 
-        <FadeIn delay={100} direction="up">
-          <StreakBanner key={streakKey} />
-        </FadeIn>
+        {hasBooks && (
+          <FadeIn delay={100} direction="up">
+            <StreakBanner key={streakKey} />
+          </FadeIn>
+        )}
 
-        {progress.length > 0 && (
+        {showEmpty && (
+          <FadeIn delay={50} direction="up">
+            <EmptyHomeState />
+          </FadeIn>
+        )}
+
+        {hasBooks && (
           <FadeIn delay={150} direction="up">
             <CurrentlyReading books={progress} />
           </FadeIn>
         )}
 
-        <FadeIn delay={200} direction="up">
-          <ReadingStats />
-        </FadeIn>
+        {hasBooks && (
+          <FadeIn delay={200} direction="up">
+            <ReadingStats />
+          </FadeIn>
+        )}
 
-        <FadeIn delay={250} direction="up">
+        <FadeIn delay={hasBooks ? 250 : 100} direction="up">
           <QuickFeed />
         </FadeIn>
       </ScrollView>
