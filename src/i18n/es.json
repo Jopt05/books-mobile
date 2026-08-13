@@ -221,5 +221,12 @@
   "report.successMessage": "¡Gracias por tu feedback! Lo revisaremos pronto.",
   "report.errorDescriptionRequired": "Describe el problema",
   "report.errorDescriptionMax": "La descripción es muy larga (máx. 2000 caracteres)",
-  "report.errorFailed": "No se pudo enviar el reporte. Intenta de nuevo."
+  "report.errorFailed": "No se pudo enviar el reporte. Intenta de nuevo.",
+  "errors.searchBooks": "No se pudo realizar la búsqueda",
+  "errors.searchUsers": "No se pudo buscar usuarios",
+  "search.tabBooks": "Libros",
+  "search.tabUsers": "Usuarios",
+  "search.usersPlaceholder": "Buscar usuarios...",
+  "search.usersEmpty": "Busca usuarios para encontrar lectores",
+  "search.usersNoResults": "No se encontraron usuarios"
 }

@@ -1,6 +1,20 @@
 import client from './client';
 import { UserProfile } from '../types/user';
 
+export interface SearchUserResult {
+  id: string;
+  username: string;
+  avatar: string | null;
+  bio: string | null;
+}
+
+export async function searchUsers(query: string): Promise<SearchUserResult[]> {
+  const { data } = await client.get<SearchUserResult[]>('/users/search', {
+    params: { q: query },
+  });
+  return data;
+}
+
 export async function getProfile(): Promise<UserProfile> {
   const { data } = await client.get<UserProfile>('/users/profile');
   return data;

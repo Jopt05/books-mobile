@@ -221,5 +221,12 @@
   "report.successMessage": "Thanks for your feedback! We'll review it soon.",
   "report.errorDescriptionRequired": "Please describe the issue",
   "report.errorDescriptionMax": "Description is too long (max 2000 characters)",
-  "report.errorFailed": "Could not send the report. Please try again."
+  "report.errorFailed": "Could not send the report. Please try again.",
+  "errors.searchBooks": "Could not perform the search",
+  "errors.searchUsers": "Could not search users",
+  "search.tabBooks": "Books",
+  "search.tabUsers": "Users",
+  "search.usersPlaceholder": "Search users...",
+  "search.usersEmpty": "Search users to find readers",
+  "search.usersNoResults": "No users found"
 }

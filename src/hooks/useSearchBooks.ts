@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { Book } from '../types/book';
 import { searchBooks } from '../api/books';
 import { mapBookVolume } from '../utils/mapBook';
+import { useLanguage } from '../context/LanguageContext';
 
 const PAGE_SIZE = 10;
 
@@ -25,6 +26,7 @@ export function useSearchBooks(): UseSearchBooksReturn {
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
   const [category, setCategory] = useState<string | undefined>(undefined);
+  const { t } = useLanguage();
 
   const queryRef = useRef('');
   const categoryRef = useRef<string | undefined>(undefined);
@@ -48,12 +50,12 @@ export function useSearchBooks(): UseSearchBooksReturn {
       hasMoreRef.current = startIndexRef.current < totalRef.current;
       setBooks(items);
     } catch {
-      setError('No se pudo realizar la búsqueda');
+      setError(t('errors.searchBooks'));
       setBooks([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const loadMore = useCallback(async () => {
     if (!hasMoreRef.current || loadingMore) return;
