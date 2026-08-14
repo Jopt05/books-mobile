@@ -6,6 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
 import { useSearchBooks } from '../hooks/useSearchBooks';
 import { useSearchUsers } from '../hooks/useSearchUsers';
+import { useSearchHistory } from '../hooks/useSearchHistory';
 import { SearchBar } from '../components/SearchBar';
 import { BookCard } from '../components/BookCard';
 import { UserSearchCard } from '../components/UserSearchCard';
@@ -36,6 +37,7 @@ export function SearchScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('books');
   const { books, loading, loadingMore, error, searched, hasMore, category, search, loadMore, selectCategory } = useSearchBooks();
   const { users, loading: usersLoading, error: usersError, searched: userSearched, search: searchUsersAction } = useSearchUsers();
+  const { history, addToHistory, removeFromHistory } = useSearchHistory();
 
   const handleScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (activeTab !== 'books') return;
@@ -47,6 +49,7 @@ export function SearchScreen() {
   }, [activeTab, hasMore, loadingMore, loadMore]);
 
   const handleSearch = (query: string) => {
+    addToHistory(query);
     if (activeTab === 'books') {
       search(query, category);
     } else {
@@ -90,7 +93,7 @@ export function SearchScreen() {
           </TouchableOpacity>
         </View>
 
-        <SearchBar onSearch={handleSearch} placeholder={placeholder} />
+        <SearchBar onSearch={handleSearch} placeholder={placeholder} history={history} onRemoveHistory={removeFromHistory} />
 
         {/* Category chips (only for books tab) */}
         {activeTab === 'books' && (

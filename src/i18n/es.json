@@ -25,6 +25,8 @@
   "search.empty": "Busca libros para empezar",
   "search.resultsFound": "resultados encontrados",
   "search.allCategories": "Todas",
+  "search.history": "Búsquedas recientes",
+  "search.historyRemove": "Eliminar",
   "search.category.fiction": "Ficción",
   "search.category.science": "Ciencia",
   "search.category.history": "Historia",

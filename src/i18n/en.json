@@ -25,6 +25,8 @@
   "search.empty": "Search for books to get started",
   "search.resultsFound": "results found",
   "search.allCategories": "All",
+  "search.history": "Recent searches",
+  "search.historyRemove": "Remove",
   "search.category.fiction": "Fiction",
   "search.category.science": "Science",
   "search.category.history": "History",
