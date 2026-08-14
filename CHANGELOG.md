@@ -2,6 +2,19 @@
 
 Todos los cambios notables de este proyecto se documentan en este archivo.
 
+## [1.1.0] - 2026-08-14
+
+### ✨ Nuevas funcionalidades
+
+- Búsqueda de usuarios con componente de UI dedicado
+- Historial de búsquedas con almacenamiento persistente
+- Estado vacío en pantalla de inicio (EmptyHomeState)
+- Mejoras en Quick Feed y su hook
+
+### 🐛 Correcciones
+
+- Ajustes de layout en pantalla de discusiones
+
 ## [Sin release]
 
 ### ♻️ Refactorización
