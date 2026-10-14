@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Activity } from '../types/domain';
+import { Activity, BookStatus } from '../types/domain';
+import { Book } from '../types/book';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
+import { useShelfButton } from '../hooks/useShelfButton';
 import { UserAvatar } from './UserAvatar';
 import { StarRating } from './StarRating';
+import { StatusActionSheet } from './StatusActionSheet';
 import { secureUrl } from '../utils/secureUrl';
 
 interface ActivityCardProps {
@@ -19,6 +23,13 @@ const ACTIVITY_KEYS: Record<string, string> = {
   FINISHED_READING: 'activity.finishedReading',
   REVIEWED: 'activity.reviewed',
   STARTED_DISCUSSION: 'activity.startedDiscussion'
+};
+
+const STATUS_LABEL_KEYS: Record<BookStatus, string> = {
+  WANT_TO_READ: 'shelf.wantToRead',
+  READING: 'shelf.reading',
+  READ: 'shelf.read',
+  DID_NOT_FINISH: 'shelf.didNotFinish',
 };
 
 function getTimeAgo(dateStr: string): string {
@@ -40,66 +51,146 @@ export function ActivityCard({ activity }: ActivityCardProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const navigation = useRouter();
+  const [sheetVisible, setSheetVisible] = useState(false);
+
+  // Seed shelf state from the feed payload so we don't fire one request per card.
+  const shelf = useShelfButton(null, {
+    initialStatus: activity.shelfStatus,
+    bookId: activity.bookId,
+  });
+
+  const isDiscussion = activity.type === 'STARTED_DISCUSSION';
+  const showShelfButton = !isDiscussion && !!activity.bookId;
+  const currentStatus = shelf.userBook?.status ?? null;
+
+  const goToUser = () => navigation.push(`/(main)/user/${activity.user.username}`);
+  const goToTarget = () => {
+    if (isDiscussion && activity.metadata?.discussionId) {
+      navigation.push(`/(main)/discussion/${activity.metadata.discussionId}`);
+    } else {
+      navigation.push(`/(main)/book/${activity.bookId}`);
+    }
+  };
+
+  const handleSelectStatus = async (status: BookStatus) => {
+    setSheetVisible(false);
+    if (currentStatus) {
+      await shelf.updateStatus(status);
+    } else {
+      const book: Book = {
+        id: activity.bookId,
+        title: activity.bookTitle,
+        authors: activity.bookAuthor ? [activity.bookAuthor] : [],
+        coverUrl: activity.bookCover ?? undefined,
+      };
+      await shelf.addToShelf(book, status);
+    }
+  };
+
+  const handleRemove = async () => {
+    setSheetVisible(false);
+    await shelf.remove();
+  };
+
+  const shelfLabel = currentStatus ? t(STATUS_LABEL_KEYS[currentStatus]) : t('shelf.wantToRead');
 
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
-      {/* Avatar - navigates to profile */}
-      <TouchableOpacity onPress={() => navigation.push(`/(main)/user/${activity.user.username}`)}>
-        <UserAvatar uri={activity.user.avatar} size={40} />
-      </TouchableOpacity>
-
-      {/* Content */}
-      <TouchableOpacity
-        style={styles.content}
-        activeOpacity={0.7}
-        onPress={() => {
-          if (activity.type === 'STARTED_DISCUSSION' && activity.metadata?.discussionId) {
-            navigation.push(`/(main)/discussion/${activity.metadata.discussionId}`);
-          } else {
-            navigation.push(`/(main)/book/${activity.bookId}`);
-          }
-        }}
-      >
-        <Text style={[styles.text, { color: colors.text }]}>
-          <Text
-            style={styles.username}
-            onPress={() => navigation.push(`/(main)/user/${activity.user.username}`)}
-          >
-            {activity.user.username}
+      {/* Header: avatar + user + action + time */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={goToUser}>
+          <UserAvatar uri={activity.user.avatar} size={40} />
+        </TouchableOpacity>
+        <View style={styles.headerText}>
+          <Text style={[styles.text, { color: colors.text }]} numberOfLines={1}>
+            <Text style={styles.username} onPress={goToUser}>
+              {activity.user.username}
+            </Text>
+            <Text style={{ color: colors.textSecondary }}>
+              {' '}{t(ACTIVITY_KEYS[activity.type] || activity.type)}
+            </Text>
           </Text>
-          {' '}{t(ACTIVITY_KEYS[activity.type] || activity.type)}{' '}
-          <Text style={[styles.bookTitleText, { color: colors.text }]}>
-            {activity.bookTitle}
+          <Text style={[styles.timeAgo, { color: colors.textSecondary }]}>
+            {getTimeAgo(activity.createdAt)}
           </Text>
-        </Text>
+        </View>
+      </View>
 
-        {/* Rating for reviews */}
-        {activity.type === 'REVIEWED' && activity.metadata?.rating && (
-          <View style={styles.ratingRow}>
-            <StarRating rating={activity.metadata.rating} size={14} />
-          </View>
-        )}
-
-        {/* Time ago */}
-        <Text style={[styles.timeAgo, { color: colors.textSecondary }]}>
-          {getTimeAgo(activity.createdAt)}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Book cover */}
-      {activity.bookCover && (
+      {/* Body: cover + book info + shelf action */}
+      <View style={styles.body}>
         <TouchableOpacity
-          onPress={() => {
-            if (activity.type === 'STARTED_DISCUSSION' && activity.metadata?.discussionId) {
-              navigation.push(`/(main)/discussion/${activity.metadata.discussionId}`);
-            } else {
-              navigation.push(`/(main)/book/${activity.bookId}`);
-            }
-          }}
+          activeOpacity={0.7}
+          onPress={goToTarget}
           style={[styles.coverWrap, { backgroundColor: colors.border }]}
         >
-          <Image source={{ uri: secureUrl(activity.bookCover) }} style={styles.cover} />
+          {activity.bookCover ? (
+            <Image source={{ uri: secureUrl(activity.bookCover) }} style={styles.cover} />
+          ) : (
+            <View style={styles.coverPlaceholder}>
+              <Ionicons name="book-outline" size={28} color={colors.textSecondary} />
+            </View>
+          )}
         </TouchableOpacity>
+
+        <View style={styles.info}>
+          <TouchableOpacity activeOpacity={0.7} onPress={goToTarget}>
+            <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={2}>
+              {activity.bookTitle}
+            </Text>
+          </TouchableOpacity>
+
+          {activity.bookAuthor && (
+            <Text style={[styles.author, { color: colors.textSecondary }]} numberOfLines={1}>
+              {t('activity.by')} {activity.bookAuthor}
+            </Text>
+          )}
+
+          {/* Rating for reviews */}
+          {activity.type === 'REVIEWED' && activity.metadata?.rating && (
+            <View style={styles.ratingRow}>
+              <StarRating rating={activity.metadata.rating} size={14} />
+            </View>
+          )}
+
+          {showShelfButton && (
+            <TouchableOpacity
+              style={[
+                styles.shelfButton,
+                currentStatus
+                  ? { backgroundColor: colors.primary + '20' }
+                  : { backgroundColor: colors.primary },
+              ]}
+              onPress={() => setSheetVisible(true)}
+              disabled={shelf.loading}
+            >
+              <Ionicons
+                name="add"
+                size={16}
+                color={currentStatus ? colors.primary : '#FFFFFF'}
+              />
+              <Text
+                style={[
+                  styles.shelfButtonText,
+                  { color: currentStatus ? colors.primary : '#FFFFFF' },
+                ]}
+                numberOfLines={1}
+              >
+                {shelf.loading ? '...' : shelfLabel}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      {showShelfButton && (
+        <StatusActionSheet
+          visible={sheetVisible}
+          bookTitle={activity.bookTitle}
+          currentStatus={currentStatus}
+          onSelectStatus={handleSelectStatus}
+          onRemove={currentStatus ? handleRemove : undefined}
+          onClose={() => setSheetVisible(false)}
+        />
       )}
     </View>
   );
@@ -107,7 +198,6 @@ export function ActivityCard({ activity }: ActivityCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     padding: 12,
     borderRadius: 12,
     marginHorizontal: 16,
@@ -117,14 +207,54 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 1,
-    gap: 10
   },
-  content: { flex: 1 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  headerText: {
+    flex: 1,
+    minWidth: 0,
+  },
   text: { fontSize: 14, lineHeight: 20 },
   username: { fontFamily: fonts.bold },
-  bookTitleText: { fontFamily: fonts.bold },
-  ratingRow: { marginTop: 4 },
-  timeAgo: { fontSize: 14, marginTop: 4 },
-  coverWrap: { width: 44, height: 64, borderRadius: 6, overflow: 'hidden' },
-  cover: { width: '100%', height: '100%' }
+  timeAgo: { fontSize: 14, marginTop: 2 },
+  body: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  coverWrap: {
+    width: 72,
+    height: 104,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  cover: { width: '100%', height: '100%' },
+  coverPlaceholder: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  info: {
+    flex: 1,
+    minWidth: 0,
+  },
+  bookTitle: { fontSize: 16, fontFamily: fonts.bold, lineHeight: 20 },
+  author: { fontSize: 14, marginTop: 2 },
+  ratingRow: { marginTop: 6 },
+  shelfButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+  shelfButtonText: { fontSize: 14, fontFamily: fonts.bold },
 });

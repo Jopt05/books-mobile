@@ -48,8 +48,11 @@ export interface Activity {
   type: ActivityType;
   bookId: string;
   bookTitle: string;
+  bookAuthor: string | null;
   bookCover: string | null;
   metadata: Record<string, any> | null;
+  /** Current user's shelf status for this book, or null if not on their shelf / anonymous. */
+  shelfStatus: BookStatus | null;
   createdAt: string;
 }
 
