@@ -92,12 +92,11 @@ export function CreateDiscussionScreen() {
           <Ionicons name="arrow-back" size={24} color={colors.text} />
           <Text style={[styles.backText, { color: colors.textSecondary }]}>{t('discussions.back')}</Text>
         </TouchableOpacity>
+        <Text style={[styles.topBarTitle, { color: colors.text }]} numberOfLines={1}>{t('discussions.new')}</Text>
       </View>
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-          <Text style={[styles.pageTitle, { color: colors.text }]}>{t('discussions.new')}</Text>
-
           {/* Title */}
           <Text style={[styles.label, { color: colors.text }]}>{t('discussions.titleLabel')}</Text>
           <TextInput
@@ -233,6 +232,7 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -246,14 +246,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.regular,
   },
+  topBarTitle: {
+    fontSize: 18,
+    fontFamily: fonts.bold,
+    flex: 1,
+  },
   scrollContent: {
     padding: 16,
     paddingBottom: 40,
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontFamily: fonts.bold,
-    marginBottom: 20,
   },
   label: {
     fontSize: 14,

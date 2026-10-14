@@ -97,8 +97,7 @@ export function FeedScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      <AppHeader />
-      <Text style={[styles.title, { color: colors.text }]}>Feed</Text>
+      <AppHeader title={t('tabs.feed')} />
 
       <TabView
         navigationState={{ index, routes }}
@@ -114,7 +113,6 @@ export function FeedScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  title: { fontSize: 28, fontFamily: fonts.bold, paddingHorizontal: 16, marginTop: 8, marginBottom: 4 },
   tabBar: { elevation: 0, shadowOpacity: 0, borderBottomWidth: 0 },
   indicator: { height: 3, borderRadius: 2 },
   tabLabel: { fontSize: 14, fontFamily: fonts.bold, textTransform: 'none' },

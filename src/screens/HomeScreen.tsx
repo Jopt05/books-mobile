@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { Text, ScrollView, StyleSheet, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, StyleSheet, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
-import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useReadingProgress } from '../hooks/useReadingProgress';
 import { CurrentlyReading } from '../components/CurrentlyReading';
@@ -35,17 +34,13 @@ export function HomeScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      <AppHeader />
+      <AppHeader title={t('tabs.home')} />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
       <ScrollView
         style={styles.flex}
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
       >
-        <FadeIn direction="none">
-          <Text style={[styles.title, { color: colors.text }]}>{t('tabs.home')}</Text>
-        </FadeIn>
-
         {hasBooks && (
           <FadeIn delay={50} direction="up">
             <QuickJournalCard key={journalKey} onEntryCreated={() => { setStreakKey((k) => k + 1); refreshProgress(); }} />
@@ -88,5 +83,4 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   scrollContent: { paddingBottom: 24, paddingTop: 24 },
-  title: { fontSize: 28, fontFamily: fonts.bold, paddingHorizontal: 16, marginBottom: 12 },
 });

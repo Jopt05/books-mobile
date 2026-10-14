@@ -48,11 +48,10 @@ export function DiscussionsScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      <AppHeader />
+      <AppHeader title={t('discussions.title')} />
 
       {/* Header */}
       <View style={styles.headerRow}>
-        <Text style={[styles.title, { color: colors.text }]}>{t('discussions.title')}</Text>
         <TouchableOpacity
           style={[styles.newBtn, { backgroundColor: colors.primary }]}
           onPress={() => router.push('/(main)/(discussions)/create')}
@@ -132,14 +131,10 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingHorizontal: 16,
     marginTop: 8,
     marginBottom: 12,
-  },
-  title: {
-    fontSize: 28,
-    fontFamily: fonts.bold,
   },
   newBtn: {
     flexDirection: 'row',
@@ -174,10 +169,11 @@ const styles = StyleSheet.create({
   sortRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    marginHorizontal: 16,
     marginBottom: 12,
   },
   sortBtn: {
+    flex: 1,
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 3,

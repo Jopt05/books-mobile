@@ -64,15 +64,13 @@ export function SearchScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      <AppHeader />
+      <AppHeader title={t('search.title')} />
       <ScrollView
         style={styles.flex}
         contentContainerStyle={styles.scrollContent}
         onScroll={handleScroll}
         scrollEventThrottle={400}
       >
-        <Text style={[styles.title, { color: colors.text }]}>{t('search.title')}</Text>
-
         {/* Tabs */}
         <View style={[styles.tabsContainer, { borderBottomColor: colors.border }]}>
           <TouchableOpacity
@@ -185,15 +183,15 @@ export function SearchScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  scrollContent: { paddingBottom: 24, paddingTop: 24 },
-  title: { fontSize: 28, fontFamily: fonts.bold, paddingHorizontal: 16, marginBottom: 12 },
+  scrollContent: { paddingBottom: 24, paddingTop: 8 },
   tabsContainer: {
     flexDirection: 'row',
-    marginHorizontal: 16,
     marginBottom: 12,
     borderBottomWidth: 1,
   },
   tab: {
+    flex: 1,
+    alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderBottomWidth: 2,

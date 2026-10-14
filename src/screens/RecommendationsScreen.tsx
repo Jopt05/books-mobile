@@ -84,7 +84,7 @@ export function RecommendationsScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      <AppHeader />
+      <AppHeader title={t('recommendations.pageTitle')} />
       <ScrollView
         style={styles.flex}
         contentContainerStyle={styles.scrollContent}
@@ -97,10 +97,6 @@ export function RecommendationsScreen() {
           />
         }
       >
-        <Text style={[styles.pageTitle, { color: colors.text }]}>
-          {t('recommendations.pageTitle')}
-        </Text>
-
         {/* Social */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -256,8 +252,7 @@ export function RecommendationsScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  scrollContent: { paddingBottom: 32 },
-  pageTitle: { fontSize: 28, fontFamily: fonts.bold, paddingHorizontal: 16, marginTop: 16, marginBottom: 24 },
+  scrollContent: { paddingBottom: 32, paddingTop: 16 },
   section: { marginBottom: 28 },
   sectionTitle: { fontSize: 20, fontFamily: fonts.bold, paddingHorizontal: 16, marginBottom: 12 },
   emptyText: { fontSize: 14, paddingHorizontal: 16 },
