@@ -64,8 +64,8 @@ export function useJournal(userBookId: string, pageCount?: number) {
     setExpanded(v => !v);
   }, [expanded, entries.length, loadEntries]);
 
-  const submit = useCallback(async () => {
-    if (!userBookId) return;
+  const submit = useCallback(async (): Promise<boolean> => {
+    if (!userBookId) return false;
     setSaving(true);
     setError('');
     try {
@@ -93,8 +93,10 @@ export function useJournal(userBookId: string, pageCount?: number) {
       setEntryCount(prev => (prev ?? 0) + 1);
       setContent('');
       setProgressValue('');
+      return true;
     } catch {
       setError('No se pudo guardar la entrada');
+      return false;
     } finally {
       setSaving(false);
     }
