@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { BookStatus } from '../types/domain';
 import { useTheme } from '../hooks/useTheme';
 import { fonts } from '../theme/typography';
@@ -16,6 +17,7 @@ const STATUS_KEYS: { status: BookStatus; key: string }[] = [
   { status: 'WANT_TO_READ', key: 'shelf.wantToRead' },
   { status: 'READING', key: 'shelf.reading' },
   { status: 'READ', key: 'shelf.read' },
+  { status: 'DID_NOT_FINISH', key: 'shelf.didNotFinish' },
 ];
 
 export function ShelfButton({ currentStatus, onSelect, onRemove, loading }: ShelfButtonProps) {
@@ -29,18 +31,21 @@ export function ShelfButton({ currentStatus, onSelect, onRemove, loading }: Shel
       case 'WANT_TO_READ': return t('shelf.wantToRead');
       case 'READING': return t('shelf.reading');
       case 'READ': return t('shelf.read');
+      case 'DID_NOT_FINISH': return t('shelf.didNotFinish');
       default: return t('shelf.addToShelf');
     }
   };
 
   return (
-    <View>
+    <View style={styles.root}>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: colors.primary }]}
         onPress={() => setVisible(true)}
         disabled={loading}
       >
+        <Ionicons name="book-outline" size={16} color="#FFFFFF" />
         <Text style={styles.buttonText}>{getStatusLabel()}</Text>
+        <Ionicons name="chevron-down" size={16} color="#FFFFFF" />
       </TouchableOpacity>
       <Modal visible={visible} transparent animationType="fade">
         <TouchableOpacity style={styles.overlay} onPress={() => setVisible(false)}>
@@ -67,7 +72,8 @@ export function ShelfButton({ currentStatus, onSelect, onRemove, loading }: Shel
 }
 
 const styles = StyleSheet.create({
-  button: { paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8, alignItems: 'center' },
+  root: { width: '100%' },
+  button: { flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, alignItems: 'center', justifyContent: 'center', gap: 8 },
   buttonText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   menu: { width: '80%', borderRadius: 12, padding: 8 },

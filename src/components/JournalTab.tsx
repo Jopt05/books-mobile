@@ -8,7 +8,6 @@ import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useShelfButton } from '../hooks/useShelfButton';
 import { useJournal } from '../hooks/useJournal';
-import { ShelfButton } from './ShelfButton';
 import { EditableDate } from './EditableDate';
 import { JournalEntryModal } from './JournalEntryModal';
 import { ProgressRing } from './ProgressRing';
@@ -44,85 +43,8 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
     }
   }, [journalable, journal]);
 
-  const handleShelfSelect = async (status: BookStatus) => {
-    if (shelf.userBook) {
-      await shelf.updateStatus(status);
-    } else {
-      await shelf.addToShelf(book, status);
-    }
-  };
-
   const progress = deriveReadingProgress(journal.entries, book.pageCount);
   const entryCountValue = journal.entryCount ?? journal.entries.length;
-
-  const renderShelfHeader = () => (
-    <View style={styles.shelfHeader}>
-      <View style={styles.shelfLeft}>
-        <Text style={[styles.readingTitle, { color: colors.text }]}>{t('reading.yourReading')}</Text>
-        {currentStatus === 'READING' && shelf.userBook?.startedAt && (
-          <EditableDate
-            icon="calendar-outline"
-            label={t('reading.startedOn')}
-            value={shelf.userBook.startedAt}
-            onSave={(date) => shelf.updateDates({ startedAt: date })}
-          />
-        )}
-        {currentStatus === 'READ' && (
-          <>
-            {shelf.userBook?.startedAt && (
-              <EditableDate
-                icon="calendar-outline"
-                label={t('reading.startedOn')}
-                value={shelf.userBook.startedAt}
-                onSave={(date) => shelf.updateDates({ startedAt: date })}
-              />
-            )}
-            {shelf.userBook?.finishedAt && (
-              <EditableDate
-                icon="checkmark-circle-outline"
-                label={t('reading.finishedOn')}
-                value={shelf.userBook.finishedAt}
-                onSave={(date) => shelf.updateDates({ finishedAt: date })}
-              />
-            )}
-          </>
-        )}
-        {currentStatus === 'DID_NOT_FINISH' && (
-          <>
-            {shelf.userBook?.startedAt && (
-              <EditableDate
-                icon="calendar-outline"
-                label={t('reading.startedOn')}
-                value={shelf.userBook.startedAt}
-                onSave={(date) => shelf.updateDates({ startedAt: date })}
-              />
-            )}
-            {shelf.userBook?.finishedAt && (
-              <EditableDate
-                icon="close-circle-outline"
-                label={t('reading.droppedOn')}
-                value={shelf.userBook.finishedAt}
-                onSave={(date) => shelf.updateDates({ finishedAt: date })}
-              />
-            )}
-          </>
-        )}
-        {currentStatus === 'WANT_TO_READ' && (
-          <Text style={[styles.dateText, { color: colors.textSecondary }]}>{t('reading.addedToShelf')}</Text>
-        )}
-        {!currentStatus && (
-          <Text style={[styles.dateText, { color: colors.textSecondary }]}>{t('reading.notInShelf')}</Text>
-        )}
-      </View>
-
-      <ShelfButton
-        currentStatus={shelf.userBook?.status || null}
-        onSelect={handleShelfSelect}
-        onRemove={shelf.remove}
-        loading={shelf.loading}
-      />
-    </View>
-  );
 
   const renderProgressSummary = () => {
     const pageOfText =
@@ -136,52 +58,55 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
 
     return (
       <View style={[styles.progressCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <ProgressRing
-          percent={progress.percent}
-          size={76}
-          thickness={8}
-          label={`${progress.percent}%`}
-        />
+        <View style={styles.progressTopRow}>
+          <ProgressRing
+            percent={progress.percent}
+            size={76}
+            thickness={8}
+            label={`${progress.percent}%`}
+          />
 
-        <View style={styles.progressInfo}>
-          {progress.hasProgress ? (
-            <>
-              {!!statusLabel && (
-                <Text style={[styles.progressStatus, { color: colors.primary }]}>{statusLabel}</Text>
-              )}
-              {pageOfText && (
-                <Text style={[styles.progressPageOf, { color: colors.text }]}>{pageOfText}</Text>
-              )}
-            </>
-          ) : (
-            <Text style={[styles.progressNoData, { color: colors.textSecondary }]}>
-              {t('journal.noProgressYet')}
-            </Text>
-          )}
-
-          {/* Progress bar */}
-          <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
-            <View
-              style={[styles.progressFill, { backgroundColor: colors.primary, width: `${progress.percent}%` }]}
-            />
-          </View>
-
-          {/* Meta row */}
-          <View style={styles.progressMetaRow}>
-            {currentStatus === 'READING' && shelf.userBook?.startedAt && (
-              <EditableDate
-                icon="calendar-outline"
-                label={t('reading.startedOn')}
-                value={shelf.userBook.startedAt}
-                onSave={(date) => shelf.updateDates({ startedAt: date })}
-              />
-            )}
-            <View style={styles.entryCountRow}>
-              <Ionicons name="create-outline" size={14} color={colors.textSecondary} />
-              <Text style={[styles.entryCount, { color: colors.textSecondary }]}>
-                {entryCountValue} {t('journal.entriesCount')}
+          <View style={styles.progressInfo}>
+            {progress.hasProgress ? (
+              <>
+                {!!statusLabel && (
+                  <Text style={[styles.progressStatus, { color: colors.primary }]}>{statusLabel}</Text>
+                )}
+                {pageOfText && (
+                  <Text style={[styles.progressPageOf, { color: colors.text }]}>{pageOfText}</Text>
+                )}
+              </>
+            ) : (
+              <Text style={[styles.progressNoData, { color: colors.textSecondary }]}>
+                {t('journal.noProgressYet')}
               </Text>
-            </View>
+            )}
+          </View>
+        </View>
+
+        {/* Dates + entry count */}
+        <View style={styles.progressMetaRow}>
+          {shelf.userBook?.startedAt && (
+            <EditableDate
+              icon="calendar-outline"
+              label={t('reading.startedOn')}
+              value={shelf.userBook.startedAt}
+              onSave={(date) => shelf.updateDates({ startedAt: date })}
+            />
+          )}
+          {currentStatus === 'READ' && shelf.userBook?.finishedAt && (
+            <EditableDate
+              icon="checkmark-circle-outline"
+              label={t('reading.finishedOn')}
+              value={shelf.userBook.finishedAt}
+              onSave={(date) => shelf.updateDates({ finishedAt: date })}
+            />
+          )}
+          <View style={styles.entryCountRow}>
+            <Ionicons name="create-outline" size={14} color={colors.textSecondary} />
+            <Text style={[styles.entryCount, { color: colors.textSecondary }]}>
+              {entryCountValue} {t('journal.entriesCount')}
+            </Text>
           </View>
         </View>
       </View>
@@ -190,22 +115,17 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
 
   const renderHeader = () => (
     <View>
-      {renderShelfHeader()}
-      {journalable && (
-        <>
-          {renderProgressSummary()}
+      {renderProgressSummary()}
 
-          <TouchableOpacity
-            style={[styles.newEntryBtn, { backgroundColor: colors.primary }]}
-            onPress={() => setModalOpen(true)}
-          >
-            <Ionicons name="add" size={18} color="#FFFFFF" />
-            <Text style={styles.newEntryText}>{t('journal.newEntry')}</Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.newEntryBtn, { backgroundColor: colors.primary }]}
+        onPress={() => setModalOpen(true)}
+      >
+        <Ionicons name="add" size={18} color="#FFFFFF" />
+        <Text style={styles.newEntryText}>{t('journal.newEntry')}</Text>
+      </TouchableOpacity>
 
-          <Text style={[styles.myJournalTitle, { color: colors.text }]}>{t('journal.myJournal')}</Text>
-        </>
-      )}
+      <Text style={[styles.myJournalTitle, { color: colors.text }]}>{t('journal.myJournal')}</Text>
     </View>
   );
 
@@ -296,19 +216,13 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   listContent: { padding: 16, paddingBottom: 40 },
 
-  shelfHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
-  shelfLeft: { flex: 1 },
-  readingTitle: { fontSize: 16, fontFamily: fonts.bold, marginBottom: 4 },
-  dateText: { fontSize: 14, marginTop: 4 },
-
-  progressCard: { flexDirection: 'row', alignItems: 'center', gap: 16, borderWidth: 1, borderRadius: 14, padding: 16, marginTop: 16 },
+  progressCard: { borderWidth: 1, borderRadius: 14, padding: 16, marginTop: 16 },
+  progressTopRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   progressInfo: { flex: 1 },
   progressStatus: { fontSize: 14, fontFamily: fonts.bold },
   progressPageOf: { fontSize: 16, fontFamily: fonts.bold, marginTop: 2 },
   progressNoData: { fontSize: 14 },
-  progressTrack: { height: 6, borderRadius: 3, overflow: 'hidden', marginTop: 8 },
-  progressFill: { height: '100%', borderRadius: 3 },
-  progressMetaRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 14, marginTop: 8 },
+  progressMetaRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 14, marginTop: 12 },
   entryCountRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   entryCount: { fontSize: 14 },
 
