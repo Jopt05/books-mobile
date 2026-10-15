@@ -43,7 +43,7 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
     }
   }, [journalable, journal]);
 
-  const progress = deriveReadingProgress(journal.entries, book.pageCount);
+  const progress = deriveReadingProgress(journal.entries, book.pageCount, currentStatus);
   const entryCountValue = journal.entryCount ?? journal.entries.length;
 
   const renderProgressSummary = () => {

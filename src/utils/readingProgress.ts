@@ -14,13 +14,22 @@ export interface ReadingProgress {
  * book's page count. Entries are expected newest-first (as returned by
  * `useJournal`), so the latest entry is `entries[0]`.
  *
- * No backend fields are invented: percent/currentPage are computed only from
- * the latest entry's `page` / `percentage` combined with `pageCount`.
+ * When the book is marked as finished (`status === 'READ'`) progress is forced
+ * to 100% / last page, since a finished book is complete regardless of what the
+ * latest journal entry recorded. Other statuses derive progress from the latest
+ * entry's `page` / `percentage` combined with `pageCount` (no backend fields
+ * are invented).
  */
 export function deriveReadingProgress(
   entries: JournalEntry[],
   pageCount?: number,
+  status?: string,
 ): ReadingProgress {
+  // A finished book is 100% complete, even if the last entry stopped earlier.
+  if (status === 'READ') {
+    return { percent: 100, currentPage: pageCount ?? null, hasProgress: true };
+  }
+
   const latest = entries[0];
 
   if (!latest) {
