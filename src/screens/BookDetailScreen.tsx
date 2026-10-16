@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, Keyboard, Platform, LayoutAnimation, UIManager } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -31,6 +31,35 @@ export function BookDetailScreen() {
   const reviews = useReviews(bookId);
   const journal = useJournal(shelf.userBook?.id || '', book?.pageCount ?? undefined);
 
+  const [activeTab, setActiveTab] = useState(0);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  // Enable layout animation on Android (no-op on iOS, which supports it natively).
+  useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
+
+  // Track keyboard visibility so the fixed book header can collapse while the
+  // user edits a journal entry, giving the tab list the full screen height.
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvt, () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKeyboardOpen(true);
+    });
+    const hideSub = Keyboard.addListener(hideEvt, () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setKeyboardOpen(false);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
   if (loading) return <Loader />;
   if (error || !book) {
     return (
@@ -59,11 +88,19 @@ export function BookDetailScreen() {
       : []),
   ];
 
+  // Collapse the fixed book header while editing a journal entry so the tab
+  // list (and its keyboard-aware scrolling) can use the full screen height.
+  // The Journal tab is the last tab when journalable.
+  const journalTabActive = journalable && activeTab === tabs.length - 1;
+  const collapseHeader = journalTabActive && keyboardOpen;
+
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       <AppHeader variant="back" />
 
-      {/* Fixed top area: hero + shelf selector */}
+      {/* Fixed top area: hero + shelf selector. Collapses while editing a
+          journal entry so the tabs can expand to the full height. */}
+      {!collapseHeader && (
       <View style={styles.topArea}>
         <View style={styles.heroSection}>
           <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
@@ -115,9 +152,10 @@ export function BookDetailScreen() {
           </View>
         )}
       </View>
+      )}
 
       {/* Tabs fill remaining space; each scene scrolls independently */}
-      <SwipeTabs tabs={tabs} />
+      <SwipeTabs tabs={tabs} onIndexChange={setActiveTab} />
     </SafeAreaView>
   );
 }

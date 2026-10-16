@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Pressable, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Pressable, TextInput, Keyboard, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../types/book';
@@ -39,19 +39,40 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
   const [editError, setEditError] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
 
+  const listRef = useRef<FlatList<JournalEntry>>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  // Track the keyboard height so the list reserves space for it while editing,
+  // letting even the last entry scroll above the keyboard.
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvt, (e) => setKeyboardHeight(e.endCoordinates.height));
+    const hideSub = Keyboard.addListener(hideEvt, () => setKeyboardHeight(0));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
   // Long-press enters edit mode on an entry, with a haptic cue so the
   // gesture is felt even though it has no persistent visual control.
-  const startEdit = (id: string, current: string | null) => {
+  const startEdit = (id: string, current: string | null, index: number) => {
     Haptics.selectionAsync().catch(() => {});
     setEditingId(id);
     setDraft(current ?? '');
     setEditError('');
+    // Bring the edited entry into view once the keyboard/layout settles.
+    setTimeout(() => {
+      listRef.current?.scrollToIndex({ index, viewPosition: 0, animated: true });
+    }, 250);
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setDraft('');
     setEditError('');
+    Keyboard.dismiss();
   };
 
   const saveEdit = async (id: string) => {
@@ -173,11 +194,11 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
     </View>
   );
 
-  const renderEntry = ({ item }: { item: JournalEntry }) => {
+  const renderEntry = ({ item, index }: { item: JournalEntry; index: number }) => {
     const isEditing = editingId === item.id;
     return (
       <Pressable
-        onLongPress={() => !isEditing && startEdit(item.id, item.content)}
+        onLongPress={() => !isEditing && startEdit(item.id, item.content, index)}
         delayLongPress={350}
         style={({ pressed }) => [
           styles.entry,
@@ -276,13 +297,24 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
+        ref={listRef}
         data={journalable ? journal.entries : []}
         keyExtractor={(item) => item.id}
         renderItem={renderEntry}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          editingId != null && keyboardHeight > 0 && { paddingBottom: keyboardHeight + 24 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        onScrollToIndexFailed={({ index, averageItemLength }) => {
+          listRef.current?.scrollToOffset({ offset: index * averageItemLength, animated: true });
+          setTimeout(() => {
+            listRef.current?.scrollToIndex({ index, viewPosition: 0, animated: true });
+          }, 150);
+        }}
         onEndReached={() => {
           if (journalable && journal.hasMore && !journal.loadingMore) journal.loadMore();
         }}
