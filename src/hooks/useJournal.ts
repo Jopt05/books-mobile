@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { JournalEntry } from '../types/domain';
-import { getJournalByBook, getJournalCountByBook, createJournalEntry, deleteJournalEntry } from '../api/journal';
+import { getJournalByBook, getJournalCountByBook, createJournalEntry, deleteJournalEntry, updateJournalEntry } from '../api/journal';
 
 export type ProgressMode = 'page' | 'percentage';
 
@@ -108,12 +108,23 @@ export function useJournal(userBookId: string, pageCount?: number) {
     setEntryCount(prev => (prev ?? 1) - 1);
   }, []);
 
+  // Updates only the text of an existing entry, leaving page/percentage intact.
+  const updateEntryContent = useCallback(async (id: string, text: string): Promise<boolean> => {
+    try {
+      const updated = await updateJournalEntry(id, { content: text.trim() || null });
+      setEntries(prev => prev.map(e => (e.id === id ? updated : e)));
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
   const hasMore = hasMoreRef.current;
 
   return {
     entries, entryCount, loading, loadingMore, hasMore, error,
     content, setContent, progressValue, setProgressValue,
     progressMode, setProgressMode, saving, expanded,
-    toggleExpanded, loadMore, submit, removeEntry,
+    toggleExpanded, loadMore, submit, removeEntry, updateEntryContent,
   };
 }

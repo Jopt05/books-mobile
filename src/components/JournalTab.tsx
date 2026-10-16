@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Pressable, TextInput } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../types/book';
 import { JournalEntry, BookStatus } from '../types/domain';
@@ -31,6 +32,43 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
   const { t } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
   const loadedRef = useRef(false);
+
+  // Inline edit state: which entry is in edit mode and its draft text.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
+  const [editError, setEditError] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  // Long-press enters edit mode on an entry, with a haptic cue so the
+  // gesture is felt even though it has no persistent visual control.
+  const startEdit = (id: string, current: string | null) => {
+    Haptics.selectionAsync().catch(() => {});
+    setEditingId(id);
+    setDraft(current ?? '');
+    setEditError('');
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setDraft('');
+    setEditError('');
+  };
+
+  const saveEdit = async (id: string) => {
+    const trimmed = draft.trim();
+    if (!trimmed) {
+      setEditError(t('journal.editEmptyError'));
+      return;
+    }
+    setSavingEdit(true);
+    const ok = await journal.updateEntryContent(id, trimmed);
+    setSavingEdit(false);
+    if (ok) {
+      cancelEdit();
+    } else {
+      setEditError(t('journal.editError'));
+    }
+  };
 
   const currentStatus = shelf.userBook?.status;
   const journalable = !!shelf.userBook && currentStatus !== 'WANT_TO_READ';
@@ -126,41 +164,90 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
       </TouchableOpacity>
 
       <Text style={[styles.myJournalTitle, { color: colors.text }]}>{t('journal.myJournal')}</Text>
-    </View>
-  );
-
-  const renderEntry = ({ item }: { item: JournalEntry }) => (
-    <View style={[styles.entry, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <View style={styles.entryHeader}>
-        <Text style={[styles.entryDate, { color: colors.textSecondary }]}>
-          {new Date(item.createdAt).toLocaleDateString(undefined, {
-            year: 'numeric', month: 'short', day: 'numeric',
-          })}
-        </Text>
-        <TouchableOpacity onPress={() => journal.removeEntry(item.id)} style={styles.deleteBtn}>
-          <Ionicons name="trash-outline" size={15} color={colors.error} />
-        </TouchableOpacity>
-      </View>
-
-      {(item.page != null || item.percentage != null) && (
-        <View style={styles.entryMetaRow}>
-          <Ionicons name="book-outline" size={14} color={colors.textSecondary} />
-          {item.page != null && (
-            <Text style={[styles.entryMeta, { color: colors.textSecondary }]}>p. {item.page}</Text>
-          )}
-          {item.percentage != null && (
-            <View style={[styles.chip, { backgroundColor: colors.primary + '26' }]}>
-              <Text style={[styles.chipText, { color: colors.primary }]}>{item.percentage}%</Text>
-            </View>
-          )}
+      {journal.entries.length > 0 && (
+        <View style={styles.hintRow}>
+          <Ionicons name="create-outline" size={13} color={colors.textSecondary} />
+          <Text style={[styles.hintText, { color: colors.textSecondary }]}>{t('journal.editHint')}</Text>
         </View>
       )}
-
-      {item.content && (
-        <Text style={[styles.entryContent, { color: colors.text }]}>{item.content}</Text>
-      )}
     </View>
   );
+
+  const renderEntry = ({ item }: { item: JournalEntry }) => {
+    const isEditing = editingId === item.id;
+    return (
+      <Pressable
+        onLongPress={() => !isEditing && startEdit(item.id, item.content)}
+        delayLongPress={350}
+        style={({ pressed }) => [
+          styles.entry,
+          { backgroundColor: colors.card, borderColor: isEditing ? colors.primary : colors.border },
+          isEditing && { borderWidth: 1.5 },
+          pressed && !isEditing && { opacity: 0.85, transform: [{ scale: 0.985 }] },
+        ]}
+      >
+        <View style={styles.entryHeader}>
+          <Text style={[styles.entryDate, { color: colors.textSecondary }]}>
+            {new Date(item.createdAt).toLocaleDateString(undefined, {
+              year: 'numeric', month: 'short', day: 'numeric',
+            })}
+          </Text>
+          {!isEditing && (
+            <TouchableOpacity onPress={() => journal.removeEntry(item.id)} style={styles.deleteBtn}>
+              <Ionicons name="trash-outline" size={15} color={colors.error} />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {(item.page != null || item.percentage != null) && (
+          <View style={styles.entryMetaRow}>
+            <Ionicons name="book-outline" size={14} color={colors.textSecondary} />
+            {item.page != null && (
+              <Text style={[styles.entryMeta, { color: colors.textSecondary }]}>p. {item.page}</Text>
+            )}
+            {item.percentage != null && (
+              <View style={[styles.chip, { backgroundColor: colors.primary + '26' }]}>
+                <Text style={[styles.chipText, { color: colors.primary }]}>{item.percentage}%</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {isEditing ? (
+          <View style={styles.editWrap}>
+            <TextInput
+              style={[styles.editInput, { color: colors.text, borderColor: colors.primary, backgroundColor: colors.background }]}
+              value={draft}
+              onChangeText={setDraft}
+              placeholder={t('journal.placeholder')}
+              placeholderTextColor={colors.textSecondary}
+              multiline
+              autoFocus
+            />
+            {editError ? (
+              <Text style={[styles.editError, { color: colors.error }]}>{editError}</Text>
+            ) : null}
+            <View style={styles.editActions}>
+              <TouchableOpacity style={[styles.editBtn, { backgroundColor: colors.surface }]} onPress={cancelEdit}>
+                <Text style={[styles.editBtnText, { color: colors.text }]}>{t('common.cancel')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.editBtn, { backgroundColor: colors.primary, opacity: savingEdit ? 0.5 : 1 }]}
+                onPress={() => saveEdit(item.id)}
+                disabled={savingEdit}
+              >
+                <Text style={[styles.editBtnText, { color: '#FFFFFF' }]}>{savingEdit ? '...' : t('common.save')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          item.content && (
+            <Text style={[styles.entryContent, { color: colors.text }]}>{item.content}</Text>
+          )
+        )}
+      </Pressable>
+    );
+  };
 
   const renderFooter = () => {
     if (!journalable || !journal.loadingMore) return null;
@@ -229,13 +316,21 @@ const styles = StyleSheet.create({
   newEntryBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, paddingHorizontal: 16, borderRadius: 12, marginTop: 16 },
   newEntryText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
 
-  myJournalTitle: { fontSize: 20, fontFamily: fonts.bold, marginTop: 20, marginBottom: 8 },
+  myJournalTitle: { fontSize: 20, fontFamily: fonts.bold, marginTop: 20, marginBottom: 4 },
+  hintRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8 },
+  hintText: { fontSize: 14 },
 
   entry: { borderWidth: 1, borderRadius: 12, padding: 14, marginBottom: 12 },
   entryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   entryDate: { fontSize: 14 },
   deleteBtn: { padding: 4 },
   entryContent: { fontSize: 16, marginTop: 6 },
+  editWrap: { marginTop: 8 },
+  editInput: { borderWidth: 1.5, borderRadius: 8, padding: 10, fontSize: 16, minHeight: 72, textAlignVertical: 'top' },
+  editError: { fontSize: 14, marginTop: 6 },
+  editActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10, marginTop: 10 },
+  editBtn: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 8 },
+  editBtnText: { fontSize: 14, fontFamily: fonts.bold },
   entryMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
   entryMeta: { fontSize: 14 },
   chip: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 10 },

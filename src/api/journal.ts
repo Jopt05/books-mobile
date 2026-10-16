@@ -41,3 +41,15 @@ export async function getJournalCountByBook(userBookId: string): Promise<{ count
 export async function deleteJournalEntry(id: string): Promise<void> {
   await client.delete(`/journal/${id}`);
 }
+
+export interface UpdateJournalPayload {
+  content?: string | null;
+  page?: number | null;
+  percentage?: number | null;
+  isPublic?: boolean;
+}
+
+export async function updateJournalEntry(id: string, payload: UpdateJournalPayload): Promise<JournalEntry> {
+  const { data } = await client.patch<JournalEntry>(`/journal/${id}`, payload);
+  return data;
+}
