@@ -81,7 +81,7 @@ export function AppHeader({
 
       {showAvatar ? (
         <TouchableOpacity onPress={() => router.push('/(main)/(profile)')}>
-          <UserAvatar uri={user?.avatar || null} size={32} />
+          <UserAvatar uri={user?.avatar || null} size={40} />
         </TouchableOpacity>
       ) : (
         // Keep the title centered/spaced even without an avatar.
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   centerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: fonts.bold,
     textAlign: 'center',
     marginHorizontal: 56,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: fonts.bold,
   },
   subtitle: {
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   avatarPlaceholder: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
   },
 });
