@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDiscussionDetail } from '../hooks/useDiscussionDetail';
 import { ReplyCard } from '../components/ReplyCard';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { AppHeader } from '../components/AppHeader';
 import { Loader } from '../components/Loader';
 import { fonts } from '../theme/typography';
 
@@ -188,13 +189,7 @@ export function DiscussionDetailScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      {/* Back button */}
-      <View style={[styles.topBar, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-          <Text style={[styles.backText, { color: colors.textSecondary }]}>{t('discussions.back')}</Text>
-        </TouchableOpacity>
-      </View>
+      <AppHeader variant="back" title={discussion.title} />
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
         <FlatList
@@ -253,21 +248,10 @@ export function DiscussionDetailScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
   backBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-  },
-  backText: {
-    fontSize: 14,
-    fontFamily: fonts.regular,
   },
   errorText: {
     fontSize: 16,

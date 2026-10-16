@@ -13,6 +13,7 @@ import { useReviews } from '../hooks/useReviews';
 import { useJournal } from '../hooks/useJournal';
 import { StarRating } from '../components/StarRating';
 import { ShelfButton } from '../components/ShelfButton';
+import { AppHeader } from '../components/AppHeader';
 import { Loader } from '../components/Loader';
 import { SwipeTabs, SwipeTab } from '../components/SwipeTabs';
 import { BookInfoTab } from '../components/BookInfoTab';
@@ -60,13 +61,10 @@ export function BookDetailScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      {/* Fixed top area: back button + hero */}
-      <View style={styles.topArea}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
-          <Text style={[styles.backText, { color: colors.textSecondary }]}>Atrás</Text>
-        </TouchableOpacity>
+      <AppHeader variant="back" />
 
+      {/* Fixed top area: hero + shelf selector */}
+      <View style={styles.topArea}>
         <View style={styles.heroSection}>
           <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
             {book.coverUrl ? (
@@ -129,8 +127,6 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 16, textAlign: 'center', marginTop: 40 },
 
   topArea: { paddingHorizontal: 16, paddingTop: 16 },
-  backBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 16 },
-  backText: { fontSize: 14 },
 
   shelfRow: { marginBottom: 16 },
 

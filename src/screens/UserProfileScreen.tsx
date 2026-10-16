@@ -85,7 +85,11 @@ export function UserProfileScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      {isOwner ? <AppHeader /> : null}
+      {isOwner ? (
+        <AppHeader variant="menu" title={t('tabs.profile')} />
+      ) : (
+        <AppHeader variant="back" title={profile?.username || ''} />
+      )}
 
       <View style={styles.headerWrapper}>
         <ScrollView
@@ -94,14 +98,6 @@ export function UserProfileScreen() {
           scrollEnabled={!editing}
           nestedScrollEnabled
         >
-          {/* Back button (non-owner only) */}
-          {!isOwner && (
-            <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
-              <Text style={[styles.backText, { color: colors.textSecondary }]}>Atrás</Text>
-            </TouchableOpacity>
-          )}
-
           {/* Avatar */}
           <FadeIn direction="none">
             <View style={styles.profileCenter}>
@@ -216,8 +212,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   headerWrapper: { maxHeight: '50%' },
   headerContent: { alignItems: 'center', paddingVertical: 16, paddingHorizontal: 16 },
-  backBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', marginBottom: 8 },
-  backText: { fontSize: 14 },
   profileCenter: { alignItems: 'center' },
   avatar: { width: 100, height: 100, borderRadius: 50 },
   avatarPlaceholder: { width: 100, height: 100, borderRadius: 50, alignItems: 'center', justifyContent: 'center' },

@@ -8,6 +8,7 @@ import { fonts } from '../theme/typography';
 import { useLanguage } from '../context/LanguageContext';
 import { useNetwork } from '../hooks/useNetwork';
 import { UserAvatar } from '../components/UserAvatar';
+import { AppHeader } from '../components/AppHeader';
 import { Loader } from '../components/Loader';
 import { SwipeTabs, SwipeTab } from '../components/SwipeTabs';
 import { FollowUser } from '../api/follows';
@@ -78,14 +79,7 @@ export function NetworkScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      {/* Header with back + title + username */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color={colors.textSecondary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>{t('network.followers')}</Text>
-        <Text style={[styles.usernameTag, { color: colors.textSecondary }]}>@{username}</Text>
-      </View>
+      <AppHeader variant="back" title={t('network.followers')} subtitle={`@${username}`} />
 
       {/* Swipeable tabs */}
       <SwipeTabs tabs={tabs} />
@@ -95,8 +89,4 @@ export function NetworkScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10 },
-  backBtn: { padding: 4 },
-  title: { fontSize: 24, fontFamily: fonts.bold },
-  usernameTag: { fontSize: 16 }
 });

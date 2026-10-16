@@ -17,16 +17,15 @@ interface ProgressRingProps {
 /**
  * Dependency-free circular progress ring (no react-native-svg).
  *
- * Classic two-half-circle technique:
- * - The circle is split into left and right halves, each clipped with
- *   overflow:hidden.
- * - Inside each half sits a full-diameter "pie" element whose visible portion
- *   is a half-circle of the progress color, rotated from the vertical center
- *   line to sweep the arc.
- * - For 0-50% only the right half rotates (0deg -> 180deg). Past 50% the right
- *   half is fully filled and the left half rotates (0deg -> 180deg).
- * - An inner circle in the card color punches the donut hole and holds the
- *   centered label.
+ * Two-half technique with a rotating "cover":
+ * - The whole circle starts painted in the progress color.
+ * - Each half (right, then left) has a half-disc painted in the TRACK color
+ *   that rotates to COVER the progress color. At 0% the cover sits flat over
+ *   its half (so the half shows track); as progress grows the cover rotates
+ *   away, revealing the progress arc underneath.
+ * - Right half uncovers over 0-50%, left half over 50-100%. The arc grows
+ *   clockwise from the top (12 o'clock), so a small percentage = a small arc.
+ * - A center disc in the card color punches the donut hole and holds the label.
  */
 export function ProgressRing({ percent, size = 76, thickness = 8, label }: ProgressRingProps) {
   const { colors } = useTheme();
@@ -34,67 +33,57 @@ export function ProgressRing({ percent, size = 76, thickness = 8, label }: Progr
   const half = size / 2;
   const innerSize = size - thickness * 2;
 
-  const rightDeg = clamped <= 50 ? (clamped / 50) * 180 : 180;
-  const leftDeg = clamped <= 50 ? 0 : ((clamped - 50) / 50) * 180;
-
-  const halfClip = { width: half, height: size, overflow: 'hidden' as const };
-  // A full-diameter colored block clipped to a half via its parent, with a
-  // rounded outer edge so the sweeping edge is a true semicircle.
-  const pieBase = {
-    width: half,
-    height: size,
-    backgroundColor: colors.primary,
-  };
+  // Cover rotation. 0deg = fully covering its half (shows track),
+  // 180deg = fully rotated away (reveals the progress color).
+  const rightCoverDeg = clamped <= 50 ? (clamped / 50) * 180 : 180;
+  const leftCoverDeg = clamped <= 50 ? 0 : ((clamped - 50) / 50) * 180;
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
-      {/* Track */}
+      {/* Full progress-colored disc underneath */}
       <View
         style={{
           position: 'absolute',
           width: size,
           height: size,
           borderRadius: half,
-          backgroundColor: colors.border,
+          backgroundColor: colors.primary,
         }}
       />
 
-      {/* RIGHT half */}
-      <View style={[styles.rightWrap, halfClip]}>
+      {/* RIGHT half window */}
+      <View style={[styles.rightWindow, { width: half, height: size }]}>
+        {/* Track-colored cover, anchored on the vertical center line */}
         <View
           style={{
+            position: 'absolute',
+            left: 0,
             width: half,
             height: size,
-            transform: [{ rotate: `${rightDeg}deg` }],
+            borderTopRightRadius: half,
+            borderBottomRightRadius: half,
+            backgroundColor: colors.border,
             transformOrigin: 'left center',
+            transform: [{ rotate: `${rightCoverDeg}deg` }],
           }}
-        >
-          <View
-            style={[
-              pieBase,
-              { borderTopRightRadius: half, borderBottomRightRadius: half },
-            ]}
-          />
-        </View>
+        />
       </View>
 
-      {/* LEFT half */}
-      <View style={[styles.leftWrap, halfClip]}>
+      {/* LEFT half window */}
+      <View style={[styles.leftWindow, { width: half, height: size }]}>
         <View
           style={{
+            position: 'absolute',
+            right: 0,
             width: half,
             height: size,
-            transform: [{ rotate: `${leftDeg}deg` }],
+            borderTopLeftRadius: half,
+            borderBottomLeftRadius: half,
+            backgroundColor: colors.border,
             transformOrigin: 'right center',
+            transform: [{ rotate: `${leftCoverDeg}deg` }],
           }}
-        >
-          <View
-            style={[
-              pieBase,
-              { borderTopLeftRadius: half, borderBottomLeftRadius: half },
-            ]}
-          />
-        </View>
+        />
       </View>
 
       {/* Donut hole + label */}
@@ -117,7 +106,7 @@ export function ProgressRing({ percent, size = 76, thickness = 8, label }: Progr
 
 const styles = StyleSheet.create({
   container: { alignItems: 'center', justifyContent: 'center' },
-  rightWrap: { position: 'absolute', right: 0, top: 0 },
-  leftWrap: { position: 'absolute', left: 0, top: 0 },
+  rightWindow: { position: 'absolute', right: 0, top: 0, overflow: 'hidden' },
+  leftWindow: { position: 'absolute', left: 0, top: 0, overflow: 'hidden' },
   label: { fontSize: 16, fontFamily: fonts.bold },
 });

@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useImport } from '../hooks/useImport';
 import { FadeIn } from '../components/FadeIn';
 import { Loader } from '../components/Loader';
+import { AppHeader } from '../components/AppHeader';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { ReportModal } from '../components/ReportModal';
 import { deactivateAccount } from '../api/users';
@@ -61,13 +62,7 @@ export function SettingsScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color={colors.textSecondary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
-      </View>
+      <AppHeader variant="back" title={t('settings.title')} />
 
       <View style={styles.content}>
         {/* Import Section Card */}
@@ -237,9 +232,6 @@ export function SettingsScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 10 },
-  backBtn: { padding: 4 },
-  title: { fontSize: 24, fontFamily: fonts.bold },
   content: { flex: 1, paddingHorizontal: 16 },
   card: { borderRadius: 12, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
   cardTitle: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 4 },

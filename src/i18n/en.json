@@ -72,6 +72,7 @@
   "journal.placeholder": "What did you read today?",
   "bookDetail.tabInfo": "Information",
   "bookDetail.tabJournal": "Journal",
+  "bookDetail.unknownAuthor": "Unknown author",
   "streak.title": "Reading streak",
   "streak.days": "consecutive days",
   "stats.booksRead": "Books read",

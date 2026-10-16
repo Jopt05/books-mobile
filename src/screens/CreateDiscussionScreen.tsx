@@ -12,6 +12,7 @@ import { createDiscussion } from '../api/discussions';
 import { searchBooks } from '../api/books';
 import { mapBookVolume } from '../utils/mapBook';
 import { Loader } from '../components/Loader';
+import { AppHeader } from '../components/AppHeader';
 import { fonts } from '../theme/typography';
 import type { Book } from '../types/book';
 
@@ -86,14 +87,7 @@ export function CreateDiscussionScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-      {/* Top bar */}
-      <View style={[styles.topBar, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-          <Text style={[styles.backText, { color: colors.textSecondary }]}>{t('discussions.back')}</Text>
-        </TouchableOpacity>
-        <Text style={[styles.topBarTitle, { color: colors.text }]} numberOfLines={1}>{t('discussions.new')}</Text>
-      </View>
+      <AppHeader variant="back" title={t('discussions.new')} />
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -229,28 +223,6 @@ export function CreateDiscussionScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
-  backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  backText: {
-    fontSize: 14,
-    fontFamily: fonts.regular,
-  },
-  topBarTitle: {
-    fontSize: 18,
-    fontFamily: fonts.bold,
-    flex: 1,
-  },
   scrollContent: {
     padding: 16,
     paddingBottom: 40,
