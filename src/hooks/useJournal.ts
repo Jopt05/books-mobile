@@ -20,13 +20,18 @@ export function useJournal(userBookId: string, pageCount?: number) {
   const pageRef = useRef(1);
   const hasMoreRef = useRef(false);
 
+  const refreshCount = useCallback(async () => {
+    if (!userBookId) return;
+    try {
+      const res = await getJournalCountByBook(userBookId);
+      setEntryCount(res.count);
+    } catch { /* ignore */ }
+  }, [userBookId]);
+
   // Fetch count on mount
   useEffect(() => {
-    if (!userBookId) return;
-    getJournalCountByBook(userBookId)
-      .then(res => setEntryCount(res.count))
-      .catch(() => {});
-  }, [userBookId]);
+    refreshCount();
+  }, [refreshCount]);
 
   const loadEntries = useCallback(async () => {
     if (!userBookId) return;
@@ -43,6 +48,13 @@ export function useJournal(userBookId: string, pageCount?: number) {
       setLoading(false);
     }
   }, [userBookId]);
+
+  // Reloads the first page of entries and the entry count. Used by pull-to-
+  // refresh so a book opened earlier reflects entries created elsewhere (e.g.
+  // the quick-journal on Home). Returns when both finish.
+  const refresh = useCallback(async () => {
+    await Promise.all([loadEntries(), refreshCount()]);
+  }, [loadEntries, refreshCount]);
 
   const loadMore = useCallback(async () => {
     if (!hasMoreRef.current || loadingMore) return;
@@ -125,6 +137,6 @@ export function useJournal(userBookId: string, pageCount?: number) {
     entries, entryCount, loading, loadingMore, hasMore, error,
     content, setContent, progressValue, setProgressValue,
     progressMode, setProgressMode, saving, expanded,
-    toggleExpanded, loadMore, submit, removeEntry, updateEntryContent,
+    toggleExpanded, loadMore, submit, removeEntry, updateEntryContent, refresh,
   };
 }

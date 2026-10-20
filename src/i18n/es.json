@@ -60,6 +60,7 @@
   "journal.submit": "Guardar entrada",
   "journal.history": "Historial de lectura",
   "journal.delete": "Eliminar entrada",
+  "journal.deleteConfirm": "¿Seguro que quieres eliminar esta entrada? Esta acción no se puede deshacer.",
   "journal.loadMore": "Ver más entradas",
   "journal.newEntry": "Nueva entrada",
   "journal.newEntryTitle": "Nueva entrada de diario",

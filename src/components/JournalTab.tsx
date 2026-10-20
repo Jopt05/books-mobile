@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Pressable, TextInput, Keyboard, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Pressable, TextInput, Keyboard, Platform, RefreshControl } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Book } from '../types/book';
@@ -11,6 +11,7 @@ import { useShelfButton } from '../hooks/useShelfButton';
 import { useJournal } from '../hooks/useJournal';
 import { EditableDate } from './EditableDate';
 import { JournalEntryModal } from './JournalEntryModal';
+import { ConfirmModal } from './ConfirmModal';
 import { ProgressRing } from './ProgressRing';
 import { deriveReadingProgress } from '../utils/readingProgress';
 
@@ -31,6 +32,8 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const loadedRef = useRef(false);
 
   // Inline edit state: which entry is in edit mode and its draft text.
@@ -101,6 +104,18 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
       journal.toggleExpanded();
     }
   }, [journalable, journal]);
+
+  // Pull-to-refresh: reloads entries + count (and therefore the progress ring,
+  // which is derived from the entries), so a book opened earlier picks up
+  // entries created elsewhere (e.g. the Home quick-journal).
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await journal.refresh();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const progress = deriveReadingProgress(journal.entries, book.pageCount, currentStatus);
   const entryCountValue = journal.entryCount ?? journal.entries.length;
@@ -214,7 +229,7 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
             })}
           </Text>
           {!isEditing && (
-            <TouchableOpacity onPress={() => journal.removeEntry(item.id)} style={styles.deleteBtn}>
+            <TouchableOpacity onPress={() => setDeleteId(item.id)} style={styles.deleteBtn}>
               <Ionicons name="trash-outline" size={15} color={colors.error} />
             </TouchableOpacity>
           )}
@@ -308,6 +323,16 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
           styles.listContent,
           editingId != null && keyboardHeight > 0 && { paddingBottom: keyboardHeight + 24 },
         ]}
+        refreshControl={
+          journalable ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          ) : undefined
+        }
         keyboardShouldPersistTaps="handled"
         onScrollToIndexFailed={({ index, averageItemLength }) => {
           listRef.current?.scrollToOffset({ offset: index * averageItemLength, animated: true });
@@ -327,6 +352,17 @@ export function JournalTab({ book, shelf, journal }: JournalTabProps) {
         journal={journal}
         pageCount={book.pageCount}
       />
+
+      <ConfirmModal
+        visible={deleteId != null}
+        title={t('journal.delete')}
+        message={t('journal.deleteConfirm')}
+        onConfirm={() => {
+          if (deleteId) journal.removeEntry(deleteId);
+          setDeleteId(null);
+        }}
+        onCancel={() => setDeleteId(null)}
+      />
     </View>
   );
 }
@@ -340,35 +376,35 @@ const styles = StyleSheet.create({
   progressInfo: { flex: 1 },
   progressStatus: { fontSize: 14, fontFamily: fonts.bold },
   progressPageOf: { fontSize: 16, fontFamily: fonts.bold, marginTop: 2 },
-  progressNoData: { fontSize: 14 },
+  progressNoData: { fontSize: 14, fontFamily: fonts.regular },
   progressMetaRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 14, marginTop: 12 },
   entryCountRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  entryCount: { fontSize: 14 },
+  entryCount: { fontSize: 14, fontFamily: fonts.regular },
 
   newEntryBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 12, paddingHorizontal: 16, borderRadius: 12, marginTop: 16 },
   newEntryText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
 
   myJournalTitle: { fontSize: 20, fontFamily: fonts.bold, marginTop: 20, marginBottom: 4 },
   hintRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8 },
-  hintText: { fontSize: 14 },
+  hintText: { fontSize: 14, fontFamily: fonts.regular },
 
   entry: { borderWidth: 1, borderRadius: 12, padding: 14, marginBottom: 12 },
   entryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  entryDate: { fontSize: 14 },
+  entryDate: { fontSize: 14, fontFamily: fonts.regular },
   deleteBtn: { padding: 4 },
-  entryContent: { fontSize: 16, marginTop: 6 },
+  entryContent: { fontSize: 16, marginTop: 6, fontFamily: fonts.regular },
   editWrap: { marginTop: 8 },
-  editInput: { borderWidth: 1.5, borderRadius: 8, padding: 10, fontSize: 16, minHeight: 72, textAlignVertical: 'top' },
-  editError: { fontSize: 14, marginTop: 6 },
+  editInput: { borderWidth: 1.5, borderRadius: 8, padding: 10, fontSize: 16, minHeight: 72, textAlignVertical: 'top', fontFamily: fonts.regular },
+  editError: { fontSize: 14, marginTop: 6, fontFamily: fonts.regular },
   editActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10, marginTop: 10 },
   editBtn: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 8 },
   editBtnText: { fontSize: 14, fontFamily: fonts.bold },
   entryMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
-  entryMeta: { fontSize: 14 },
+  entryMeta: { fontSize: 14, fontFamily: fonts.regular },
   chip: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 10 },
   chipText: { fontSize: 14, fontFamily: fonts.bold },
 
   footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16 },
-  footerText: { fontSize: 14 },
-  emptyText: { fontSize: 16, textAlign: 'center', marginTop: 16 },
+  footerText: { fontSize: 14, fontFamily: fonts.regular },
+  emptyText: { fontSize: 16, textAlign: 'center', marginTop: 16, fontFamily: fonts.regular },
 });
