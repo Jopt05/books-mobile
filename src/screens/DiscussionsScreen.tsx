@@ -1,56 +1,50 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
-import { useDiscussions } from '../hooks/useDiscussions';
-import { DiscussionCard } from '../components/DiscussionCard';
 import { AppHeader } from '../components/AppHeader';
-import { FadeIn } from '../components/FadeIn';
-import { Loader } from '../components/Loader';
+import { SwipeTabs, SwipeTab } from '../components/SwipeTabs';
+import { DiscussionsList } from '../components/DiscussionsList';
 import { fonts } from '../theme/typography';
-
-type SortType = 'recent' | 'popular';
 
 export function DiscussionsScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
-  const [sort, setSort] = useState<SortType>('recent');
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-
-  const { discussions, loading, loadingMore, error, hasMore, loadMore, toggleLike, refresh } =
-    useDiscussions({ search, sort });
 
   const handleSearch = () => {
     setSearch(searchInput.trim());
   };
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refresh();
-    setRefreshing(false);
-  }, [refresh]);
-
-  const renderItem = ({ item, index }: { item: typeof discussions[0]; index: number }) => (
-    <FadeIn delay={index * 60} direction="up">
-      <DiscussionCard
-        discussion={item}
-        onLike={() => toggleLike(item.id)}
-        onPress={() => router.push(`/(main)/discussion/${item.id}`)}
-      />
-    </FadeIn>
-  );
+  // The search query is shared across both sort tabs; each tab owns its own
+  // discussions list (and scroll) so it can live inside SwipeTabs.
+  const tabs: SwipeTab[] = [
+    {
+      key: 'recent',
+      title: t('discussions.sortRecent'),
+      icon: 'time-outline',
+      component: DiscussionsList,
+      props: { search, sort: 'recent' },
+    },
+    {
+      key: 'popular',
+      title: t('discussions.sortPopular'),
+      icon: 'flame-outline',
+      component: DiscussionsList,
+      props: { search, sort: 'popular' },
+    },
+  ];
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       <AppHeader title={t('discussions.title')} />
 
-      {/* Header */}
+      {/* New discussion */}
       <View style={styles.headerRow}>
         <TouchableOpacity
           style={[styles.newBtn, { backgroundColor: colors.primary }]}
@@ -61,7 +55,7 @@ export function DiscussionsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Search */}
+      {/* Shared search */}
       <View style={[styles.searchRow, { borderColor: colors.border, backgroundColor: colors.card }]}>
         <Ionicons name="search-outline" size={18} color={colors.textSecondary} />
         <TextInput
@@ -75,53 +69,8 @@ export function DiscussionsScreen() {
         />
       </View>
 
-      {/* Sort tabs */}
-      <View style={[styles.sortRow, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity
-          style={[styles.sortBtn, sort === 'recent' && { borderBottomColor: colors.primary }]}
-          onPress={() => setSort('recent')}
-        >
-          <Text style={[styles.sortText, { color: sort === 'recent' ? colors.primary : colors.textSecondary }]}>
-            {t('discussions.sortRecent')}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.sortBtn, sort === 'popular' && { borderBottomColor: colors.primary }]}
-          onPress={() => setSort('popular')}
-        >
-          <Text style={[styles.sortText, { color: sort === 'popular' ? colors.primary : colors.textSecondary }]}>
-            {t('discussions.sortPopular')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Error */}
-      {error ? <Text style={[styles.error, { color: colors.error }]}>{error}</Text> : null}
-
-      {/* Content */}
-      {loading ? (
-        <Loader />
-      ) : discussions.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Ionicons name="chatbubbles-outline" size={48} color={colors.textSecondary} />
-          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-            {search ? t('discussions.noResults') : t('discussions.empty')}
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={discussions}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          onEndReached={() => { if (hasMore && !loadingMore) loadMore(); }}
-          onEndReachedThreshold={0.3}
-          ListFooterComponent={loadingMore ? <Loader /> : null}
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />
-          }
-        />
-      )}
+      {/* Sort tabs (swipeable) */}
+      <SwipeTabs tabs={tabs} />
     </SafeAreaView>
   );
 }
@@ -165,39 +114,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.regular,
     padding: 0,
-  },
-  sortRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    marginBottom: 12,
-  },
-  sortBtn: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 3,
-    borderBottomColor: 'transparent',
-  },
-  sortText: {
-    fontSize: 14,
-    fontFamily: fonts.bold,
-  },
-  error: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 12,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingTop: 60,
-  },
-  emptyText: {
-    fontSize: 16,
-    marginTop: 12,
-  },
-  listContent: {
-    paddingTop: 4,
-    paddingBottom: 20,
   },
 });

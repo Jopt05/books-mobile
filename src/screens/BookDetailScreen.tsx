@@ -82,9 +82,21 @@ export function BookDetailScreen() {
   const journalable = !!shelf.userBook && shelf.userBook.status !== 'WANT_TO_READ';
 
   const tabs: SwipeTab[] = [
-    { key: 'info', title: t('bookDetail.tabInfo'), component: BookInfoTab, props: { book, stats, user, reviews } },
+    {
+      key: 'info',
+      title: t('bookDetail.tabInfo'),
+      icon: 'information-circle-outline',
+      component: BookInfoTab,
+      props: { book, stats, user, reviews },
+    },
     ...(journalable
-      ? [{ key: 'journal', title: t('bookDetail.tabJournal'), component: JournalTab, props: { book, shelf, journal } } as SwipeTab]
+      ? [{
+          key: 'journal',
+          title: t('bookDetail.tabJournal'),
+          icon: 'pencil-outline',
+          component: JournalTab,
+          props: { book, shelf, journal },
+        } as SwipeTab]
       : []),
   ];
 
