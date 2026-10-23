@@ -1,49 +1,60 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
-import { useRecommendationsPage } from '../hooks/useRecommendationsPage';
+import { useForYou } from '../hooks/useForYou';
 import { fonts } from '../theme/typography';
 import { Ionicons } from '@expo/vector-icons';
 import { AppHeader } from '../components/AppHeader';
+import type { RecommendedBook } from '../utils/mapForYouItem';
+import type { RecommendationReason } from '../api/recommendations';
 
 function BookCard({
-  bookId,
-  title,
-  subtitle,
-  coverUrl,
-  badge,
+  book,
+  discoverLabel,
+  reasonText,
 }: {
-  bookId: string;
-  title: string;
-  subtitle: string;
-  coverUrl: string | null;
-  badge?: React.ReactNode;
+  book: RecommendedBook;
+  discoverLabel: string;
+  reasonText: (reason: RecommendationReason) => string;
 }) {
   const { colors } = useTheme();
   const router = useRouter();
-  const secureUrl = coverUrl?.replace('http://', 'https://') || null;
+  const reason = book.reasons[0] ? reasonText(book.reasons[0]) : null;
 
   return (
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.7}
-      onPress={() => router.push(`/(main)/book/${bookId}`)}
+      onPress={() => router.push(`/(main)/book/${book.id}`)}
     >
       <View style={[styles.coverContainer, { backgroundColor: colors.border }]}>
-        {secureUrl ? (
-          <Image source={{ uri: secureUrl }} style={styles.cover} />
+        {book.coverUrl ? (
+          <Image source={{ uri: book.coverUrl }} style={styles.cover} />
         ) : (
           <View style={styles.coverPlaceholder}>
             <Ionicons name="book-outline" size={24} color={colors.textSecondary} />
           </View>
         )}
-        {badge}
+        {book.source === 'discovery' && (
+          <View style={[styles.badge, { backgroundColor: colors.primary }]}>
+            <Text style={styles.badgeText}>{discoverLabel}</Text>
+          </View>
+        )}
       </View>
-      <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>{title}</Text>
-      <Text style={[styles.bookSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>{subtitle}</Text>
+      <Text style={[styles.bookTitle, { color: colors.text }]} numberOfLines={1}>
+        {book.title}
+      </Text>
+      <Text style={[styles.bookSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
+        {book.authors.join(', ')}
+      </Text>
+      {reason ? (
+        <Text style={[styles.reason, { color: colors.primary }]} numberOfLines={1}>
+          {reason}
+        </Text>
+      ) : null}
     </TouchableOpacity>
   );
 }
@@ -51,43 +62,65 @@ function BookCard({
 export function RecommendationsScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
-  const { social, trending, authors, categories } = useRecommendationsPage();
+  const { items, loading, hasMore, loadMore, refresh } = useForYou();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const reasonText = useCallback(
+    (reason: RecommendationReason): string =>
+      t(`recommendations.reason.${reason.key}`).replace('{count}', String(reason.count ?? '')),
+    [t],
+  );
 
   useEffect(() => {
-    social.refresh();
-    trending.refresh();
-    authors.refresh();
-    categories.refresh();
+    refresh();
+    // Load once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([
-      social.refresh(),
-      trending.refresh(),
-      authors.refresh(),
-      categories.refresh(),
-    ]);
+    await refresh();
     setRefreshing(false);
-  }, []);
+  }, [refresh]);
 
-  const renderFooter = useCallback((loading: boolean) => {
-    if (!loading) return null;
+  const renderFooter = useCallback(() => {
+    if (!loading || items.length === 0) return null;
     return (
       <View style={styles.loadingFooter}>
         <ActivityIndicator color={colors.primary} />
       </View>
     );
-  }, [colors.primary]);
+  }, [loading, items.length, colors.primary]);
+
+  const renderEmpty = useCallback(() => {
+    if (loading) return null;
+    return (
+      <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+        {t('recommendations.emptyForYou')}
+      </Text>
+    );
+  }, [loading, colors.textSecondary, t]);
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       <AppHeader title={t('recommendations.pageTitle')} />
-      <ScrollView
-        style={styles.flex}
-        contentContainerStyle={styles.scrollContent}
+      <FlatList
+        data={items}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.column}
+        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {t('recommendations.forYouSubtitle')}
+          </Text>
+        }
+        ListEmptyComponent={renderEmpty}
+        ListFooterComponent={renderFooter}
+        onEndReached={() => {
+          if (hasMore && !loading) loadMore();
+        }}
+        onEndReachedThreshold={0.4}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -96,180 +129,32 @@ export function RecommendationsScreen() {
             colors={[colors.primary]}
           />
         }
-      >
-        {/* Social */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            {t('recommendations.socialTitle')}
-          </Text>
-          {social.items.length === 0 && !social.loading && (
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              {t('recommendations.emptySocial')}
-            </Text>
-          )}
-          <FlatList
-            horizontal
-            data={social.items}
-            keyExtractor={(item) => item.bookId}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            onEndReached={social.loadMore}
-            onEndReachedThreshold={0.3}
-            ListFooterComponent={renderFooter(social.loading)}
-            renderItem={({ item }) => (
-              <BookCard
-                bookId={item.bookId}
-                title={item.title}
-                subtitle={item.author}
-                coverUrl={item.coverUrl}
-              />
-            )}
+        renderItem={({ item }) => (
+          <BookCard
+            book={item}
+            discoverLabel={t('recommendations.discoveryBadge')}
+            reasonText={reasonText}
           />
-        </View>
-
-        {/* Trending */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            {t('recommendations.trendingTitle')}
-          </Text>
-          {trending.items.length === 0 && !trending.loading && (
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              {t('recommendations.emptyTrending')}
-            </Text>
-          )}
-          <FlatList
-            horizontal
-            data={trending.items}
-            keyExtractor={(item) => item.bookId}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            onEndReached={trending.loadMore}
-            onEndReachedThreshold={0.3}
-            ListFooterComponent={renderFooter(trending.loading)}
-            renderItem={({ item }) => (
-              <BookCard
-                bookId={item.bookId}
-                title={item.title}
-                subtitle={item.author}
-                coverUrl={item.coverUrl}
-                badge={
-                  <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                    <Text style={styles.badgeText}>{item.count}</Text>
-                  </View>
-                }
-              />
-            )}
-          />
-        </View>
-
-        {/* Favorite Authors */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            {t('recommendations.favoriteAuthorsTitle')}
-          </Text>
-          {authors.items.length === 0 && !authors.loading && (
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              {t('recommendations.emptyAuthors')}
-            </Text>
-          )}
-          {authors.items.map((group) => (
-            <View key={group.author} style={styles.authorGroup}>
-              <Text style={[styles.authorName, { color: colors.text }]}>{group.author}</Text>
-              <FlatList
-                horizontal
-                data={group.books}
-                keyExtractor={(item) => item.bookId}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.listContent}
-                renderItem={({ item }) => (
-                  <BookCard
-                    bookId={item.bookId}
-                    title={item.title}
-                    subtitle={item.authors.join(', ')}
-                    coverUrl={item.coverUrl}
-                  />
-                )}
-              />
-            </View>
-          ))}
-          {authors.hasMore && !authors.loading && (
-            <TouchableOpacity onPress={authors.loadMore} style={styles.loadMoreBtn}>
-              <Text style={[styles.loadMoreText, { color: colors.primary }]}>
-                {t('recommendations.loadMoreAuthors')}
-              </Text>
-            </TouchableOpacity>
-          )}
-          {authors.loading && <ActivityIndicator color={colors.primary} style={styles.loader} />}
-        </View>
-
-        {/* By Categories */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            {t('recommendations.categoriesTitle')}
-          </Text>
-          {categories.items.length === 0 && !categories.loading && (
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              {t('recommendations.emptyCategories')}
-            </Text>
-          )}
-          {categories.items.map((group) => (
-            <View key={group.category} style={styles.authorGroup}>
-              <Text style={[styles.authorName, { color: colors.text }]}>{group.category}</Text>
-              <Text style={[styles.categoryCount, { color: colors.textSecondary }]}>
-                {t('recommendations.booksReadInCategory').replace('{count}', String(group.booksRead))}
-              </Text>
-              <FlatList
-                horizontal
-                data={group.books}
-                keyExtractor={(item) => item.bookId}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.listContent}
-                renderItem={({ item }) => (
-                  <BookCard
-                    bookId={item.bookId}
-                    title={item.title}
-                    subtitle={item.authors.join(', ')}
-                    coverUrl={item.coverUrl}
-                  />
-                )}
-              />
-            </View>
-          ))}
-          {categories.hasMore && !categories.loading && (
-            <TouchableOpacity onPress={categories.loadMore} style={styles.loadMoreBtn}>
-              <Text style={[styles.loadMoreText, { color: colors.primary }]}>
-                {t('recommendations.loadMoreCategories')}
-              </Text>
-            </TouchableOpacity>
-          )}
-          {categories.loading && <ActivityIndicator color={colors.primary} style={styles.loader} />}
-        </View>
-      </ScrollView>
+        )}
+      />
     </SafeAreaView>
   );
 }
 
-
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  scrollContent: { paddingBottom: 32, paddingTop: 16 },
-  section: { marginBottom: 28 },
-  sectionTitle: { fontSize: 20, fontFamily: fonts.bold, paddingHorizontal: 16, marginBottom: 12 },
-  emptyText: { fontSize: 14, paddingHorizontal: 16 },
-  listContent: { paddingHorizontal: 16, gap: 12 },
-  card: { width: 130 },
-  coverContainer: { width: 130, height: 185, borderRadius: 8, overflow: 'hidden' },
+  listContent: { padding: 16, paddingBottom: 32 },
+  column: { gap: 12, marginBottom: 16 },
+  subtitle: { fontSize: 14, marginBottom: 16 },
+  emptyText: { fontSize: 14, marginTop: 24, textAlign: 'center' },
+  card: { flex: 1 },
+  coverContainer: { width: '100%', aspectRatio: 2 / 3, borderRadius: 8, overflow: 'hidden' },
   cover: { width: '100%', height: '100%' },
   coverPlaceholder: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
   bookTitle: { fontSize: 14, fontFamily: fonts.bold, marginTop: 6 },
   bookSubtitle: { fontSize: 14, marginTop: 2 },
+  reason: { fontSize: 14, marginTop: 2 },
   badge: { position: 'absolute', top: 8, right: 8, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
   badgeText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
-  authorGroup: { marginBottom: 16 },
-  authorName: { fontSize: 16, fontFamily: fonts.bold, paddingHorizontal: 16, marginBottom: 4 },
-  categoryCount: { fontSize: 14, paddingHorizontal: 16, marginBottom: 8 },
-  loadMoreBtn: { paddingHorizontal: 16, paddingVertical: 8 },
-  loadMoreText: { fontSize: 14, fontFamily: fonts.bold },
-  loader: { marginTop: 8 },
-  loadingFooter: { width: 60, justifyContent: 'center', alignItems: 'center' },
+  loadingFooter: { paddingVertical: 16, alignItems: 'center' },
 });
