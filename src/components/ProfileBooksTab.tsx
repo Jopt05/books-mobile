@@ -76,7 +76,17 @@ export function ProfileBooksTab({ username, isOwn = false }: ProfileBooksTabProp
 
       {sections.map((section) => (
         <View key={section.status as string} style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.label} ({section.total})</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.label} ({section.total})</Text>
+            <TouchableOpacity
+              style={[styles.seeAll, { backgroundColor: colors.border }]}
+              onPress={() => navigation.push(`/(main)/user/${username}/books?status=${section.status}`)}
+              hitSlop={6}
+            >
+              <Text style={[styles.seeAllText, { color: colors.textSecondary }]}>{t('yourBooks.seeAll')}</Text>
+              <Ionicons name="arrow-forward" size={14} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
           <FlatList
             horizontal
             data={section.books}
@@ -142,7 +152,10 @@ const styles = StyleSheet.create({
   },
   hintText: { fontSize: 14, fontFamily: fonts.bold, flex: 1 },
   section: { marginBottom: 20, paddingLeft: 16 },
-  sectionTitle: { fontSize: 18, fontFamily: fonts.bold, marginBottom: 10 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 16, marginBottom: 10 },
+  sectionTitle: { fontSize: 18, fontFamily: fonts.bold },
+  seeAll: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999 },
+  seeAllText: { fontSize: 14, fontFamily: fonts.bold },
   scroll: { gap: 12, paddingRight: 16 },
   card: { width: 110 },
   cover: { width: 110, height: 160, borderRadius: 8, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },

@@ -12,6 +12,8 @@ export interface UserBook {
   finishedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** The user's own review rating (1-5) for this book, or null if not reviewed. */
+  rating: number | null;
 }
 
 export interface JournalEntry {

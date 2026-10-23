@@ -249,5 +249,22 @@
   "search.tabUsers": "Users",
   "search.usersPlaceholder": "Search users...",
   "search.usersEmpty": "Search users to find readers",
-  "search.usersNoResults": "No users found"
+  "search.usersNoResults": "No users found",
+  "yourBooks.seeAll": "See all",
+  "yourBooks.title": "Book History",
+  "yourBooks.searchPlaceholder": "Search my books...",
+  "yourBooks.toggleSort": "Toggle sort order",
+  "yourBooks.newestFirst": "Newest",
+  "yourBooks.oldestFirst": "Oldest",
+  "yourBooks.sortedByFinished": "Sorted by finish date",
+  "yourBooks.sortedByAdded": "Sorted by date added",
+  "yourBooks.readOn": "Read on",
+  "yourBooks.addedOn": "Added on",
+  "yourBooks.noDate": "No date",
+  "yourBooks.empty": "No books in this list yet",
+  "yourBooks.noResults": "No books match your search",
+  "yourBooks.filterRead": "Read",
+  "yourBooks.filterWantToRead": "Want to Read",
+  "yourBooks.filterReading": "Reading",
+  "yourBooks.filterDidNotFinish": "Did Not Finish"
 }
