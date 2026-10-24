@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, useWindowDimensions, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import RenderHtml from 'react-native-render-html';
 import { useTheme } from '../hooks/useTheme';
@@ -10,6 +10,7 @@ import { BookStats } from '../api/reviews';
 import { useReviews } from '../hooks/useReviews';
 import { StarRating } from './StarRating';
 import { ReviewCard } from './ReviewCard';
+import { ReviewSheet, ReviewSheetHandle } from './ReviewSheet';
 import { ConfirmModal } from './ConfirmModal';
 
 interface AuthUser {
@@ -28,25 +29,16 @@ export function BookInfoTab({ book, stats, user, reviews }: BookInfoTabProps) {
   const { t } = useLanguage();
   const { width: screenWidth } = useWindowDimensions();
 
-  const { reviews: reviewList, submitReview, removeReview, submitting, validationError } = reviews;
+  const { reviews: reviewList, submitReview, removeReview, submitting, validationError, clearValidationError } = reviews;
 
-  const [reviewRating, setReviewRating] = useState(0);
-  const [reviewContent, setReviewContent] = useState('');
-  const [reviewSpoilers, setReviewSpoilers] = useState(false);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+  const sheetRef = useRef<ReviewSheetHandle>(null);
 
   const myReview = reviewList.find((r) => r.userId === user?.id) || null;
   const otherReviews = reviewList.filter((r) => r.userId !== user?.id);
 
-  const handleReviewSubmit = async () => {
-    await submitReview({ rating: reviewRating, content: reviewContent || undefined, hasSpoilers: reviewSpoilers });
-    setReviewRating(0);
-    setReviewContent('');
-    setReviewSpoilers(false);
-  };
-
   return (
-    <KeyboardAvoidingView style={[styles.container, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         {/* Meta grid */}
         <View style={styles.metaGrid}>
@@ -106,51 +98,49 @@ export function BookInfoTab({ book, stats, user, reviews }: BookInfoTabProps) {
             </View>
           )}
 
-          {/* My Review or Review Form */}
-          {myReview ? (
-            <View style={styles.myReviewSection}>
-              <Text style={[styles.myReviewLabel, { color: colors.textSecondary }]}>{t('reviews.write')}</Text>
-              <ReviewCard
-                review={myReview}
-                isOwn={true}
-                onDelete={() => setDeleteReviewId(myReview.id)}
-              />
-            </View>
-          ) : (
-            <View style={[styles.reviewForm, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <Text style={[styles.reviewFormLabel, { color: colors.textSecondary }]}>{t('reviews.write')}</Text>
-              <StarRating rating={reviewRating} onRate={setReviewRating} size={28} />
-              <TextInput
-                style={[styles.reviewInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
-                placeholder={t('reviews.content')}
-                placeholderTextColor={colors.textSecondary}
-                value={reviewContent}
-                onChangeText={setReviewContent}
-                multiline
-              />
-              <TouchableOpacity style={styles.spoilerToggle} onPress={() => setReviewSpoilers(!reviewSpoilers)}>
-                <Ionicons name={reviewSpoilers ? 'checkbox' : 'square-outline'} size={18} color={colors.textSecondary} />
-                <Text style={[styles.spoilerText, { color: colors.textSecondary }]}> {t('reviews.spoilers')}</Text>
-              </TouchableOpacity>
-              {validationError ? <Text style={[styles.valError, { color: colors.error }]}>{validationError}</Text> : null}
-              <TouchableOpacity
-                style={[styles.submitBtn, { backgroundColor: colors.primary, opacity: submitting ? 0.5 : 1 }]}
-                onPress={handleReviewSubmit}
-                disabled={submitting}
-              >
-                <Text style={styles.submitText}>{t('reviews.submit')}</Text>
-              </TouchableOpacity>
-            </View>
+          {/* Write / edit review button, placed directly below the heading */}
+          {user && (
+            <TouchableOpacity
+              style={[styles.writeBtn, { backgroundColor: colors.primary }]}
+              onPress={() => sheetRef.current?.present()}
+            >
+              <Ionicons name={myReview ? 'create-outline' : 'add'} size={18} color="#FFFFFF" />
+              <Text style={styles.writeBtnText}>{myReview ? t('reviews.editReview') : t('reviews.write')}</Text>
+            </TouchableOpacity>
           )}
 
-          {/* Other Reviews List */}
-          {otherReviews.length === 0 && !myReview ? (
+          {/* Reviews list: own review first, then the rest */}
+          {!myReview && otherReviews.length === 0 ? (
             <Text style={[styles.emptyReviews, { color: colors.textSecondary }]}>{t('reviews.noReviews')}</Text>
           ) : (
-            otherReviews.map((review) => <ReviewCard key={review.id} review={review} />)
+            <>
+              {myReview && (
+                <ReviewCard
+                  review={myReview}
+                  isOwn
+                  onDelete={() => setDeleteReviewId(myReview.id)}
+                />
+              )}
+              {otherReviews.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))}
+            </>
           )}
         </View>
       </ScrollView>
+
+      {/* Write/edit bottom sheet */}
+      {user && (
+        <ReviewSheet
+          ref={sheetRef}
+          book={book}
+          existingReview={myReview}
+          submitting={submitting}
+          validationError={validationError}
+          onSubmit={submitReview}
+          onClearError={clearValidationError}
+        />
+      )}
 
       <ConfirmModal
         visible={!!deleteReviewId}
@@ -159,7 +149,7 @@ export function BookInfoTab({ book, stats, user, reviews }: BookInfoTabProps) {
         onConfirm={() => { if (deleteReviewId) removeReview(deleteReviewId); setDeleteReviewId(null); }}
         onCancel={() => setDeleteReviewId(null)}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -178,15 +168,16 @@ const styles = StyleSheet.create({
   section: { marginBottom: 24 },
   sectionTitle: { fontSize: 20, fontFamily: fonts.bold, marginBottom: 10 },
 
-  myReviewSection: { marginBottom: 16 },
-  myReviewLabel: { fontSize: 14, marginBottom: 6 },
-  reviewForm: { borderWidth: 1, borderRadius: 12, padding: 14, marginBottom: 16 },
-  reviewFormLabel: { fontSize: 14, marginBottom: 8 },
-  reviewInput: { borderWidth: 1, borderRadius: 8, padding: 12, fontSize: 14, minHeight: 70, marginTop: 10, textAlignVertical: 'top' },
-  spoilerToggle: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
-  spoilerText: { fontSize: 14 },
-  valError: { fontSize: 14, marginTop: 6 },
-  submitBtn: { alignSelf: 'flex-end', marginTop: 10, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-  submitText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
+  writeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginBottom: 16,
+  },
+  writeBtnText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
+
   emptyReviews: { fontSize: 16, textAlign: 'center', marginTop: 10 },
 });

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
-  View, Text, FlatList, TextInput, TouchableOpacity,
-  Image, StyleSheet, KeyboardAvoidingView, Platform,
+  View, Text, FlatList, TouchableOpacity,
+  Image, StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,10 +11,12 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useDiscussionDetail } from '../hooks/useDiscussionDetail';
 import { ReplyCard } from '../components/ReplyCard';
+import { ReplySheet, ReplySheetHandle } from '../components/ReplySheet';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { AppHeader } from '../components/AppHeader';
 import { Loader } from '../components/Loader';
 import { fonts } from '../theme/typography';
+import type { Book } from '../types/book';
 
 export function DiscussionDetailScreen() {
   const { colors } = useTheme();
@@ -41,18 +43,22 @@ export function DiscussionDetailScreen() {
     removeDiscussion,
   } = useDiscussionDetail(discussionId);
 
-  const [replyContent, setReplyContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const replySheetRef = useRef<ReplySheetHandle>(null);
 
-  const handleSubmitReply = async () => {
-    if (!replyContent.trim()) return;
+  const handleSubmitReply = async ({ content, book }: { content: string; book: Book | null }): Promise<boolean> => {
     setSubmitting(true);
     try {
-      await addReply({ content: replyContent.trim() });
-      setReplyContent('');
+      await addReply({
+        content,
+        bookId: book?.id,
+        bookTitle: book?.title,
+        bookCover: book?.coverUrl,
+      });
+      return true;
     } catch {
-      // silent
+      return false;
     } finally {
       setSubmitting(false);
     }
@@ -183,6 +189,17 @@ export function DiscussionDetailScreen() {
         </View>
       </View>
 
+      {/* Write reply button, placed before the replies list */}
+      {user && (
+        <TouchableOpacity
+          style={[styles.replyBtn, { backgroundColor: colors.primary }]}
+          onPress={() => replySheetRef.current?.present()}
+        >
+          <Ionicons name="create-outline" size={18} color="#FFFFFF" />
+          <Text style={styles.replyBtnText}>{t('discussions.writeReply')}</Text>
+        </TouchableOpacity>
+      )}
+
       {loadingReplies ? <Loader /> : null}
     </View>
   );
@@ -191,49 +208,36 @@ export function DiscussionDetailScreen() {
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
       <AppHeader variant="back" title={discussion.title} />
 
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
-        <FlatList
-          data={replies}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.replyWrapper}>
-              <ReplyCard
-                reply={item}
-                isOwn={item.userId === user?.id}
-                onLike={() => likeReply(item.id)}
-                onDelete={() => removeReply(item.id)}
-              />
-            </View>
-          )}
-          ListHeaderComponent={headerComponent}
-          ListFooterComponent={loadingMore ? <Loader /> : null}
-          onEndReached={() => { if (hasMoreReplies && !loadingMore) loadMoreReplies(); }}
-          onEndReachedThreshold={0.3}
-          contentContainerStyle={styles.listContent}
-        />
-
-        {/* Reply input */}
-        {user && (
-          <View style={[styles.replyBar, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
-            <TextInput
-              style={[styles.replyInput, { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border }]}
-              placeholder={t('discussions.replyPlaceholder')}
-              placeholderTextColor={colors.textSecondary}
-              value={replyContent}
-              onChangeText={setReplyContent}
-              multiline
-              maxLength={2000}
+      <FlatList
+        data={replies}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.replyWrapper}>
+            <ReplyCard
+              reply={item}
+              isOwn={item.userId === user?.id}
+              onLike={() => likeReply(item.id)}
+              onDelete={() => removeReply(item.id)}
             />
-            <TouchableOpacity
-              onPress={handleSubmitReply}
-              disabled={submitting || !replyContent.trim()}
-              style={[styles.sendBtn, { backgroundColor: colors.primary, opacity: submitting || !replyContent.trim() ? 0.5 : 1 }]}
-            >
-              <Ionicons name="send" size={18} color="#FFFFFF" />
-            </TouchableOpacity>
           </View>
         )}
-      </KeyboardAvoidingView>
+        ListHeaderComponent={headerComponent}
+        ListFooterComponent={loadingMore ? <Loader /> : null}
+        onEndReached={() => { if (hasMoreReplies && !loadingMore) loadMoreReplies(); }}
+        onEndReachedThreshold={0.3}
+        contentContainerStyle={styles.listContent}
+      />
+
+      {/* Reply bottom sheet */}
+      {user && (
+        <ReplySheet
+          ref={replySheetRef}
+          discussionTitle={discussion.title}
+          discussionAuthor={discussion.user.username}
+          submitting={submitting}
+          onSubmit={handleSubmitReply}
+        />
+      )}
 
       <ConfirmModal
         visible={showDeleteModal}
@@ -381,31 +385,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   listContent: {
-    paddingBottom: 12,
+    paddingBottom: 24,
   },
-  replyBar: {
+  replyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-  },
-  replyInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 14,
-    fontFamily: fonts.regular,
-    maxHeight: 80,
-  },
-  sendBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  replyBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: fonts.bold,
   },
 });
