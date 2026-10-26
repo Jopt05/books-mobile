@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity,
-  Image, StyleSheet,
+  Image, StyleSheet, RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -31,11 +31,13 @@ export function DiscussionDetailScreen() {
     loading,
     loadingReplies,
     loadingMore,
+    refreshing,
     error,
     hasMoreReplies,
     replySort,
     setReplySort,
     loadMoreReplies,
+    refresh,
     addReply,
     removeReply,
     toggleLike,
@@ -226,6 +228,14 @@ export function DiscussionDetailScreen() {
         onEndReached={() => { if (hasMoreReplies && !loadingMore) loadMoreReplies(); }}
         onEndReachedThreshold={0.3}
         contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
       />
 
       {/* Reply bottom sheet */}

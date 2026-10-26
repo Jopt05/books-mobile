@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, useWindowDimensions, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import RenderHtml from 'react-native-render-html';
 import { useTheme } from '../hooks/useTheme';
@@ -22,9 +22,11 @@ interface BookInfoTabProps {
   stats: BookStats | null;
   user: AuthUser | null;
   reviews: ReturnType<typeof useReviews>;
+  /** Reloads the book stats and reviews (used for pull-to-refresh). */
+  onRefresh?: () => Promise<void>;
 }
 
-export function BookInfoTab({ book, stats, user, reviews }: BookInfoTabProps) {
+export function BookInfoTab({ book, stats, user, reviews, onRefresh }: BookInfoTabProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { width: screenWidth } = useWindowDimensions();
@@ -32,14 +34,38 @@ export function BookInfoTab({ book, stats, user, reviews }: BookInfoTabProps) {
   const { reviews: reviewList, submitReview, removeReview, submitting, validationError, clearValidationError } = reviews;
 
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
   const sheetRef = useRef<ReviewSheetHandle>(null);
+
+  const handleRefresh = useCallback(async () => {
+    if (!onRefresh) return;
+    setRefreshing(true);
+    try {
+      await onRefresh();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [onRefresh]);
 
   const myReview = reviewList.find((r) => r.userId === user?.id) || null;
   const otherReviews = reviewList.filter((r) => r.userId !== user?.id);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          ) : undefined
+        }
+      >
         {/* Meta grid */}
         <View style={styles.metaGrid}>
           {book.pageCount && (

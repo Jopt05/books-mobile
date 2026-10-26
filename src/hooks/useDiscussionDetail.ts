@@ -16,6 +16,7 @@ export function useDiscussionDetail(id: string) {
   const [loading, setLoading] = useState(true);
   const [loadingReplies, setLoadingReplies] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [replySort, setReplySort] = useState<'recent' | 'popular'>('recent');
   const cursorRef = useRef<string | null>(null);
@@ -76,6 +77,27 @@ export function useDiscussionDetail(id: string) {
     }
   }, [id, replySort, loadingMore]);
 
+  // Pull-to-refresh: reload the discussion and the first page of replies
+  // together, without triggering the full-screen loaders.
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    setError('');
+    try {
+      const [discussionRes, repliesRes] = await Promise.all([
+        getDiscussionById(id),
+        getReplies(id, { sort: replySort, limit: 20 }),
+      ]);
+      setDiscussion(discussionRes);
+      setReplies(repliesRes.data);
+      cursorRef.current = repliesRes.nextCursor;
+      hasMoreRef.current = repliesRes.nextCursor !== null;
+    } catch {
+      setError('Could not load discussion');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [id, replySort]);
+
   const addReply = async (data: {
     content: string;
     bookId?: string;
@@ -129,11 +151,13 @@ export function useDiscussionDetail(id: string) {
     loading,
     loadingReplies,
     loadingMore,
+    refreshing,
     error,
     hasMoreReplies: hasMoreRef.current,
     replySort,
     setReplySort,
     loadMoreReplies,
+    refresh,
     addReply,
     removeReply,
     toggleLike,

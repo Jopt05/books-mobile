@@ -20,6 +20,8 @@ import { ProfileReviewsTab } from '../components/ProfileReviewsTab';
 
 type RouteParams = { username?: string };
 
+const BIO_MAX_LENGTH = 150;
+
 export function UserProfileScreen() {
   const params = useLocalSearchParams<RouteParams>();
   const router = useRouter();
@@ -150,46 +152,65 @@ export function UserProfileScreen() {
 
           {/* Bio */}
           <FadeIn delay={150} direction="up" style={{ width: '100%' }}>
-            <View style={styles.bioSection}>
-            <View style={styles.bioHeader}>
-              <Text style={[styles.bioTitle, { color: colors.text }]}>{t('profile.bio')}</Text>
-              {isOwner && !editing && (
-                <TouchableOpacity onPress={() => setEditing(true)} style={styles.editBtn}>
-                  <Ionicons name="pencil-outline" size={16} color={colors.primary} />
-                  <Text style={[styles.editBtnText, { color: colors.primary }]}>{t('profile.edit')}</Text>
-                </TouchableOpacity>
+            <View
+              style={[
+                styles.bioCard,
+                { backgroundColor: colors.card, borderColor: editing ? colors.primary : colors.border },
+              ]}
+            >
+              <View style={styles.bioHeader}>
+                <Text style={[styles.bioTitle, { color: colors.text }]}>{t('profile.bio')}</Text>
+                {isOwner && (
+                  editing ? (
+                    <View style={styles.bioHeaderActions}>
+                      <TouchableOpacity
+                        onPress={() => { setEditing(false); setBio(profile?.bio || ''); }}
+                        hitSlop={8}
+                        accessibilityLabel={t('common.cancel')}
+                      >
+                        <Ionicons name="close" size={22} color={colors.textSecondary} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={handleSaveBio}
+                        disabled={updating || bio.length > BIO_MAX_LENGTH}
+                        hitSlop={8}
+                        accessibilityLabel={t('common.save')}
+                        style={{ opacity: updating || bio.length > BIO_MAX_LENGTH ? 0.4 : 1 }}
+                      >
+                        <Ionicons name="checkmark" size={22} color={colors.primary} />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => setEditing(true)}
+                      hitSlop={8}
+                      accessibilityLabel={t('profile.edit')}
+                    >
+                      <Ionicons name="pencil" size={18} color={colors.primary} />
+                    </TouchableOpacity>
+                  )
+                )}
+              </View>
+
+              {isOwner && editing ? (
+                <View>
+                  <TextInput
+                    style={[styles.bioInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+                    value={bio}
+                    onChangeText={setBio}
+                    placeholder={t('profile.bioPlaceholder')}
+                    placeholderTextColor={colors.textSecondary}
+                    maxLength={BIO_MAX_LENGTH}
+                    multiline
+                  />
+                  <Text style={[styles.bioCounter, { color: bio.length > BIO_MAX_LENGTH ? colors.error : colors.textSecondary }]}>
+                    {bio.length} / {BIO_MAX_LENGTH}
+                  </Text>
+                </View>
+              ) : (
+                <Text style={[styles.bioText, { color: colors.textSecondary }]}>{profile?.bio || t('profile.noBio')}</Text>
               )}
             </View>
-            {isOwner && editing ? (
-              <View>
-                <TextInput
-                  style={[styles.bioInput, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
-                  value={bio}
-                  onChangeText={setBio}
-                  placeholder={t('profile.noBio')}
-                  placeholderTextColor={colors.textSecondary}
-                  multiline
-                />
-                <View style={styles.bioActions}>
-                  <TouchableOpacity
-                    style={[styles.saveBtn, { backgroundColor: colors.primary, opacity: updating ? 0.5 : 1 }]}
-                    onPress={handleSaveBio}
-                    disabled={updating}
-                  >
-                    <Text style={styles.saveBtnText}>{updating ? '...' : t('common.save')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.cancelBtn, { backgroundColor: colors.border }]}
-                    onPress={() => { setEditing(false); setBio(profile?.bio || ''); }}
-                  >
-                    <Text style={[styles.cancelBtnText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              <Text style={[styles.bioText, { color: colors.textSecondary }]}>{profile?.bio || t('profile.noBio')}</Text>
-            )}
-          </View>
           </FadeIn>
         </ScrollView>
       </View>
@@ -224,16 +245,11 @@ const styles = StyleSheet.create({
   dot: { fontSize: 14 },
   followBtn: { marginTop: 12, paddingVertical: 10, paddingHorizontal: 24, borderRadius: 8 },
   followText: { fontSize: 14, fontFamily: fonts.bold },
-  bioSection: { width: '100%', marginTop: 16 },
-  bioHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
+  bioCard: { width: '100%', marginTop: 16, borderWidth: 1, borderRadius: 12, padding: 14 },
+  bioHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  bioHeaderActions: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   bioTitle: { fontSize: 20, fontFamily: fonts.bold },
-  editBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  editBtnText: { fontSize: 14, fontFamily: fonts.bold },
   bioText: { fontSize: 16, lineHeight: 22, fontFamily: fonts.regular },
-  bioInput: { borderWidth: 1, borderRadius: 8, padding: 12, fontSize: 14, minHeight: 70, textAlignVertical: 'top', marginBottom: 10, fontFamily: fonts.regular },
-  bioActions: { flexDirection: 'row', gap: 10 },
-  saveBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-  saveBtnText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.bold },
-  cancelBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-  cancelBtnText: { fontSize: 14, fontFamily: fonts.bold },
+  bioInput: { borderWidth: 1, borderRadius: 8, padding: 12, fontSize: 14, minHeight: 70, textAlignVertical: 'top', fontFamily: fonts.regular },
+  bioCounter: { fontSize: 14, fontFamily: fonts.regular, textAlign: 'right', marginTop: 6 },
 });

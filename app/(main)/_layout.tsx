@@ -1,34 +1,24 @@
 import React from 'react';
-import { Drawer } from 'expo-router/drawer';
-import { DrawerContent } from '../../src/components/DrawerContent';
-import { useTheme } from '../../src/hooks/useTheme';
+import { Stack } from 'expo-router';
 
+/**
+ * Root stack for the authenticated area.
+ *
+ * The drawer (with all the top-level sections) is a single screen in this
+ * stack. Detail routes (book, user, discussion, network) are siblings of the
+ * drawer and get pushed ON TOP of it. This way:
+ *  - Opening a detail pushes over whatever drawer section you were on.
+ *  - Going back pops exactly to the previous screen (the drawer section),
+ *    never to a stale detail from an earlier visit.
+ */
 export default function MainLayout() {
-  const { colors } = useTheme();
-
   return (
-    <Drawer
-      drawerContent={(props) => <DrawerContent {...props} />}
-      screenOptions={{
-        headerShown: false,
-        drawerStyle: {
-          width: 240,
-          backgroundColor: colors.surface,
-        },
-        swipeEnabled: true,
-      }}
-    >
-      <Drawer.Screen name="(home)" options={{ drawerLabel: 'Home' }} />
-      <Drawer.Screen name="(search)" options={{ drawerLabel: 'Search' }} />
-      <Drawer.Screen name="(feed)" options={{ drawerLabel: 'Feed' }} />
-      <Drawer.Screen name="(recommendations)" options={{ drawerLabel: 'Recommendations' }} />
-      <Drawer.Screen name="(discussions)" options={{ drawerLabel: 'Discussions' }} />
-      <Drawer.Screen name="(settings)" options={{ drawerLabel: 'Settings' }} />
-      <Drawer.Screen name="(profile)" options={{ drawerLabel: 'Profile' }} />
-      <Drawer.Screen name="book" options={{ drawerItemStyle: { display: 'none' } }} />
-      <Drawer.Screen name="user" options={{ drawerItemStyle: { display: 'none' } }} />
-      <Drawer.Screen name="discussion" options={{ drawerItemStyle: { display: 'none' } }} />
-      <Drawer.Screen name="network" options={{ drawerItemStyle: { display: 'none' } }} />
-    </Drawer>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(drawer)" />
+      <Stack.Screen name="book" />
+      <Stack.Screen name="user" />
+      <Stack.Screen name="discussion" />
+      <Stack.Screen name="network" />
+    </Stack>
   );
 }

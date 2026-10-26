@@ -29,8 +29,11 @@ export function DrawerContent({ navigation }: DrawerContentComponentProps) {
 
   const insets = useSafeAreaInsets();
 
-  // Determine active segment from current route
-  const activeSegment = segments.length > 1 ? segments[1] : '';
+  // Determine active segment from current route. The segments look like
+  // ['(main)', '(drawer)', '(home)', ...], so the active section lives at the
+  // '(drawer)' index + 1.
+  const drawerIdx = segments.indexOf('(drawer)');
+  const activeSegment = drawerIdx >= 0 && segments.length > drawerIdx + 1 ? segments[drawerIdx + 1] : '';
 
   return (
     <SafeAreaView style={[

@@ -1,21 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../context/LanguageContext';
+
+const LIVE_DEBOUNCE_MS = 300;
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   history?: string[];
   onRemoveHistory?: (query: string) => void;
+  /**
+   * When provided, the query is propagated live as the user types (debounced),
+   * including when the field is cleared — so the list resets on empty. Used for
+   * in-memory filters like the book history screen.
+   */
+  onLiveChange?: (query: string) => void;
 }
 
-export function SearchBar({ onSearch, placeholder, history = [], onRemoveHistory }: SearchBarProps) {
+export function SearchBar({ onSearch, placeholder, history = [], onRemoveHistory, onLiveChange }: SearchBarProps) {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const [text, setText] = useState('');
   const [focused, setFocused] = useState(false);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+  }, []);
+
+  const handleChangeText = (value: string) => {
+    setText(value);
+    if (!onLiveChange) return;
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => onLiveChange(value.trim()), LIVE_DEBOUNCE_MS);
+  };
 
   const handleSubmit = () => {
     if (text.trim()) {
@@ -41,7 +61,7 @@ export function SearchBar({ onSearch, placeholder, history = [], onRemoveHistory
           placeholder={placeholder || t('search.placeholder')}
           placeholderTextColor={colors.textSecondary}
           value={text}
-          onChangeText={setText}
+          onChangeText={handleChangeText}
           onSubmitEditing={handleSubmit}
           onFocus={() => setFocused(true)}
           onBlur={() => setTimeout(() => setFocused(false), 150)}
