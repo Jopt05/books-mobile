@@ -85,8 +85,8 @@ export function YourBooksScreen() {
         </ScrollView>
       </View>
 
-      {/* Search */}
-      <SearchBar onSearch={setQuery} placeholder={t('yourBooks.searchPlaceholder')} />
+      {/* Search (live, in-memory filter — clearing the field resets the list) */}
+      <SearchBar onSearch={setQuery} onLiveChange={setQuery} placeholder={t('yourBooks.searchPlaceholder')} />
 
       {/* Sort row: helper text + direction toggle */}
       <View style={styles.sortRow}>
