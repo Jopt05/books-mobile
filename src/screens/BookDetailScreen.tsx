@@ -26,7 +26,7 @@ export function BookDetailScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { user } = useAuth();
-  const { book, userBook, stats, loading, error } = useBookDetail(bookId);
+  const { book, userBook, stats, loading, error, refresh: refreshBookDetail } = useBookDetail(bookId);
   const shelf = useShelfButton(userBook);
   const reviews = useReviews(bookId);
   const journal = useJournal(shelf.userBook?.id || '', book?.pageCount ?? undefined);
@@ -69,6 +69,12 @@ export function BookDetailScreen() {
     );
   }
 
+  // Pull-to-refresh for the Information tab: reload the book stats (rating
+  // average/count) and the reviews list together.
+  const handleRefreshInfo = async () => {
+    await Promise.all([refreshBookDetail(), reviews.refresh()]);
+  };
+
   const handleShelfSelect = async (status: BookStatus) => {
     if (shelf.userBook) {
       await shelf.updateStatus(status);
@@ -87,7 +93,7 @@ export function BookDetailScreen() {
       title: t('bookDetail.tabInfo'),
       icon: 'information-circle-outline',
       component: BookInfoTab,
-      props: { book, stats, user, reviews },
+      props: { book, stats, user, reviews, onRefresh: handleRefreshInfo },
     },
     ...(journalable
       ? [{
